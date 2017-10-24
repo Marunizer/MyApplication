@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -22,22 +21,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.plus.model.people.Person;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import sadappp.myapplication.R;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import sadappp.myapplication.model3D.MainActivity;
 
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
@@ -47,12 +43,12 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 public class StoreActivity extends ListActivity{
 
-    ListView listView;
     List<RowStore> rowItems;
+
+    GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
     Map<String, Object> objectHashMap;
     ArrayList<String> objectARests;
-    ArrayList<Object> objectArrayList;
-    String[] restsArr;
+    ArrayList<String> menuList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,26 +56,9 @@ public class StoreActivity extends ListActivity{
         setContentView(R.layout.activity_demo);
 
         Intent intent = getIntent();
-        objectARests  = (ArrayList<String>)intent.getSerializableExtra("hashmap");
-       // objectARests = new ArrayList<String>(objectHashMap.keySet());
-     //   objectArrayList = new ArrayList<Object>(objectHashMap.values());
-
-     //   restsArr = new String[objectARests.size()];
-      //  restsArr = objectARests.toArray()(restsArr);
-      //  String key = String.valueOf(objectArrayList.get(1));
-
-
-      //  Log.d(TAG, "Key is " + objectHashMap.keySet() + " value for sadbois IN STORE ACTIVITY is " + String.valueOf(objectArrayList.get(1)));
-
-        //WIll need once a system for store is set up
-//        AssetManager assets = getApplicationContext().getAssets();
-//        String[] models = null;
-//        try {
-//            models = assets.list("models");
-//        } catch (IOException ex) {
-//            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
-//            return;
-//        }
+        objectARests  = (ArrayList<String>)intent.getSerializableExtra("FOOD_STORE");
+        //TODO: Now that we have a list of the items, Probably need to sort in some kind of order
+          //such as alphabetical, distance, yada yada, right now sorts in order of database
 
         // add 1 entry per store found
         rowItems = new ArrayList<RowStore>();
@@ -88,20 +67,48 @@ public class StoreActivity extends ListActivity{
                 rowItems.add(item);
         }
 
-        RowStore item = new RowStore("Vietnomz", "android.jpg");
-        rowItems.add(item);
         CustomStoreListViewAdapter adapter = new CustomStoreListViewAdapter(this, R.layout.activity_demo, rowItems);
         setListAdapter(adapter);
     }
 
+    //This function is called when an item on the list is clicked, taking us to the menu of the store
     private void loadItems(final String selectedItem) {
-        Intent intent = new Intent(StoreActivity.this.getApplicationContext(), DemoActivity.class);
-        Bundle b = new Bundle();
-//        b.putString("assetDir", "models");
-//        b.putString("assetFilename", selectedItem);
-//        b.putString("immersiveMode", "true");
-//        intent.putExtras(b);
-        StoreActivity.this.startActivity(intent);
+
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Rests/" + selectedItem + "/Menu");
+
+        // Read from the database
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                objectHashMap = dataSnapshot.getValue(objectsGTypeInd);
+             //   objectArrayList = new ArrayList<Object>(objectHashMap.values());
+
+                //DO NOT USE OR CRASH//String value = dataSnapshot.getValue(String.class);
+                menuList = new ArrayList<String>();
+
+                //for every key, go through and assign string to arraylist from hasmap
+                for (String key: objectHashMap.keySet()) {
+                    menuList.add(key);
+                }
+
+                Intent intent = new Intent(StoreActivity.this.getApplicationContext(), DemoActivity.class);
+                intent.putExtra("MENU", menuList);
+                intent.putExtra("STORE_NAME", selectedItem);
+                StoreActivity.this.startActivity(intent);
+
+                //TODO: probably need to close connection to firebase before moving on to next activity??
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
     }
 
     @Override
@@ -207,7 +214,6 @@ class CustomStoreListViewAdapter extends ArrayAdapter<RowStore> {
         } catch (Exception e) {
             holder.imageView.setImageResource(R.drawable.ic_launcher2);
         }
-
         return convertView;
     }
 }

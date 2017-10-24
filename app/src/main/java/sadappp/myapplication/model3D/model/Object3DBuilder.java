@@ -5,7 +5,6 @@ import android.content.res.AssetManager;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import sadappp.myapplication.model3D.services.WavefrontLoader;
 import sadappp.myapplication.model3D.services.WavefrontLoader.FaceMaterials;
 import sadappp.myapplication.model3D.services.WavefrontLoader.Faces;
 import sadappp.myapplication.model3D.services.WavefrontLoader.Material;
@@ -45,267 +44,6 @@ public final class Object3DBuilder {
 	 */
 	private static float[] DEFAULT_COLOR = {1.0f, 1.0f, 0, 1.0f};
 
-	final static float[] axisVertexLinesData = new float[]{
-			//@formatter:off
-			0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // right
-			0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // left
-			0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, // up
-			0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, // down
-			0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, // z+
-			0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, // z-
-
-			0.95f, 0.05f, 0, 1, 0, 0, 0.95f, -0.05f, 0, 1, 0f, 0f, // Arrow X (>)
-			-0.95f, 0.05f, 0, -1, 0, 0, -0.95f, -0.05f, 0, -1, 0f, 0f, // Arrow X (<)
-			-0.05f, 0.95f, 0, 0, 1, 0, 0.05f, 0.95f, 0, 0, 1f, 0f, // Arrox Y (^)
-			-0.05f, 0, 0.95f, 0, 0, 1, 0.05f, 0, 0.95f, 0, 0, 1, // Arrox z (v)
-
-			1.05F, 0.05F, 0, 1.10F, -0.05F, 0, 1.05F, -0.05F, 0, 1.10F, 0.05F, 0, // Letter X
-			-0.05F, 1.05F, 0, 0.05F, 1.10F, 0, -0.05F, 1.10F, 0, 0.0F, 1.075F, 0, // Letter Y
-			-0.05F, 0.05F, 1.05F, 0.05F, 0.05F, 1.05F, 0.05F, 0.05F, 1.05F, -0.05F, -0.05F, 1.05F, -0.05F, -0.05F,
-			1.05F, 0.05F, -0.05F, 1.05F // letter z
-			//@formatter:on
-	};
-
-	final static float[] squarePositionData = new float[]{
-			// @formatter:off
-			-0.5f, 0.5f, 0.5f, // top left front
-			-0.5f, -0.5f, 0.5f, // bottom left front
-			0.5f, -0.5f, 0.5f, // bottom right front
-			0.5f, 0.5f, 0.5f, // upper right front
-			-0.5f, 0.5f, -0.5f, // top left back
-			-0.5f, -0.5f, -0.5f, // bottom left back
-			0.5f, -0.5f, -0.5f, // bottom right back
-			0.5f, 0.5f, -0.5f // upper right back
-			// @formatter:on
-	};
-
-	final static int[] squareDrawOrderData = new int[]{
-			// @formatter:off
-			// front
-			0, 1, 2,
-			0, 2, 3,
-			// back
-			7, 6, 5,
-			4, 7, 5,
-			// up
-			4, 0, 3,
-			7, 4, 3,
-			// bottom
-			1, 5, 6,
-			2, 1, 6,
-			// left
-			4, 5, 1,
-			0, 4, 1,
-			// right
-			3, 2, 6,
-			7, 3, 6
-			// @formatter:on
-	};
-
-	final static float[] cubePositionData = {
-			//@formatter:off
-			// Front face
-			-1.0f, 1.0f, 1.0f,
-			-1.0f, -1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f,
-			-1.0f, -1.0f, 1.0f,
-			1.0f, -1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f,
-
-			// Right face
-			1.0f, 1.0f, 1.0f,
-			1.0f, -1.0f, 1.0f,
-			1.0f, 1.0f, -1.0f,
-			1.0f, -1.0f, 1.0f,
-			1.0f, -1.0f, -1.0f,
-			1.0f, 1.0f, -1.0f,
-
-			// Back face
-			1.0f, 1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
-			-1.0f, 1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f, -1.0f,
-			-1.0f, 1.0f, -1.0f,
-
-			// Left face
-			-1.0f, 1.0f, -1.0f,
-			-1.0f, -1.0f, -1.0f,
-			-1.0f, 1.0f, 1.0f,
-			-1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f, 1.0f,
-			-1.0f, 1.0f, 1.0f,
-
-			// Top face
-			-1.0f, 1.0f, -1.0f,
-			-1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, -1.0f,
-			-1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f,
-			1.0f, 1.0f, -1.0f,
-
-			// Bottom face
-			1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f, 1.0f,
-			-1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f, 1.0f,
-			-1.0f, -1.0f, 1.0f,
-			-1.0f, -1.0f, -1.0f
-	};
-
-	final static float[] cubeColorData = {
-
-			// Front face (red)
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-
-			// Right face (green)
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-
-			// Back face (blue)
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-
-			// Left face (yellow)
-			1.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 0.0f, 1.0f,
-
-			// Top face (cyan)
-			0.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 1.0f, 1.0f,
-
-			// Bottom face (magenta)
-			1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 1.0f
-	};
-
-	final static float[] cubeNormalData =
-			{
-					// Front face
-					0.0f, 0.0f, 1.0f,
-					0.0f, 0.0f, 1.0f,
-					0.0f, 0.0f, 1.0f,
-					0.0f, 0.0f, 1.0f,
-					0.0f, 0.0f, 1.0f,
-					0.0f, 0.0f, 1.0f,
-
-					// Right face
-					1.0f, 0.0f, 0.0f,
-					1.0f, 0.0f, 0.0f,
-					1.0f, 0.0f, 0.0f,
-					1.0f, 0.0f, 0.0f,
-					1.0f, 0.0f, 0.0f,
-					1.0f, 0.0f, 0.0f,
-
-					// Back face
-					0.0f, 0.0f, -1.0f,
-					0.0f, 0.0f, -1.0f,
-					0.0f, 0.0f, -1.0f,
-					0.0f, 0.0f, -1.0f,
-					0.0f, 0.0f, -1.0f,
-					0.0f, 0.0f, -1.0f,
-
-					// Left face
-					-1.0f, 0.0f, 0.0f,
-					-1.0f, 0.0f, 0.0f,
-					-1.0f, 0.0f, 0.0f,
-					-1.0f, 0.0f, 0.0f,
-					-1.0f, 0.0f, 0.0f,
-					-1.0f, 0.0f, 0.0f,
-
-					// Top face
-					0.0f, 1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f,
-
-					// Bottom face
-					0.0f, -1.0f, 0.0f,
-					0.0f, -1.0f, 0.0f,
-					0.0f, -1.0f, 0.0f,
-					0.0f, -1.0f, 0.0f,
-					0.0f, -1.0f, 0.0f,
-					0.0f, -1.0f, 0.0f
-			};
-
-
-	final static float[] cubeTextureCoordinateData =
-			{
-					// Front face
-					0.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f,
-
-					// Right face
-					0.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f,
-
-					// Back face
-					0.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f,
-
-					// Left face
-					0.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f,
-
-					// Top face
-					0.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f,
-
-					// Bottom face
-					0.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 0.0f,
-					0.0f, 1.0f,
-					1.0f, 1.0f,
-					1.0f, 0.0f
-			};
 	//@formatter:on
 
 	private Object3DV0 object3dv0;
@@ -326,83 +64,6 @@ public final class Object3DBuilder {
 	public static Object3DData buildPoint(float[] point) {
 		return new Object3DData(createNativeByteBuffer(point.length * 4).asFloatBuffer().put(point))
 				.setDrawMode(GLES20.GL_POINTS);
-	}
-
-	public static Object3DData buildAxis() {
-		return new Object3DData(
-				createNativeByteBuffer(axisVertexLinesData.length * 4).asFloatBuffer().put(axisVertexLinesData))
-				.setDrawMode(GLES20.GL_LINES);
-	}
-
-	public static Object3DData buildCubeV1() {
-		return new Object3DData(
-				createNativeByteBuffer(cubePositionData.length * 4).asFloatBuffer().put(cubePositionData))
-				.setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV1").centerAndScale(1.0f);
-	}
-
-	public static Object3DData buildCubeV1_with_normals() {
-		return new Object3DData(
-				createNativeByteBuffer(cubePositionData.length * 4).asFloatBuffer().put(cubePositionData))
-				.setVertexColorsArrayBuffer(
-						createNativeByteBuffer(cubeColorData.length * 4).asFloatBuffer().put(cubeColorData))
-				.setVertexNormalsArrayBuffer(
-						createNativeByteBuffer(cubeNormalData.length * 4).asFloatBuffer().put(cubeNormalData))
-				.setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV1_light").centerAndScale(1.0f);
-	}
-
-	public static Object3DData buildSquareV2() {
-		return new Object3DData(
-				createNativeByteBuffer(squarePositionData.length * 4).asFloatBuffer().put(squarePositionData),
-				createNativeByteBuffer(squareDrawOrderData.length * 4).asIntBuffer().put(squareDrawOrderData)
-						.asReadOnlyBuffer()).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV2").centerAndScale(1.0f);
-	}
-
-	public static Object3DData buildCubeV3(byte[] textureData) {
-		return new Object3DData(
-				createNativeByteBuffer(cubePositionData.length * 4).asFloatBuffer().put(cubePositionData),
-				createNativeByteBuffer(cubeTextureCoordinateData.length * 4).asFloatBuffer()
-						.put(cubeTextureCoordinateData).asReadOnlyBuffer(),
-				textureData).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV3").centerAndScale(1.0f);
-	}
-
-	public static Object3DData buildCubeV4(byte[] textureData) {
-		return new Object3DData(
-				createNativeByteBuffer(cubePositionData.length * 4).asFloatBuffer().put(cubePositionData),
-				createNativeByteBuffer(cubeColorData.length * 4).asFloatBuffer().put(cubeColorData).asReadOnlyBuffer(),
-				createNativeByteBuffer(cubeTextureCoordinateData.length * 4).asFloatBuffer()
-						.put(cubeTextureCoordinateData).asReadOnlyBuffer(),
-				textureData).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV4").centerAndScale(1.0f);
-	}
-
-	public static Object3DData loadV5(AssetManager assets, String assetDir, String assetFilename) {
-		try {
-			final String modelId = assetDir + "/" + assetFilename;
-
-			InputStream is = assets.open(modelId);
-			WavefrontLoader wfl = new WavefrontLoader(assetFilename);
-			wfl.analyzeModel(is);
-			is.close();
-
-			wfl.allocateBuffers();
-
-			is = assets.open(modelId);
-			wfl.loadModel(is);
-			is.close();
-
-			Object3DData data3D = new Object3DData(wfl.getVerts(), wfl.getNormals(), wfl.getTexCoords(), wfl.getFaces(),
-					wfl.getFaceMats(), wfl.getMaterials());
-			data3D.setId(assetFilename);
-			data3D.setAssetsDir(assetDir);
-			data3D.setDimensions(wfl.getDimensions());
-			data3D.centerScale();
-
-			data3D.setDrawMode(GLES20.GL_TRIANGLES);
-			generateArrays(assets, data3D);
-
-			return data3D;
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	public Object3D getDrawer(Object3DData obj, boolean usingTextures, boolean usingLights) throws IOException {
@@ -471,7 +132,7 @@ public final class Object3DBuilder {
 
 		Log.i("Object3DBuilder", "Allocating vertex normals buffer... Total normals ("+faces.facesNormIdxs.size()+")");
 		// Normals buffer size = Number_of_faces X 3 (vertices_per_face) X 3 (coords_per_normal) X 4 (bytes_per_float)
-		final FloatBuffer vertexNormalsArrayBuffer = createNativeByteBuffer(faces.getSize() * 3 * 3 * 4).asFloatBuffer();;
+		final FloatBuffer vertexNormalsArrayBuffer = createNativeByteBuffer(faces.getSize() * 3 * 3 * 4).asFloatBuffer();
 		obj.setVertexNormalsArrayBuffer(vertexNormalsArrayBuffer);
 
 		// build file normals
@@ -579,12 +240,21 @@ public final class Object3DBuilder {
 				} else {
 					String assetResourceName = obj.getAssetsDir() + "/" + texture;
 					Log.i("Object3DBuilder", "Loading texture '" + assetResourceName + "'...");
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					InputStream fis = assets.open(assetResourceName);
-					IOUtils.copy(fis, bos);
+					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+					InputStream fis = new FileInputStream(new File(assetResourceName));
+					for(int c = fis.read();c != -1; c = fis.read())
+					{
+						buffer.write(c);
+					}
+
+					Log.i("Object3DBuilder", "Loading fis'" + fis + "'...");
+
+					buffer.flush();
+
 					fis.close();
-					textureData = bos.toByteArray();
-					bos.close();
+					textureData = buffer.toByteArray();//bos.toByteArray();
+					Log.i("Object3DBuilder", "Length of jpg bytes:'" + textureData.length + "'..." + textureData.toString());
+					buffer.close();
 				}
 			} else {
 				Log.i("Object3DBuilder", "Found material(s) but no texture");
@@ -754,33 +424,6 @@ public final class Object3DBuilder {
 	}
 
 	/**
-	 * Build a wireframe from obj vertices and faces.  This method uses less memory that {@link #buildWireframe(Object3DData)}
-	 * --The problem-- in using this method  is that we are reshaping the object (scaling) after
-	 * it is loaded, so this wireframe wont match current state of the shape
-	 * @param objData the 3d model
-	 * @return the 3d wireframe
-	 */
-	public static Object3DData buildWireframe_from_original(Object3DData objData) {
-		try {
-			IntBuffer drawOrder = createNativeByteBuffer(objData.getFaces().getIndexBuffer().capacity() * 2 * 4).asIntBuffer();
-			for (int i = 0; i < objData.getFaces().getIndexBuffer().capacity(); i+=3) {
-					drawOrder.put(objData.getFaces().getIndexBuffer().get(i));
-					drawOrder.put((objData.getFaces().getIndexBuffer().get(i+1)));
-					drawOrder.put((objData.getFaces().getIndexBuffer().get(i+1)));
-					drawOrder.put((objData.getFaces().getIndexBuffer().get(i+2)));
-					drawOrder.put((objData.getFaces().getIndexBuffer().get(i+2)));
-					drawOrder.put((objData.getFaces().getIndexBuffer().get(i)));
-			}
-			return new Object3DData(objData.getVertexBuffer()).setDrawOrder(drawOrder).
-					setVertexNormalsArrayBuffer(objData.getVertexNormalsBuffer()).setColor(objData.getColor())
-					.setDrawMode(GLES20.GL_LINES);
-		} catch (Exception ex) {
-			Log.e("Object3DBuilder", ex.getMessage(), ex);
-		}
-		return objData;
-	}
-
-	/**
 	 * Generate a new object that contains all the line normals for all the faces for the specified object
 	 * <p>
 	 * TODO: This only works for objects made of triangles. Make it useful for any kind of polygonal face
@@ -871,7 +514,7 @@ public final class Object3DBuilder {
 	public static void loadV6AsyncParallel_Obj(final Activity parent, final File file, final String assetsDir, final String assetName,
 										   final Callback callback) {
 
-		final String modelId = file != null ? file.getName() : assetName;
+		String modelId = file != null ? file.getName() : assetName;
 		final File currentDir = file != null ? file.getParentFile() : null;
 
 		Log.i("Object3DBuilder", "Loading model "+modelId+". async and parallel..");
@@ -882,26 +525,9 @@ public final class Object3DBuilder {
 
 class BoundingBox {
 
-	// number of coordinates per vertex in this array
-	protected static final int COORDS_PER_VERTEX = 3;
-	protected static final int COORDS_PER_COLOR = 4;
-
 	public FloatBuffer vertices;
-	public FloatBuffer vertexArray;
 	public FloatBuffer colors;
 	public IntBuffer drawOrder;
-
-	public float xMin = Float.MAX_VALUE;
-	public float xMax = Float.MIN_VALUE;
-	public float yMin = Float.MAX_VALUE;
-	public float yMax = Float.MIN_VALUE;
-	public float zMin = Float.MAX_VALUE;
-	public float zMax = Float.MIN_VALUE;
-
-	public float[] center;
-	public float[] sizes;
-	public float radius;
-
 	/**
 	 * Build a bounding box for the specified 3D object vertex buffer.
 	 *
@@ -927,10 +553,6 @@ class BoundingBox {
 		return GLES20.GL_LINE_LOOP;
 	}
 
-	public int getDrawSize() {
-		return 4;
-	}
-
 	public List<int[]> getDrawModeList() {
 		List<int[]> ret = new ArrayList<int[]>();
 		int drawOrderPos = 0;
@@ -941,164 +563,8 @@ class BoundingBox {
 		return ret;
 	}
 
-	BoundingBox(FloatBuffer vertexBuffer, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-		this.xMin = xMin;
-		this.xMax = xMax;
-		this.yMin = yMin;
-		this.yMax = yMax;
-		this.zMin = zMin;
-		this.zMax = zMax;
-		calculateVertex();
-		calculateOther(vertexBuffer);
-	}
-
-	public void recalculate(FloatBuffer vertexBuffer) {
-
-		calculateMins(vertexBuffer);
-		calculateVertex();
-		calculateOther(vertexBuffer);
-	}
-
-	/**
-	 * This works only when COORDS_PER_VERTEX = 3
-	 *
-	 * @param vertexBuffer
-	 */
-	private void calculateMins(FloatBuffer vertexBuffer) {
-		vertexBuffer.position(0);
-		while (vertexBuffer.hasRemaining()) {
-			float vertexx = vertexBuffer.get();
-			float vertexy = vertexBuffer.get();
-			float vertexz = vertexBuffer.get();
-			if (vertexx < xMin) {
-				xMin = vertexx;
-			}
-			if (vertexx > xMax) {
-				xMax = vertexx;
-			}
-			if (vertexy < yMin) {
-				yMin = vertexy;
-			}
-			if (vertexy > yMax) {
-				yMax = vertexy;
-			}
-			if (vertexz < zMin) {
-				zMin = vertexz;
-			}
-			if (vertexz > zMax) {
-				zMax = vertexz;
-			}
-		}
-	}
-
-	private void calculateVertex() {
-		vertices.position(0);
-		//@formatter:off
-		vertices.put(xMin).put(yMin).put(zMin);  // down-left (far)
-		vertices.put(xMin).put(yMax).put(zMin);  // up-left (far)
-		vertices.put(xMax).put(yMax).put(zMin);  // up-right (far)
-		vertices.put(xMax).put(yMin).put(zMin);  // down-right  (far)
-		vertices.put(xMin).put(yMin).put(zMax);  // down-left (near)
-		vertices.put(xMin).put(yMax).put(zMax);  // up-left (near)
-		vertices.put(xMax).put(yMax).put(zMax);  // up-right (near)
-		vertices.put(xMax).put(yMin).put(zMax);  // down-right (near)
-		//@formatter:on
-	}
-
-	private void calculateOther(FloatBuffer vertexBuffer) {
-		center = new float[]{(xMax + xMin) / 2, (yMax + yMin) / 2, (zMax + zMin) / 2};
-		sizes = new float[]{xMax - xMin, yMax - yMin, zMax - zMin};
-
-		vertexBuffer.position(0);
-
-		// calculated bounding sphere
-		double radius = 0;
-		double radiusTemp;
-		vertexBuffer.position(0);
-		while (vertexBuffer.hasRemaining()) {
-			float vertexx = vertexBuffer.get();
-			float vertexy = vertexBuffer.get();
-			float vertexz = vertexBuffer.get();
-			radiusTemp = Math.sqrt(Math.pow(vertexx - center[0], 2) + Math.pow(vertexy - center[1], 2)
-					+ Math.pow(vertexz - center[2], 2));
-			if (radiusTemp > radius) {
-				radius = radiusTemp;
-			}
-		}
-		this.radius = (float) radius;
-	}
-
 	public FloatBuffer getVertices() {
 		return vertices;
-	}
-
-	public FloatBuffer getVertexArray() {
-		// initialize vertex byte buffer for shape coordinates
-		ByteBuffer bb = ByteBuffer.allocateDirect(
-				// (number of coordinate values * 4 bytes per float)
-				drawOrder.capacity() * COORDS_PER_VERTEX * 4);
-		// use the device hardware's native byte order
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer ret = bb.asFloatBuffer();
-		ret.position(0);
-		for (int i = 0; i < drawOrder.capacity(); i++) {
-			ret.put(vertices.get(drawOrder.get(i) * 3)); // x
-			ret.put(vertices.get(drawOrder.get(i) * 3 + 1)); // y
-			ret.put(vertices.get(drawOrder.get(i) * 3 + 2)); // z
-		}
-		return ret;
-	}
-
-	public String sizeToString() {
-		return "x[" + sizes[0] + "],y[" + sizes[1] + "],z[" + sizes[2] + "]";
-	}
-
-	public String centerToString() {
-		return "x[" + center[0] + "],y[" + center[1] + "],z[" + center[2] + "]";
-	}
-
-	public String limitsToString() {
-		StringBuffer ret = new StringBuffer();
-		ret.append("xMin[" + xMin + "], xMax[" + xMax + "], yMin[" + yMin + "], yMax[" + yMax + "], zMin[" + zMin
-				+ "], zMax[" + zMax + "]");
-		return ret.toString();
-	}
-
-	public float[] getCenter() {
-		return center;
-	}
-
-	public void setCenter(float[] center) {
-		this.center = center;
-	}
-
-	public float getRadius() {
-		return radius;
-	}
-
-	public void setRadius(float radius) {
-		this.radius = radius;
-	}
-
-	public FloatBuffer getNormals() {
-		return createEmptyNormalsFloatBuffer(getVertices().capacity());
-	}
-
-	private static FloatBuffer createEmptyNormalsFloatBuffer(int size) {
-		FloatBuffer buffer = createNativeByteBuffer(size * 3 * 4).asFloatBuffer();
-		buffer.position(0);
-		for (int i = 0; i < size; i++) {
-			buffer.put(0.0f).put(1.0f).put(0.0f);
-		}
-		return buffer;
-	}
-
-	private static ByteBuffer createNativeByteBuffer(int length) {
-		// initialize vertex byte buffer for shape coordinates
-		ByteBuffer bb = ByteBuffer.allocateDirect(length);
-		// use the device hardware's native byte order
-		bb.order(ByteOrder.nativeOrder());
-		return bb;
 	}
 
 }

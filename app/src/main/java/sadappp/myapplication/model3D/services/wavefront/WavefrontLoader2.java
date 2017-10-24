@@ -31,11 +31,10 @@ public class WavefrontLoader2 {
 			private InputStream getInputStream() {
 				Log.i("LoaderTask", "Opening " + modelId + "...");
 				try {
-					final InputStream ret;
 					if (currentDir != null) {
 						return new FileInputStream(new File(currentDir, modelId));
 					} else if (assetsDir != null) {
-						return parent.getAssets().open(assetsDir + "/" + modelId);
+						return new FileInputStream((new File(assetsDir,modelId.toLowerCase())));
 					} else {
 						throw new IllegalArgumentException("Model data source not specified");
 					}

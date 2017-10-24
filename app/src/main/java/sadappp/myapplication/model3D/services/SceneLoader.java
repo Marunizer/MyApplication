@@ -83,23 +83,22 @@ public class SceneLoader {
 	}
 
 	public void init() {
-
 		// Load object
 		if (parent.getParamFile() != null || parent.getParamAssetDir() != null) {
 
 			// Initialize assets url handler
 			Handler.assets = parent.getAssets();
 			// Handler.classLoader = parent.getClassLoader(); (optional)
-			// Handler.androidResources = parent.getResources(); (optional)
+			 //Handler.androidResources = parent.getResources(); (optional)
 
 			// Create asset url
 			final URL url;
 			try {
 				if (parent.getParamFile() != null) {
 					url = parent.getParamFile().toURI().toURL();
-				} else {
-					url = new URL("android://org.andresoviedo.dddmodel2/assets/" + parent.getParamAssetDir() + File.separator + parent.getParamAssetFilename());
-
+				} else {//TODO:  probaably should at least attach the appropriate URL, No idea why it is needed
+					url = new URL("android:/" +parent.getParamAssetDir() + File.separator + parent.getParamAssetFilename());
+					//??????? LMAO SOMEHOW THIS URL WORKS, don't know why android part is needed, will crash without it
 				}
 			} catch (MalformedURLException e) {
 				Log.e("SceneLoader", e.getMessage(), e);

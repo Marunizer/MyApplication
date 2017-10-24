@@ -128,7 +128,7 @@ public class WavefrontLoader {
 
 	/**
 	 * Count verts, normals, faces etc and reserve buffers to save the data.
-	 * @param br data source
+	 * @param //br data source
 	 */
 	public void analyzeModel(InputStream is) {
 		int lineNum = 0;
@@ -576,8 +576,7 @@ public class WavefrontLoader {
 					System.out.println("Loading material from " + file);
 					is = new FileInputStream(file);
 				} else {
-					System.out.println("Loading material from " + mfnm);
-					is = am.open(assetsDir + "/" + mfnm);
+					is = new FileInputStream((new File(assetsDir,mfnm)));//am.open(assetsDir + "/" + mfnm);
 				}
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
@@ -615,7 +614,6 @@ public class WavefrontLoader {
 						Log.d("Loader", "New material found: " + name);
 						currMaterial = new Material(name);
 					} else if (line.startsWith("map_Kd ")) { // texture filename
-						// String fileName = new File(file.getParent(), line.substring(7)).getAbsolutePath();
 						String textureFilename = line.substring(7);
 						Log.d("Loader", "New texture found: " + textureFilename);
 						currMaterial.setTexture(textureFilename);

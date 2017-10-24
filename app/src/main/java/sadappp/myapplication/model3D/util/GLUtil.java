@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
-
 import java.io.InputStream;
 
 public final class GLUtil {
@@ -118,9 +117,9 @@ public final class GLUtil {
 			// we set inScaled to false.
 			options.inScaled = false;
 
-			// Read in the resource
 			final Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
-			if (bitmap == null) {
+			if (bitmap == null)
+			{
 				throw new RuntimeException("couldnt load bitmap");
 			}
 
@@ -132,7 +131,6 @@ public final class GLUtil {
 			bitmap.recycle();
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
 		}
 
 		if (textureHandle[0] == 0) {
