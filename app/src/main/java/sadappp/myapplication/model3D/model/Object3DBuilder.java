@@ -230,7 +230,7 @@ public final class Object3DBuilder {
 			if (texture != null) {
 				if (obj.getCurrentDir() != null) {
 					File file = new File(obj.getCurrentDir(), texture);
-					Log.i("Object3DBuilder", "Loading texture '" + file + "'...");
+					Log.i("Object3DBuilder", "Loading texture '" + file + " from " + obj.getCurrentDir() +"...");
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					FileInputStream fis = new FileInputStream(file);
 					IOUtils.copy(fis, bos);
@@ -242,17 +242,19 @@ public final class Object3DBuilder {
 					Log.i("Object3DBuilder", "Loading texture '" + assetResourceName + "'...");
 					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 					InputStream fis = new FileInputStream(new File(assetResourceName));
-					for(int c = fis.read();c != -1; c = fis.read())
-					{
-						buffer.write(c);
-					}
+					//TODO: Clean this up later, leaving as reference for now
+//					for(int c = fis.read();c != -1; c = fis.read())
+//					{
+//						buffer.write(c);
+//					}
 
 					Log.i("Object3DBuilder", "Loading fis'" + fis + "'...");
 
-					buffer.flush();
+				//	buffer.flush();
 
+					//IOUtils.toByteArray(fis);
+					textureData = IOUtils.toByteArray(fis);//fis.readAllBytes(); //toByteArray(); //buffer.toByteArray();//bos.toByteArray();
 					fis.close();
-					textureData = buffer.toByteArray();//bos.toByteArray();
 					Log.i("Object3DBuilder", "Length of jpg bytes:'" + textureData.length + "'..." + textureData.toString());
 					buffer.close();
 				}

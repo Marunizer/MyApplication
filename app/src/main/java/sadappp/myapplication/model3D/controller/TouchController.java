@@ -184,7 +184,8 @@ public class TouchController {
 			float[] hit1 = unproject(x1, y1, 0);
 			float[] hit2 = unproject(x1, y1, 1);
 			// check if the ray intersect any of our objects and select the nearer
-			selectObjectImpl(hit1, hit2);
+            //TODO:Check out why this causes 3D modeler viewer to crash: I suspect, expects buffering, when there is none
+			//selectObjectImpl(hit1, hit2);
 		}
 
 
@@ -308,6 +309,7 @@ public class TouchController {
 	 * @param farPoint
 	 *            the far point in world coordinates
 	 */
+	//CAUSES CRASH
 	private void selectObjectImpl(float[] nearPoint, float[] farPoint) {
 		SceneLoader scene = view.getModelActivity().getScene();
 		if (scene == null) {
