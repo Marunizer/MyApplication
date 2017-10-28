@@ -30,6 +30,7 @@ public class LocationActivity  extends Activity{
         queryText = (TextView) findViewById(R.id.zipcode_text);
         zipcodeText = (EditText) findViewById(R.id.add_zip);
         enterQuery = (Button) findViewById(R.id.zipcode_button);
+
     }
 
 }

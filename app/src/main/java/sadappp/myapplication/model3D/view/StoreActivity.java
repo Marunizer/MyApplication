@@ -44,11 +44,11 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 public class StoreActivity extends ListActivity{
 
     List<RowStore> rowItems;
-
     GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
     Map<String, Object> objectHashMap;
     ArrayList<String> objectARests;
     ArrayList<String> menuList;
+    TextView title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +60,8 @@ public class StoreActivity extends ListActivity{
         //TODO: Now that we have a list of the items, Probably need to sort in some kind of order
           //such as alphabetical, distance, yada yada, right now sorts in order of database
 
+        title = (TextView) findViewById(R.id.title);
+        title.setText("Stores around you");
         // add 1 entry per store found
         rowItems = new ArrayList<RowStore>();
         for (String model : objectARests) {

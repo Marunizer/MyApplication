@@ -30,6 +30,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,6 +59,7 @@ public class DemoActivity extends ListActivity {
 	List<RowItem> rowItems;
 	ArrayList<String> menuList;
 	String store;
+	TextView title;
 
 	GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
 	Map<String, Object> objectHashMap;
@@ -78,6 +80,8 @@ public class DemoActivity extends ListActivity {
 		Intent intent = getIntent();
 		menuList = (ArrayList<String>)intent.getSerializableExtra("MENU");
 		store = intent.getStringExtra("STORE_NAME");
+		title = (TextView) findViewById(R.id.title);
+		title.setText("Menu Items");
 
 		// add 1 entry per store found
 		rowItems = new ArrayList<RowItem>();
