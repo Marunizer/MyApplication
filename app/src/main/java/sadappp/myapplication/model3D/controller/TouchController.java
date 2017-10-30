@@ -22,6 +22,7 @@ public class TouchController {
 	private static final int TOUCH_STATUS_ZOOMING_CAMERA = 1;
 	private static final int TOUCH_STATUS_ROTATING_CAMERA = 4;
 	private static final int TOUCH_STATUS_MOVING_WORLD = 5;
+    private static final int TOUCH_STATUS_NO_ACTION = 9;
 
 	private final ModelSurfaceView view;
 	private final ModelRenderer mRenderer;
@@ -191,6 +192,7 @@ public class TouchController {
 
 		int max = Math.max(mRenderer.getWidth(), mRenderer.getHeight());
 		if (touchDelay > 1) {
+            //TODO: Added a flag check for rotating camera , make sure it works and doesn't crash app
 			// INFO: Procesar gesto
 			if (pointerCount == 1 && currentPress1 > 4.0f) {
 			} else if (pointerCount == 1) {
@@ -205,8 +207,9 @@ public class TouchController {
 					float zoomFactor = (length - previousLength) / max * mRenderer.getFar();
 					Log.i("Camera", "Zooming '" + zoomFactor + "'...");
 					mRenderer.getCamera().MoveCameraZ(zoomFactor);
+                    touchStatus = TOUCH_STATUS_NO_ACTION;
 				}
-				if (isRotating) {
+				if (isRotating && touchStatus != TOUCH_STATUS_ZOOMING_CAMERA) {
 					touchStatus = TOUCH_STATUS_ROTATING_CAMERA;
 					Log.i("Camera", "Rotating camera '" + Math.signum(rotationVector[2]) + "'...");
 					mRenderer.getCamera().Rotate((float) (Math.signum(rotationVector[2]) / Math.PI) / 4);

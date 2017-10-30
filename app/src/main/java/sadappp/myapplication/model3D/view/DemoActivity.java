@@ -110,6 +110,9 @@ public class DemoActivity extends ListActivity {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 
+		//TODO: Need to add Loading sign, makes it sexy
+		//TODO: Disable ability to click on all items after clicking on one, enable all buttons after All files have been downloaded
+
 		final RowItem selectedItem = (RowItem) getListView().getItemAtPosition(position);
 
 		FirebaseDatabase database = FirebaseDatabase.getInstance();
