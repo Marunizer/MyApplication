@@ -56,6 +56,11 @@
             android:label="@string/title_activity_model"
             android:parentActivityName="sadappp.myapplication.model3D.MainActivity" >
         </activity>
+        <activity
+            android:name="sadappp.myapplication.model3D.view.ARModelActivity"
+            android:label="@string/title_activity_model"
+            android:parentActivityName="sadappp.myapplication.model3D.MainActivity" >
+        </activity>
     </application>
 
 </manifest>
