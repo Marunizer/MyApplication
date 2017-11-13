@@ -22,17 +22,24 @@
         android:id="@+id/location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:background="@android:color/darker_gray"
         android:backgroundTint="?android:attr/textColorSecondaryNoDisable"
         android:text="Use my location"
-        android:textSize="30sp"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp" />
+        android:textSize="30sp" />
 
     <Button
         android:id="@+id/check_download"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Check my downlaod !" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="nearByRestauraunts"
+        android:text="Nearby Restauraunts" />
 
 </LinearLayout>

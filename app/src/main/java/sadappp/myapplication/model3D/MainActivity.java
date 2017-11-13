@@ -314,7 +314,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 					//DO NOT USE OR CRASH//String value = dataSnapshot.getValue(String.class);
 					objectARests = new ArrayList<String>();
 
-					//for every key, go through and assign string to arraylist from hasmap
+					//for every key, go through and assign string to arraylist from hashmap
 					for (String key: objectHashMap.keySet()) {
 						objectARests.add(key);
 					}
@@ -477,5 +477,17 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		Toast.makeText(MainActivity.this,
 				"onConnectionFailed: \n" + connectionResult.toString(),
 				Toast.LENGTH_LONG).show();
-	}
+    }
+
+    /**
+     * On Button Press Calls this method to provide long/lat for restaurant list
+     * @param view
+     */
+	public void nearByRestauraunts(View view)
+    {
+        Intent intent = new Intent(this, RestListActivity.class);
+        intent.putExtra("longitude", String.valueOf(mLastLocation.getLongitude()));
+        intent.putExtra("latitude", String.valueOf(mLastLocation.getLatitude()));
+        startActivity(intent);
+    }
 }
