@@ -193,6 +193,7 @@ public class TouchController {
 		int max = Math.max(mRenderer.getWidth(), mRenderer.getHeight());
 		if (touchDelay > 1) {
             //TODO: Added a flag check for rotating camera , make sure it works and doesn't crash app
+			//doesn't crash app but doesn't work either lol
 			// INFO: Procesar gesto
 			if (pointerCount == 1 && currentPress1 > 4.0f) {
 			} else if (pointerCount == 1) {
@@ -376,76 +377,76 @@ class TouchScreen {
 	private float newRot = 0f;
 	private float[] lastEvent = null;
 
-	public boolean onTouch(View v, MotionEvent event) {
-		// handle touch events here
-		ImageView view = (ImageView) v;
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_DOWN:
-			savedMatrix.set(matrix);
-			start.set(event.getX(), event.getY());
-			mode = DRAG;
-			lastEvent = null;
-			break;
-		case MotionEvent.ACTION_POINTER_DOWN:
-			oldDist = spacing(event);
-			if (oldDist > 10f) {
-				savedMatrix.set(matrix);
-				midPoint(mid, event);
-				mode = ZOOM;
-			}
-			lastEvent = new float[4];
-			lastEvent[0] = event.getX(0);
-			lastEvent[1] = event.getX(1);
-			lastEvent[2] = event.getY(0);
-			lastEvent[3] = event.getY(1);
-			d = getRotation(event);
-			break;
-		case MotionEvent.ACTION_UP:
-		case MotionEvent.ACTION_POINTER_UP:
-			mode = NONE;
-			lastEvent = null;
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mode == DRAG) {
-				matrix.set(savedMatrix);
-				float dx = event.getX() - start.x;
-				float dy = event.getY() - start.y;
-				matrix.postTranslate(dx, dy);
-			} else if (mode == ZOOM) {
-				float newDist = spacing(event);
-				if (newDist > 10f) {
-					matrix.set(savedMatrix);
-					float scale = (newDist / oldDist);
-					matrix.postScale(scale, scale, mid.x, mid.y);
-				}
-				if (lastEvent != null && event.getPointerCount() == 3) {
-					newRot = getRotation(event);
-					float r = newRot - d;
-					float[] values = new float[9];
-					matrix.getValues(values);
-					float tx = values[2];
-					float ty = values[5];
-					float sx = values[0];
-					float xc = (view.getWidth() / 2) * sx;
-					float yc = (view.getHeight() / 2) * sx;
-					matrix.postRotate(r, tx + xc, ty + yc);
-				}
-			}
-			break;
-		}
-
-		view.setImageMatrix(matrix);
-		return true;
-	}
-
-	/**
-	 * Determine the space between the first two fingers
-	 */
-	private float spacing(MotionEvent event) {
-		float x = event.getX(0) - event.getX(1);
-		float y = event.getY(0) - event.getY(1);
-		return (float)Math.sqrt(x * x + y * y);
-	}
+//	public boolean onTouch(View v, MotionEvent event) {
+//		// handle touch events here
+//		ImageView view = (ImageView) v;
+//		switch (event.getAction() & MotionEvent.ACTION_MASK) {
+//		case MotionEvent.ACTION_DOWN:
+//			savedMatrix.set(matrix);
+//			start.set(event.getX(), event.getY());
+//			mode = DRAG;
+//			lastEvent = null;
+//			break;
+//		case MotionEvent.ACTION_POINTER_DOWN:
+//			oldDist = spacing(event);
+//			if (oldDist > 10f) {
+//				savedMatrix.set(matrix);
+//				midPoint(mid, event);
+//				mode = ZOOM;
+//			}
+//			lastEvent = new float[4];
+//			lastEvent[0] = event.getX(0);
+//			lastEvent[1] = event.getX(1);
+//			lastEvent[2] = event.getY(0);
+//			lastEvent[3] = event.getY(1);
+//			d = getRotation(event);
+//			break;
+//		case MotionEvent.ACTION_UP:
+//		case MotionEvent.ACTION_POINTER_UP:
+//			mode = NONE;
+//			lastEvent = null;
+//			break;
+//		case MotionEvent.ACTION_MOVE:
+//			if (mode == DRAG) {
+//				matrix.set(savedMatrix);
+//				float dx = event.getX() - start.x;
+//				float dy = event.getY() - start.y;
+//				matrix.postTranslate(dx, dy);
+//			} else if (mode == ZOOM) {
+//				float newDist = spacing(event);
+//				if (newDist > 10f) {
+//					matrix.set(savedMatrix);
+//					float scale = (newDist / oldDist);
+//					matrix.postScale(scale, scale, mid.x, mid.y);
+//				}
+//				if (lastEvent != null && event.getPointerCount() == 3) {
+//					newRot = getRotation(event);
+//					float r = newRot - d;
+//					float[] values = new float[9];
+//					matrix.getValues(values);
+//					float tx = values[2];
+//					float ty = values[5];
+//					float sx = values[0];
+//					float xc = (view.getWidth() / 2) * sx;
+//					float yc = (view.getHeight() / 2) * sx;
+//					matrix.postRotate(r, tx + xc, ty + yc);
+//				}
+//			}
+//			break;
+//		}
+//
+//		view.setImageMatrix(matrix);
+//		return true;
+//	}
+//
+//	/**
+//	 * Determine the space between the first two fingers
+//	 */
+//	private float spacing(MotionEvent event) {
+//		float x = event.getX(0) - event.getX(1);
+//		float y = event.getY(0) - event.getY(1);
+//		return (float)Math.sqrt(x * x + y * y);
+//	}
 
 	/**
 	 * Calculate the mid point of the first two fingers

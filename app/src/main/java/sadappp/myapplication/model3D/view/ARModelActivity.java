@@ -146,7 +146,10 @@ public class ARModelActivity extends Activity implements GLSurfaceView.Renderer 
         if (!CameraPermissionHelper.hasCameraPermission(this)) {
             Toast.makeText(this,
                     "Camera permission is needed to run this application", Toast.LENGTH_LONG).show();
-            finish();
+            //TODO: Handle no camera permission to go back to pick 3D model viewer
+            //hope this is good enough
+           onBackPressed();
+           // finish();
         }
     }
 

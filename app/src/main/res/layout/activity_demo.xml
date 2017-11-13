@@ -12,14 +12,15 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="351dp"
-        android:layout_height="10dp"
+        android:layout_width="320dp"
+        android:layout_height="49dp"
         android:layout_gravity="center"
         android:layout_weight="0.48"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_dark"
-        android:textSize="36dp" />
+        android:textSize="36dp"
+        tools:paddingLeft="60dp" />
 
     <ListView
         android:id="@android:id/list"
