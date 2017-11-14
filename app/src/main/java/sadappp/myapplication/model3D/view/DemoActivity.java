@@ -150,26 +150,28 @@ public class DemoActivity extends ListActivity {
 					new Thread(new Runnable() {
 						public void run() {
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(0)),
-									String.valueOf(objectArrayList.get(0)));//.jpg
+									String.valueOf(objectArrayList.get(0)));//.jpg  //DRC WITH DRC
 							Log.d(TAG, "this is jpg: "+ String.valueOf(objectArrayList.get(0)));
 
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(1)),
-									String.valueOf(objectArrayList.get(1)));//.obj
+									String.valueOf(objectArrayList.get(1)));//.obj //JPG WITH DRC
 							Log.d(TAG, "this is obj/drc: "+ String.valueOf(objectArrayList.get(1)));
 
-							String path = String.valueOf(objectArrayList.get(1));
+							//using path (0) for drc
+							String path = String.valueOf(objectArrayList.get(0));
 							if (path.endsWith(".drc")) {
 								path = path.substring(0, path.length() - 3);
-								path = path + ".obj";
+								path = path + "obj";
 							}
 							Log.d(TAG, "this is the new obj: "+ path);
 
-							draco_decode(String.valueOf(objectArrayList.get(1)), path);
+							draco_decode(String.valueOf(objectArrayList.get(0)), path);
 
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(2)),
 									String.valueOf(objectArrayList.get(2)));//.mtl
 							Log.d(TAG, "this is mtl: "+ String.valueOf(objectArrayList.get(2)));
 							//APPERANTLY THIS IS MTL?????? ^^^^^^^^^^^
+							//WHEN DRACO FILE INVOLVED, THIS IS THE ORDER 0) drc, jpg, mtl
 
 							loadDemo(selectedItem.name);
 						}
@@ -284,13 +286,15 @@ public class DemoActivity extends ListActivity {
 	}
 
 	public void draco_decode(String dracoFile, String objFile) {
-		decoder(dracoFile, objFile);
+		Log.d(TAG, "/data/user/0/sadappp.myapplication/files/" + dracoFile + "   /data/user/0/sadappp.myapplication/files/" + objFile);
+		decoder("/data/user/0/sadappp.myapplication/files/" + dracoFile, "/data/user/0/sadappp.myapplication/files/" + objFile);
 	}
 }
 
 class RowItem {
 	/**
 	 * Image of the 3D object (snapshot of what the model looks like)
+	 * Instead might make this a some type of logo depicting food, soup, desert, or store logo
 	 */
 	String image;
 	/**

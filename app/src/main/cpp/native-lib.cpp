@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include <draco_decoder.cc>
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -12,6 +13,8 @@ Java_sadappp_myapplication_model3D_view_DemoActivity_decoder(JNIEnv *env, jobjec
 
     env->ReleaseStringUTFChars(dracoFile_, dracoFile);
     env->ReleaseStringUTFChars(objFile_, objFile);
+
+    //draco_decoder.decodeMachine(dracoFile,objFile);
 
 
     const char *returnValue = objFile;
