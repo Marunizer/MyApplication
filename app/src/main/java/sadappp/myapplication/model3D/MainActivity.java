@@ -69,15 +69,6 @@ import java.util.Map;
 
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
-/**
- * This is the main android activity. From here we launch the whole stuff.
- * 
- * Basically, this activity may serve to show a Splash screen and copy the assets (obj models) from the jar to external
- * directory.
- * 
- * @author andresoviedo
- *
- */
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener {
 
@@ -95,7 +86,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	Button btnCheckDownload;
 
 	GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
-	Map<String, Object> objectHashMap;//HOLDS ALL INFO FROM FIREBASE LOL
+	Map<String, Object> objectHashMap;//HOLDS ALL INFO FROM FIREBASE
 	ArrayList<Object> objectArrayList;//HOLDS VALUES IN HASHMAP
 	ArrayList<String> objectARests; //HOLDS KEYS(RESAURANTS) IN HASHMAP
 
@@ -125,21 +116,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		// WebView myWebView = (WebView) findViewById(R.id.main_logo_webview);
 		// myWebView.loadUrl("file:///android_res/raw/ic_launcher.gif");
 		// init();
-	}
-
-	//THIS NAME IS MISLEADING, HAS NOTHING TO DO WITH AMAZON, IT IS HERE SO WE CAN MANUALLY CHECK
-	//WHAT INFORMATION WE HAVE GATHERED FROM FIREBASE, SPECIFICALLY ONLY FIREBASE
-	//TODO: RIGHT NOW, WON'T WORK BECAUSE IVE CHANGED THE STANDARD SO ITS NO LONGER A LINK BUT A KEY NAME
-	private void setUpAmazonWebService() {
-
-		String key = String.valueOf(objectArrayList.get(1));
-		String obj_key = "cookie_v2.obj";
-		String mtl_key = key.substring(key.lastIndexOf("mtl=") + 4).split("\\,")[0];
-		String jpg_key = key.substring(key.lastIndexOf("jpg=") + 4).split("\\,")[0];
-
-		Log.d(TAG, "Obj_key is: " + obj_key);
-		Log.d(TAG, "Mtl_key is: " + mtl_key);
-		Log.d(TAG, "Jpg_key is: " + jpg_key);
 	}
 
 	View.OnClickListener btnGetLastLocationOnClickListener = new View.OnClickListener() {

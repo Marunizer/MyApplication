@@ -71,6 +71,15 @@ public class DemoActivity extends ListActivity {
 	String BUCKET_NAME = "verysadbucket";
 	FileOutputStream fos;
 
+
+	//used to load C++ library
+	//public native String  stringFromJNI();
+	static {
+		System.loadLibrary("native-lib");
+	}
+    //from native library
+	public native String  decoder(String dracoFile, String objFile);
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,6 +91,7 @@ public class DemoActivity extends ListActivity {
 		store = intent.getStringExtra("STORE_NAME");
 		title = (TextView) findViewById(R.id.title);
 		title.setText("Menu Items");
+
 
 		// add 1 entry per store found
 		rowItems = new ArrayList<RowItem>();
@@ -101,7 +111,7 @@ public class DemoActivity extends ListActivity {
 		Intent in = new Intent(DemoActivity.this.getApplicationContext(), ModelActivity.class);
 		Bundle b = new Bundle();
 		b.putString("assetDir", getFilesDir().getAbsolutePath());
-		b.putString("assetFilename", selectedItem+".obj");
+		b.putString("assetFilename", selectedItem+".obj");//b.putString("assetFilename", selectedItem+".obj");
 		b.putString("immersiveMode", "true");
 		in.putExtras(b);
 		DemoActivity.this.startActivity(in);
@@ -141,10 +151,24 @@ public class DemoActivity extends ListActivity {
 						public void run() {
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(0)),
 									String.valueOf(objectArrayList.get(0)));//.jpg
+							Log.d(TAG, "this is jpg: "+ String.valueOf(objectArrayList.get(0)));
+
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(1)),
 									String.valueOf(objectArrayList.get(1)));//.obj
+							Log.d(TAG, "this is obj/drc: "+ String.valueOf(objectArrayList.get(1)));
+
+							String path = String.valueOf(objectArrayList.get(1));
+							if (path.endsWith(".drc")) {
+								path = path.substring(0, path.length() - 3);
+								path = path + ".obj";
+							}
+							Log.d(TAG, "this is the new obj: "+ path);
+
+							draco_decode(String.valueOf(objectArrayList.get(1)), path);
+
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(2)),
 									String.valueOf(objectArrayList.get(2)));//.mtl
+							Log.d(TAG, "this is mtl: "+ String.valueOf(objectArrayList.get(2)));
 							//APPERANTLY THIS IS MTL?????? ^^^^^^^^^^^
 
 							loadDemo(selectedItem.name);
@@ -226,7 +250,6 @@ public class DemoActivity extends ListActivity {
 
 	//WE CALL THIS TO DOWNLOAD FILES INTO INTERNAL STORAGE AT DATA/DATA/SADAPPP.MYAPPLICATION/FILES
 	public void downloadFileFromS3(final String myKey, final String file){
-
 //		File files_folder = getFilesDir();                       //will get folder data/data/packagename/file
 //		File files_child = new File(files_folder, "files_child");
 //		files_child.mkdirs();
@@ -260,6 +283,9 @@ public class DemoActivity extends ListActivity {
 		//TODO: Should always delete files after no longer needed with myContext.deleteFile(filename);
 	}
 
+	public void draco_decode(String dracoFile, String objFile) {
+		decoder(dracoFile, objFile);
+	}
 }
 
 class RowItem {
