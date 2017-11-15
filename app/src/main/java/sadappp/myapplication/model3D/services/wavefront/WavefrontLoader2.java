@@ -18,6 +18,8 @@ import java.net.URL;
  * Wavefront loader implementation
  *
  * @author andresoviedo
+ *
+ * with slight changes by MauricioMendez
  */
 
 public class WavefrontLoader2 {
