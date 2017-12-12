@@ -1,10 +1,12 @@
 # My Android Application
 Draft version of AR MENU SAD APP
 
-This repository is a sandbox for my Senior Design Teams project, Android Version
+This repository is a prototype for my Senior Design Teams project, Android Version
 
 # Currently runnable ?
-No. 
+Yes.
+
+ Except issues may arise when compiling native-lib.cpp, the Draco library is not included
 
 Why?
 In the middle of setting up the Decompression system from Draco (https://github.com/google/draco) 
