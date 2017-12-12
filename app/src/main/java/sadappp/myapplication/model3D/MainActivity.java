@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
@@ -104,6 +105,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		createGoogleAPIClient();
 
 		textLastLocation   = (TextView) findViewById(R.id.location_text);
+		textLastLocation.setTextColor(Color.BLUE);
 		btnGetLastLocation = (Button) findViewById(R.id.location_button);
 		btnGetLastLocation.setOnClickListener(btnGetLastLocationOnClickListener);
 		btnCheckDownload= (Button) findViewById(R.id.check_download);

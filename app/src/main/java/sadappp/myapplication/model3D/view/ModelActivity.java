@@ -1,11 +1,15 @@
 package sadappp.myapplication.model3D.view;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import sadappp.myapplication.model3D.services.SceneLoader;
 import sadappp.myapplication.util.Utils;
@@ -36,7 +40,7 @@ public class ModelActivity extends Activity {
 	private float[] backgroundColor = new float[]{0.2f, 0.2f, 0.2f, 1.0f};
 
 	private GLSurfaceView gLView;
-
+	//private ModelSurfaceView gLView;
 	private SceneLoader scene;
 
 	private Handler handler;
@@ -68,10 +72,39 @@ public class ModelActivity extends Activity {
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
 		gLView = new ModelSurfaceView(this);
-		setContentView(gLView);
+		//setContentView(gLView);
+
+		FrameLayout frame = new FrameLayout(this);
+
+        TextView titleText = new TextView(this);
+     //   titleText.setBackgroundResource(findViewById(R.id.title_text));
+        titleText.setText("This is a 3D Model !");
+        titleText.setTextSize(36);
+		titleText.setTextColor(Color.BLUE);
+        titleText.setPadding(16,16,16,16);
+
+//        Button nextItemButton = (Button) findViewById(R.id.click_here);
+//		Button nextItemButton = new Button(this);
+//		nextItemButton.setBackgroundResource(R.drawable.custom_style);
+//		nextItem.setText("Click to go to next item");
+//		nextItem.setMaxWidth(1);
+//		nextItem.setMaxHeight(1);
+//		nextItem.setTextColor(Color.RED);
+
+		frame.addView(gLView);
+		frame.addView(titleText);
+//		frame.addView(nextItemButton);
+
+		setContentView(frame);
+
+//		gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
+//		gLView.setModelActivity(this);
+//		setContentView(R.layout.activity_model);
+
 
 		System.out.println(paramAssetDir);
 		System.out.println(paramAssetFilename);
+
 		// Create our 3D sceneario
 		scene = new SceneLoader(this);
 		scene.init();

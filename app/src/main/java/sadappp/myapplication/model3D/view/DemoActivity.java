@@ -151,21 +151,21 @@ public class DemoActivity extends ListActivity {
 						public void run() {
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(0)),
 									String.valueOf(objectArrayList.get(0)));//.jpg  //DRC WITH DRC
-							Log.d(TAG, "this is jpg: "+ String.valueOf(objectArrayList.get(0)));
+							Log.d(TAG, "this is obj/drc: "+ String.valueOf(objectArrayList.get(0)));
 
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(1)),
 									String.valueOf(objectArrayList.get(1)));//.obj //JPG WITH DRC
-							Log.d(TAG, "this is obj/drc: "+ String.valueOf(objectArrayList.get(1)));
+							Log.d(TAG, "this is jpg for drc: "+ String.valueOf(objectArrayList.get(1)));
 
 							//using path (0) for drc
-							String path = String.valueOf(objectArrayList.get(0));
-							if (path.endsWith(".drc")) {
-								path = path.substring(0, path.length() - 3);
-								path = path + "obj";
-							}
-							Log.d(TAG, "this is the new obj: "+ path);
-
-							draco_decode(String.valueOf(objectArrayList.get(0)), path);
+//							String path = String.valueOf(objectArrayList.get(0));
+//							if (path.endsWith(".drc")) {
+//								path = path.substring(0, path.length() - 3);
+//								path = path + "obj";
+//							}
+//							Log.d(TAG, "this is the new obj: "+ path);
+//
+//							draco_decode(String.valueOf(objectArrayList.get(0)), path);
 
 							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(2)),
 									String.valueOf(objectArrayList.get(2)));//.mtl

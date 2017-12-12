@@ -5,17 +5,14 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
+add_subdirectory(D:/VODS/draco-master
+                 ${CMAKE_BINARY_DIR}/draco_build)
+include_directories("${CMAKE_BINARY_DIR}" D:/VODS/draco-master)
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
-
-# Note "/path/to/draco" must be changed to the path where you have cloned
-# the Draco sources.
-
-add_subdirectory(D:/VODS/draco-master
-                 ${CMAKE_BINARY_DIR}/draco_build)
-include_directories("${CMAKE_BINARY_DIR}" D:/VODS/draco-master)
 
 add_library( # Sets the name of the library.
              native-lib
@@ -46,9 +43,8 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
                        native-lib
 
-                       # Tells cmake this build depends on libdraco.
+                        # Tells cmake this build depends on libdraco.
                        draco
-
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )

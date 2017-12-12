@@ -2,10 +2,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ModelActivity" >
+    tools:context=".model3D.view.ModelActivity" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <sadappp.myapplication.model3D.view.ModelSurfaceView
+            android:id="@+id/myglsurfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </FrameLayout>
+
+
+
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is a 3D Model !"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_green_light"
+            android:layout_marginTop="40dp"
+            android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/click_here"
+        android:layout_width="120dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="200dp"
+        android:layout_marginTop="400dp"
+        android:text="click here"/>
+
 
 </RelativeLayout>

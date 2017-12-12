@@ -1,7 +1,11 @@
 package sadappp.myapplication.model3D.view;
 
+import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import org.w3c.dom.Attr;
 
 import sadappp.myapplication.model3D.controller.TouchController;
 
@@ -17,8 +21,9 @@ public class ModelSurfaceView extends GLSurfaceView {
 	private ModelRenderer mRenderer;
 	private TouchController touchHandler;
 
-	public ModelSurfaceView(ModelActivity parent) {
+	public ModelSurfaceView(ModelActivity parent) {//Context context, AttributeSet attrs) {
 		super(parent);
+		//super(context,attrs);
 
 		// parent component
 		this.parent = parent;
@@ -28,6 +33,7 @@ public class ModelSurfaceView extends GLSurfaceView {
 
 		// This is the actual renderer of the 3D space
 		mRenderer = new ModelRenderer(this);
+	//	mRenderer = new ModelRenderer(context);
 		setRenderer(mRenderer);
 
 		// Render the view only when there is a change in the drawing data
@@ -44,6 +50,9 @@ public class ModelSurfaceView extends GLSurfaceView {
 
 	public ModelActivity getModelActivity() {
 		return parent;
+	}
+	public void setModelActivity(ModelActivity model) {
+		this.parent = model;
 	}
 
 }

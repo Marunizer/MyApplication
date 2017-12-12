@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 27
     buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "sadappp.myapplication"
-        minSdkVersion 19
-        targetSdkVersion 25
+        minSdkVersion 21
+        targetSdkVersion 27
         externalNativeBuild {
             cmake {
                 cppFlags "-fexceptions -frtti -std=c++11"
-                arguments "-DANDROID_STL=c++_shared"
+                arguments "-DANDROID_STL=c++_shared","-DANDROID_ARM_NEON=TRUE","-DANDROID_CPP_FEATURES=rtti exceptions","-DANDROID_UNIFIED_HEADERS=ON"
                 cppFlags "-DDRACO_POINT_CLOUD_COMPRESSION_SUPPORTED"
                 cppFlags "-DDRACO_MESH_COMPRESSION_SUPPORTED"
                 cppFlags "-DDRACO_STANDARD_EDGEBREAKER_SUPPORTED"
@@ -43,16 +43,19 @@ repositories {
 dependencies {
     compile (name: 'arcore_client', ext: 'aar')
     compile (name: 'obj-0.2.1', ext: 'jar')
-    compile 'com.android.support:support-v4:25.3.1'
+    //noinspection GradleCompatible
+    compile 'com.android.support:support-v4:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'commons-io:commons-io:2.5'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.google.android.gms:play-services:11.0.4'
-    compile 'com.google.firebase:firebase-database:10.0.1'
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.google.android.gms:play-services:11.6.2'
+    compile 'com.google.firebase:firebase-database:11.6.2'
     compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-s3:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-ddb:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-cognito:2.2.+'
     testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:cardview-v7:27.0.2'
 }
 
 
