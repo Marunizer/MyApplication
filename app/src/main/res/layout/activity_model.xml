@@ -17,26 +17,36 @@
 
     </FrameLayout>
 
-
-
         <TextView
             android:id="@+id/title_text"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="This is a 3D Model !"
             android:textSize="36sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_light"
             android:layout_marginTop="40dp"
-            android:textAlignment="center"/>
+            android:gravity="center"/>
 
     <Button
-        android:id="@+id/click_here"
+        android:id="@+id/left_button"
         android:layout_width="120dp"
         android:layout_height="80dp"
-        android:layout_marginLeft="200dp"
-        android:layout_marginTop="400dp"
-        android:text="click here"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="click here" />
+
+    <Button
+        android:id="@+id/right_button"
+        android:layout_width="120dp"
+        android:layout_height="80dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:text=" or click here" />
 
 
 </RelativeLayout>

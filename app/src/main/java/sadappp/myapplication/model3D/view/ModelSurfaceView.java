@@ -17,16 +17,16 @@ import sadappp.myapplication.model3D.controller.TouchController;
  */
 public class ModelSurfaceView extends GLSurfaceView {
 
-	private ModelActivity parent;
+	private static ModelActivity parent;
 	private ModelRenderer mRenderer;
 	private TouchController touchHandler;
 
-	public ModelSurfaceView(ModelActivity parent) {//Context context, AttributeSet attrs) {
-		super(parent);
-		//super(context,attrs);
+	public ModelSurfaceView(Context context, AttributeSet attrs) {//ModelActivity parent) {Context context, AttributeSet attrs) {
+		//super(parent);
+		super(context,attrs);
 
 		// parent component
-		this.parent = parent;
+		//this.parent = parent;
 
 		// Create an OpenGL ES 2.0 context.
 		setEGLContextClientVersion(2);
