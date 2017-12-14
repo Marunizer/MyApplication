@@ -15,6 +15,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
 /**
  * General purpose android utilities
@@ -22,6 +24,8 @@ import java.io.OutputStream;
  * @author andresoviedo
  *
  */
+
+//Additions made by Mauricio Mendez
 public final class Utils {
 
 	/**
@@ -96,6 +100,31 @@ public final class Utils {
 		// Only return URIs that can be opened with ContentResolver
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		return intent;
+	}
+
+	//removes all '.' and all empty spaces
+	public static String cleanLatLongKey(String locationKey)
+	{
+		locationKey = locationKey.replaceAll("\\.", "");
+		locationKey = locationKey.replaceAll(" ", "");
+		return locationKey;
+	}
+
+	public static String createLatLongKey(String latitude, String longitude)
+	{
+		float floatLatitude;
+		float floatLongitude;
+		DecimalFormat decimalFormat = new DecimalFormat("#");
+		try {
+			floatLatitude = decimalFormat.parse(latitude).floatValue();
+			floatLongitude = decimalFormat.parse(longitude).floatValue();
+			latitude = String.format(java.util.Locale.US,"%.6f", floatLatitude);
+			longitude =  String.format(java.util.Locale.US,"%.6f", floatLongitude);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return latitude + longitude;
 	}
 
 }

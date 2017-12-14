@@ -87,6 +87,7 @@ public class DemoActivity extends ListActivity {
 		s3credentialsProvider();
 
 		Intent intent = getIntent();
+
 		menuList = (ArrayList<String>)intent.getSerializableExtra("MENU");
 		store = intent.getStringExtra("STORE_NAME");
 		title = (TextView) findViewById(R.id.title);
@@ -117,11 +118,32 @@ public class DemoActivity extends ListActivity {
 		DemoActivity.this.startActivity(in);
 	}
 
+	private ListView listView;
+	private View view;
+	private int pos;
+	private long identification;
+
+	public  void clickNextModel(){
+
+		pos++;
+		identification++;
+
+		onListItemClick(listView, view, pos, identification);
+
+	}
+
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 
+		this.listView = l;
+		this.view = v;
+		this.pos = position;
+		this.identification = id;
+
 		//TODO: Need to add Loading sign, makes it sexy
 		//TODO: Disable ability to click on all items after clicking on one, enable all buttons after All files have been downloaded
+	//	System.out.println("******* Position: " + position + "     id: " + id + "     ********");
+	//	System.out.println("******* Position: " + l + "     id: " + v + "     ********");
 
 		final RowItem selectedItem = (RowItem) getListView().getItemAtPosition(position);
 
@@ -135,6 +157,8 @@ public class DemoActivity extends ListActivity {
 				public void onDataChange(DataSnapshot dataSnapshot) {
 					// This method is called once with the initial value and again
 					// whenever data at this location is updated.
+
+					//hashMap is made
 					objectHashMap = dataSnapshot.getValue(objectsGTypeInd);
 					//   objectArrayList = new ArrayList<Object>(objectHashMap.values());
 
@@ -288,6 +312,23 @@ public class DemoActivity extends ListActivity {
 	public void draco_decode(String dracoFile, String objFile) {
 		Log.d(TAG, "/data/user/0/sadappp.myapplication/files/" + dracoFile + "   /data/user/0/sadappp.myapplication/files/" + objFile);
 		decoder("/data/user/0/sadappp.myapplication/files/" + dracoFile, "/data/user/0/sadappp.myapplication/files/" + objFile);
+	}
+
+	//  _   _ ___   _____                 _
+	// | | | |_ _| | ____|_   _____ _ __ | |_ ___
+	// | | | || |  |  _| \ \ / / _ \ '_ \| __/ __|
+	// | |_| || |  | |___ \ V /  __/ | | | |_\__ \
+	//  \___/|___| |_____| \_/ \___|_| |_|\__|___/
+	//
+
+	public void next_model(View view){
+
+		//DemoActivity demoActivity = new DemoActivity();
+		clickNextModel();
+	}
+
+	public void previous_model(View view){
+
 	}
 }
 

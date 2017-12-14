@@ -36,7 +36,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="16dp"
-        android:text="click here" />
+        android:text="previous model"
+        android:onClick="previous_model"/>
 
     <Button
         android:id="@+id/right_button"
@@ -46,7 +47,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:text=" or click here" />
+        android:text="next model"
+        android:onClick="next_model"/>
 
 
 </RelativeLayout>

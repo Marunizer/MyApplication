@@ -182,7 +182,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	View.OnClickListener btnCheckDownloadLocationOnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(final View v) {
-			//TODO: Implement a fail safe when user doesn't want to share location and use zipcode
 				Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
 				MainActivity.this.startActivity(intent);
 		}

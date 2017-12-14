@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -44,12 +45,17 @@ public class ModelActivity extends Activity {
 
 	private Handler handler;
 
+	private static DemoActivity parent;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		//parent = savedInstanceState.getClass().
+       // parent = savedInstanceState.describeContents().getTheActivity();
 		// Try to get input parameters
 		Bundle b = getIntent().getExtras();
+	//	parent = getIntent().get
 		if (b != null) {
 			this.paramAssetDir = b.getString("assetDir");
 			this.paramAssetFilename = b.getString("assetFilename");
@@ -139,5 +145,22 @@ public class ModelActivity extends Activity {
 
 	public GLSurfaceView getgLView() {
 		return gLView;
+	}
+
+	//  _   _ ___   _____                 _
+	// | | | |_ _| | ____|_   _____ _ __ | |_ ___
+	// | | | || |  |  _| \ \ / / _ \ '_ \| __/ __|
+	// | |_| || |  | |___ \ V /  __/ | | | |_\__ \
+	//  \___/|___| |_____| \_/ \___|_| |_|\__|___/
+	//
+
+	public void next_model(View view){
+
+		//DemoActivity demoActivity = new DemoActivity();
+		parent.clickNextModel();
+	}
+
+	public void previous_model(View view){
+
 	}
 }
