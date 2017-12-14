@@ -108,6 +108,16 @@ public class DemoActivity extends ListActivity {
 		setListAdapter(adapter);
 	}
 
+	private void hardDownload()
+	{
+		downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.mtl", "mickyd.mtl");
+		downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.obj", "mickyd.obj");
+		downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd01.jpg", "mickyd01.jpg");
+		downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v2.mtl", "cookie_v2.mtl");
+		downloadFileFromS3("sadbois/Menu/Cookies/Key/cookies.obj", "cookies.obj");
+		downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v201.jpg", "cookie_v201.jpg");
+	}
+
 	private void loadDemo(final String selectedItem) {
 		Intent in = new Intent(DemoActivity.this.getApplicationContext(), ModelActivity.class);
 		Bundle b = new Bundle();
@@ -173,31 +183,33 @@ public class DemoActivity extends ListActivity {
 
 					new Thread(new Runnable() {
 						public void run() {
-							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(0)),
-									String.valueOf(objectArrayList.get(0)));//.jpg  //DRC WITH DRC
-							Log.d(TAG, "this is obj/drc: "+ String.valueOf(objectArrayList.get(0)));
-
-							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(1)),
-									String.valueOf(objectArrayList.get(1)));//.obj //JPG WITH DRC
-							Log.d(TAG, "this is jpg for drc: "+ String.valueOf(objectArrayList.get(1)));
-
-							//using path (0) for drc
-//							String path = String.valueOf(objectArrayList.get(0));
-//							if (path.endsWith(".drc")) {
-//								path = path.substring(0, path.length() - 3);
-//								path = path + "obj";
-//							}
-//							Log.d(TAG, "this is the new obj: "+ path);
-//
-//							draco_decode(String.valueOf(objectArrayList.get(0)), path);
-
-							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(2)),
-									String.valueOf(objectArrayList.get(2)));//.mtl
-							Log.d(TAG, "this is mtl: "+ String.valueOf(objectArrayList.get(2)));
-							//APPERANTLY THIS IS MTL?????? ^^^^^^^^^^^
-							//WHEN DRACO FILE INVOLVED, THIS IS THE ORDER 0) drc, jpg, mtl
-
+							hardDownload();
 							loadDemo(selectedItem.name);
+//							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(0)),
+//									String.valueOf(objectArrayList.get(0)));//.jpg  //DRC WITH DRC
+//							Log.d(TAG, "this is obj/drc: "+ String.valueOf(objectArrayList.get(0)));
+//
+//							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(1)),
+//									String.valueOf(objectArrayList.get(1)));//.obj //JPG WITH DRC
+//							Log.d(TAG, "this is jpg for drc: "+ String.valueOf(objectArrayList.get(1)));
+//
+//							//using path (0) for drc
+////							String path = String.valueOf(objectArrayList.get(0));
+////							if (path.endsWith(".drc")) {
+////								path = path.substring(0, path.length() - 3);
+////								path = path + "obj";
+////							}
+////							Log.d(TAG, "this is the new obj: "+ path);
+////
+////							draco_decode(String.valueOf(objectArrayList.get(0)), path);
+//
+//							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(2)),
+//									String.valueOf(objectArrayList.get(2)));//.mtl
+//							Log.d(TAG, "this is mtl: "+ String.valueOf(objectArrayList.get(2)));
+//							//APPERANTLY THIS IS MTL?????? ^^^^^^^^^^^
+//							//WHEN DRACO FILE INVOLVED, THIS IS THE ORDER 0) drc, jpg, mtl
+//
+//							loadDemo(selectedItem.name);
 						}
 					}
 					).start();

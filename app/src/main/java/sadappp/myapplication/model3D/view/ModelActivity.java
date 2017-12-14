@@ -1,6 +1,7 @@
 package sadappp.myapplication.model3D.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -156,11 +157,27 @@ public class ModelActivity extends Activity {
 
 	public void next_model(View view){
 
+		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
+		Bundle b = new Bundle();
+		b.putString("assetDir", getFilesDir().getAbsolutePath());
+		b.putString("assetFilename", "mickyd"+".obj");//b.putString("assetFilename", selectedItem+".obj");
+		b.putString("immersiveMode", "true");
+		in.putExtras(b);
+		ModelActivity.this.startActivity(in);
+
 		//DemoActivity demoActivity = new DemoActivity();
-		parent.clickNextModel();
+//		parent.clickNextModel();
 	}
 
 	public void previous_model(View view){
+
+		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
+		Bundle b = new Bundle();
+		b.putString("assetDir", getFilesDir().getAbsolutePath());
+		b.putString("assetFilename", "cookies"+".obj");//b.putString("assetFilename", selectedItem+".obj");
+		b.putString("immersiveMode", "true");
+		in.putExtras(b);
+		ModelActivity.this.startActivity(in);
 
 	}
 }
