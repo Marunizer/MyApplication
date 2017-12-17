@@ -14,7 +14,7 @@ public class Restaurant {
     String longitude;
     GeoLocation geoLocation;
 
-    public Restaurant(String name, String longitude, String latitude){// ,GeoLocation geoLocation) {
+    public Restaurant(String name, String latitude, String longitude ,GeoLocation geoLocation) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;

@@ -40,6 +40,10 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -50,10 +54,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import sadappp.myapplication.model3D.util.Restaurant;
 import sadappp.myapplication.model3D.view.LocationActivity;
 import sadappp.myapplication.model3D.view.RestaurantViewActivity;
 import sadappp.myapplication.model3D.view.StoreActivity;
 import sadappp.myapplication.R;
+import sadappp.myapplication.util.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -167,7 +173,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 					//Should have if success, do this
 					Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);//StoreActivity.class);
-					intent.putExtra("FOOD_STORE", objectARests);
+					intent.putExtra("LOCATION", mLastLocation);
 					MainActivity.this.startActivity(intent);
 				}
 
@@ -195,6 +201,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 //		return true;
 //	}
 
+
+	//    EVERYTHING
+	//
+	//              GOOGLE
+	//
+	//                       API
 	private void createGoogleAPIClient() {
 		// Create an instance of GoogleAPIClient.
 		if (mGoogleApiClient == null) {
@@ -230,7 +242,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 			return;
 		}
-		mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+		this.mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 		if (mLastLocation != null) {
 			textLastLocation.setText(
 					String.valueOf(mLastLocation.getLatitude()) + "\n"
