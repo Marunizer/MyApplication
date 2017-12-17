@@ -5,17 +5,27 @@ This repository is a prototype for my Senior Design Teams project, Android Versi
 
 # Currently runnable ?
 Yes.
+But not without access to the modeler and AR view as before.
 
- Except issues may arise when compiling native-lib.cpp, the Draco library is not included
+Changing how data is stored in app and how items are traversed.
+
+ Also: issues may arise when compiling native-lib.cpp, the Draco library is not included
 
 Why?
 In the middle of setting up the Decompression system from Draco (https://github.com/google/draco) 
 
-using Draco involves using C/C++ natively within Android Studio to be called by a JAVA Activity. 
+using Draco involves using C/C++ natively within Android Studio to be called by a JAVA Activity.
 
 There are some struggles working with the NDK, but I'm on the case as we speak ! ;) 
 
 Besides Draco decompression, the rest is up and running
+
+# Latest Update:
+Latest update removes access to the 3d Model view.
+
+Got rid of initial list view of items, and instead have a recycler view being filled with cardViews
+
+Now working on: using GeoFire to have right information to access Firebase, and dynamically fill data
 
 # What API's or librarys are used 
 Google Maps

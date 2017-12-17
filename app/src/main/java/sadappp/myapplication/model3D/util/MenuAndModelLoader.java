@@ -32,18 +32,22 @@ public class MenuAndModelLoader {
     Menu menu;
     DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
 
-    GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
-    Map<String, Object> objectHashMap;
-    ArrayList<String> modelFiles;
+//    GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
+//    Map<String, Object> objectHashMap;
+//    ArrayList<String> modelFiles;
 
+
+    //CoordinateKey is all thats needed to query Firebase for a restaurants menu.
     public MenuAndModelLoader(String coordinateKey) {
         this.menu = new Menu();
         this.coordinateKey = coordinateKey;
     }
 
+
+    // Call Firebase, create a Menu object, assign it to self.
+    //TODO Test this. Theoretically works. Not Tested
     public void createMenu()
     {
-        //TODO Test this. Theoretically works. Not Tested
         myRef.child("menus/" + Utils.cleanLatLongKey(coordinateKey) + "/items").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -51,6 +55,7 @@ public class MenuAndModelLoader {
                 for (DataSnapshot item: dataSnapshot.getChildren()) {
                     menu.allItems.add(new Menu.MenuItem(item.toString()));
                 }
+                Log.w(TAG, "Properly loaded Menu from Firebase with " + menu.allItems.size() + " items.");
             }
 
             @Override
@@ -62,7 +67,7 @@ public class MenuAndModelLoader {
     }
 
     //Should downlaod 3 needed files all at once
-    public void indiateModelDownload(Context context, String key, File path){
+    public void iniciateModelDownload(Context context, String key, File path){
 
         AmazonS3Helper s3Helper = new AmazonS3Helper();
         s3Helper.download(context, key,path);

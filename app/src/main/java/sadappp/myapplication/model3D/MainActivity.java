@@ -51,6 +51,7 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import sadappp.myapplication.model3D.view.LocationActivity;
+import sadappp.myapplication.model3D.view.RestaurantViewActivity;
 import sadappp.myapplication.model3D.view.StoreActivity;
 import sadappp.myapplication.R;
 
@@ -165,7 +166,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 					//TODO: probably need to close connection to firebase before moving on to next activity??
 
 					//Should have if success, do this
-					Intent intent = new Intent(MainActivity.this.getApplicationContext(), StoreActivity.class);
+					Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);//StoreActivity.class);
 					intent.putExtra("FOOD_STORE", objectARests);
 					MainActivity.this.startActivity(intent);
 				}

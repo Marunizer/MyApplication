@@ -110,12 +110,12 @@ public class DemoActivity extends ListActivity {
 
 	private void hardDownload()
 	{
-		downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.mtl", "mickyd.mtl");
-		downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.obj", "mickyd.obj");
-		downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd01.jpg", "mickyd01.jpg");
-		downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v2.mtl", "cookie_v2.mtl");
-		downloadFileFromS3("sadbois/Menu/Cookies/Key/cookies.obj", "cookies.obj");
-		downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v201.jpg", "cookie_v201.jpg");
+		//downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.mtl", "mickyd.mtl");
+		//downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.obj", "mickyd.obj");
+		//downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd01.jpg", "mickyd01.jpg");
+		//downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v2.mtl", "cookie_v2.mtl");
+		//downloadFileFromS3("sadbois/Menu/Cookies/Key/cookies.obj", "cookies.obj");
+		//downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v201.jpg", "cookie_v201.jpg");
 	}
 
 	private void loadDemo(final String selectedItem) {

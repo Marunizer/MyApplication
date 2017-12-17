@@ -156,14 +156,21 @@ public class ModelActivity extends Activity {
 	//
 
 	public void next_model(View view){
+//will crash if try to go to next model too soon, still downloading
+		this.paramFilename = "mickyd"+".obj";
+		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
+		this.gLView.setModelActivity(this);
+		scene = new SceneLoader(this);
+		scene.init();
+		scene.toggleLighting();
 
-		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
-		Bundle b = new Bundle();
-		b.putString("assetDir", getFilesDir().getAbsolutePath());
-		b.putString("assetFilename", "mickyd"+".obj");//b.putString("assetFilename", selectedItem+".obj");
-		b.putString("immersiveMode", "true");
-		in.putExtras(b);
-		ModelActivity.this.startActivity(in);
+//		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
+//		Bundle b = new Bundle();
+//		b.putString("assetDir", getFilesDir().getAbsolutePath());
+//		b.putString("assetFilename", "mickyd"+".obj");//b.putString("assetFilename", selectedItem+".obj");
+//		b.putString("immersiveMode", "true");
+//		in.putExtras(b);
+//		ModelActivity.this.startActivity(in);
 
 		//DemoActivity demoActivity = new DemoActivity();
 //		parent.clickNextModel();
@@ -171,13 +178,14 @@ public class ModelActivity extends Activity {
 
 	public void previous_model(View view){
 
-		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
-		Bundle b = new Bundle();
-		b.putString("assetDir", getFilesDir().getAbsolutePath());
-		b.putString("assetFilename", "cookies"+".obj");//b.putString("assetFilename", selectedItem+".obj");
-		b.putString("immersiveMode", "true");
-		in.putExtras(b);
-		ModelActivity.this.startActivity(in);
+		onBackPressed();
+//		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
+//		Bundle b = new Bundle();
+//		b.putString("assetDir", getFilesDir().getAbsolutePath());
+//		b.putString("assetFilename", "cookies"+".obj");//b.putString("assetFilename", selectedItem+".obj");
+//		b.putString("immersiveMode", "true");
+//		in.putExtras(b);
+//		ModelActivity.this.startActivity(in);
 
 	}
 }

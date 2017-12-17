@@ -14,11 +14,14 @@ public class Restaurant {
     String longitude;
     GeoLocation geoLocation;
 
-    public Restaurant(String name, String longitude, String latitude, GeoLocation geoLocation) {
+    public Restaurant(String name, String longitude, String latitude){// ,GeoLocation geoLocation) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.geoLocation = geoLocation;
     }
 
+    public String getName() {
+        return name;
+    }
 }
