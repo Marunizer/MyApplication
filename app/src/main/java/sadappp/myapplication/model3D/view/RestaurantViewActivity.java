@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.util.ArraySet;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,7 +41,9 @@ import static android.content.ContentValues.TAG;
 
 public class RestaurantViewActivity extends Activity {
 
-    public ArrayList<Restaurant> restaurant;
+     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
+     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
+     ArraySet<GeoLocation> restaurants = new ArraySet<GeoLocation>();
 
     String valueToPass;
 
@@ -50,7 +53,6 @@ public class RestaurantViewActivity extends Activity {
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.OnClickListener myOnClickListener;
     private ArrayList cards;
-    String[] sampleData = {"Bento", "mickyD", "sadbois", "Chipotle" , "Flippers", "Vietnomz"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public class RestaurantViewActivity extends Activity {
         //Grab Location received from start of app
         Intent intent = getIntent();
         this.mLastLocation = (Location) intent.getSerializableExtra("LOCATION");
-       // prepareRestaurantArray();
+        prepareRestaurantArray();
 
         myOnClickListener = new MyOnClickListener(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
@@ -70,15 +72,8 @@ public class RestaurantViewActivity extends Activity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        //FOR TESTING PURPOSES, WILL BE REMOVED AFTER CONNECTION TO FIREBASE IS FINISHED
-        cards = new ArrayList<Restaurant>();
-        for(int i = 0; i < sampleData.length; i++)
-        {
-            cards.add( new Restaurant(sampleData[i],"long", "lat", null));
-        }
-
-        mAdapter = new MyAdapter(cards);
-        mRecyclerView.setAdapter(mAdapter);
+//        mAdapter = new MyAdapter(cards);
+//        mRecyclerView.setAdapter(mAdapter);
     }
 
 
@@ -90,10 +85,9 @@ public class RestaurantViewActivity extends Activity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference();
-        final String restaurantNameKey = "restaurant_name";
-        final String restaurantLatKey = "lat";
-        final String restaurantLongKey = "long";
-
+        final String NAME_KEY = "restaurant_name";
+        final String LAT_KEY = "lat";
+        final String LONG_KEY = "long";
 
         myRef.child("restaurants").addValueEventListener(new ValueEventListener() {
             @Override
@@ -102,9 +96,9 @@ public class RestaurantViewActivity extends Activity {
                 geoFire = new GeoFire(myRef.child("geofire_restaurants"));
 
                 //Dynamic and will actually be used
-                double latitude = mLastLocation.getLatitude();
-                double longitude = mLastLocation.getLongitude();
-                double radius = .6;
+                double latitude;// = mLastLocation.getLatitude();
+                double longitude;// = mLastLocation.getLongitude();
+                double radius;// = .6;
 
                 //hardcoded values for testing purposes
                 latitude = 28.546373;
@@ -119,7 +113,6 @@ public class RestaurantViewActivity extends Activity {
 
                         String myLat = String.format(java.util.Locale.US,"%.6f", location.latitude);
                         String myLong =  String.format(java.util.Locale.US,"%.6f", location.longitude);
-
                         String locationKey = myLat + myLong;
                         locationKey = Utils.cleanLatLongKey(locationKey);
 
@@ -131,13 +124,21 @@ public class RestaurantViewActivity extends Activity {
                         for (DataSnapshot item: dataSnapshot.getChildren()) {
                             if (item.getKey().compareTo(locationKey) >= 0)
                             {
-                                String name = myRef.child("restaurants/" + locationKey + "/" + restaurantNameKey).getKey();
-                                String item_lat = myRef.child("restaurants/" + locationKey + "/" + restaurantLatKey).getKey();
-                                String item_long = myRef.child("restaurants/" + locationKey + "/" + restaurantLongKey).getKey();
+                                String name = item.child(NAME_KEY).getValue().toString();
+                                String item_lat = item.child(LAT_KEY).getValue().toString();
+                                String item_long = item.child(LONG_KEY).getValue().toString();
 
-                                restaurant.add(new Restaurant(name, item_lat, item_long, location));
+                                //if GeoChecker has location
+                                if(!restaurantGeoChecker.contains(location)){
+                                    restaurant.add(new Restaurant(name, item_lat, item_long, location));
+                                    restaurantGeoChecker.add(location);
+                                    System.out.println("!!!!!!!ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey());
+                                    setRestaurant(restaurant);
+                                    //TODO Reload cards
+                                }
                             }
                         }
+                        System.out.println("WOWWWWWWWWWWWWWWW" + restaurant);
                         System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                     }
 
@@ -161,7 +162,6 @@ public class RestaurantViewActivity extends Activity {
                         System.err.println("There was an error with this query: " + error);
                     }
                 });
-
             }
 
             @Override
@@ -172,6 +172,13 @@ public class RestaurantViewActivity extends Activity {
         });
     }
 
+    //Set new restaurant and possibly relaod
+    void setRestaurant(ArrayList restaurant)
+    {
+        this.restaurant = restaurant;
+        mAdapter = new MyAdapter(this.restaurant);
+        mRecyclerView.setAdapter(mAdapter);
+    }
 }
 
 

@@ -25,7 +25,9 @@ Latest update removes access to the 3d Model view.
 
 Got rid of initial list view of items, and instead have a recycler view being filled with cardViews
 
-Now working on: using GeoFire to have right information to access Firebase, and dynamically fill data
+uses GeoFire to have right information to access Firebase, and dynamically fill data
+
+Now working on: Using Firebase data to gather correct data from AWS S3 storage
 
 # What API's or librarys are used 
 Google Maps
