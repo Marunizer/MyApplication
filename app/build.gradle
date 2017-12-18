@@ -43,6 +43,7 @@ repositories {
 dependencies {
     compile (name: 'arcore_client', ext: 'aar')
     compile (name: 'obj-0.2.1', ext: 'jar')
+    compile 'com.squareup.picasso:picasso:2.5.2'
     //noinspection GradleCompatible
     compile 'com.android.support:support-v4:27.0.2'
     compile 'com.android.support:appcompat-v7:27.0.2'

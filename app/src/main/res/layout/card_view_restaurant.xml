@@ -18,8 +18,10 @@
     app:cardElevation="100dp" -->
 
     <RelativeLayout
+        android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="186dp">
+
 
     <ImageView
         android:id="@+id/restaurant_image"
@@ -27,7 +29,9 @@
         android:layout_height="150dp"
         app:srcCompat="@drawable/sample_food"
         android:scaleType="centerCrop"
+        android:layout_alignParentTop="true"
         />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,6 +52,7 @@
                 android:textSize="24sp"/>
 
             <TextView
+                android:id="@+id/restaurant_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="16dp"

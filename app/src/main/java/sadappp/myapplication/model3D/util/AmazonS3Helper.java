@@ -36,6 +36,10 @@ public class AmazonS3Helper {
     private static TransferObserver observer;
     FileOutputStream fos;
 
+    public static TransferUtility getTransferUtility() {
+        return transferUtility;
+    }
+
     public void download(Context context, String OBJECT_KEY, File MY_FILE) {
 
         System.out.println("🎬 Iniating download for (requestedFile) on menu");
@@ -137,5 +141,4 @@ public class AmazonS3Helper {
     public void cancel(){
         transferUtility.cancelAllWithType(TransferType.DOWNLOAD);
     }
-
 }

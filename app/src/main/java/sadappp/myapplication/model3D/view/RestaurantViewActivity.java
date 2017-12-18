@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.util.ArraySet;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,8 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -30,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,19 +49,17 @@ import static android.content.ContentValues.TAG;
 
 public class RestaurantViewActivity extends Activity {
 
-     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
-     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
-     ArraySet<GeoLocation> restaurants = new ArraySet<GeoLocation>();
-
-    String valueToPass;
+    private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
+    private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
+    AmazonS3Helper s3Helper = new AmazonS3Helper();
 
     private Location mLastLocation;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.OnClickListener myOnClickListener;
-    private ArrayList cards;
     private Context context;
+    private static TransferObserver observer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,14 +87,17 @@ public class RestaurantViewActivity extends Activity {
     //Download image from Bucket
     void downloadImageFromAWS(String imageKey)
     {
-        AmazonS3Helper s3Helper = new AmazonS3Helper();
         imageKey = imageKey + "_main_image.png";
         String path = getFilesDir().toString() + "/" + imageKey;
 
         //will get folder data/data/packagename/file
         File files_folder = new File(path);
 
-        s3Helper.download(this.getApplicationContext(), imageKey, files_folder);
+        if(!files_folder.exists())
+        {
+            s3Helper.download(this.getApplicationContext(), imageKey, files_folder);
+           // observer = s3Helper.
+        }
     }
 
 
@@ -203,7 +206,7 @@ public class RestaurantViewActivity extends Activity {
 
     void reloadData()
     {
-        mAdapter = new MyAdapter(this.restaurant);
+        mAdapter = new MyAdapter(this.restaurant, getApplicationContext());
         mRecyclerView.setAdapter(mAdapter);
     }
 }
@@ -224,6 +227,7 @@ class MyOnClickListener implements View.OnClickListener {
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
+    private Context context;
     private ArrayList mDataset;
 
     // Provide a reference to the views for each data item
@@ -233,19 +237,24 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // each data item is just a string in this case
         public CardView cv;
         public TextView restName;
+        public TextView restDistance;
         public ImageView restImage;
 
         public ViewHolder(View itemView){
             super(itemView);
             cv = (CardView)itemView.findViewById(R.id.restaurant_card);
             restName = (TextView)itemView.findViewById(R.id.restaurant_name);
+            restDistance = (TextView)itemView.findViewById(R.id.restaurant_distance);
+
             restImage = (ImageView)itemView.findViewById(R.id.restaurant_image);
+
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(ArrayList myDataset) {
-        mDataset = myDataset;
+    public MyAdapter(ArrayList myDataset, Context context) {
+        this.mDataset = myDataset;
+        this.context = context;
     }
 
     // Create new views (invoked by the layout manager)
@@ -267,16 +276,12 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        Restaurant rest = (Restaurant) mDataset.get(position);
-        String path = holder.restImage.getContext().getFilesDir().toString() + "/" + rest.getName() + "_main_image.png";
+        String path = context.getFilesDir().toString() + "/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
+
         File imgFile = new File(path);
-        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-        holder.restName.setText(rest.getName());
-       // holder.restName.setText(mDataset.get(position).get);
-
-       // holder.restImage.setImageResource(R.drawable.sample_food);
-        holder.restImage.setImageBitmap(bitmap);
+        Picasso.with(context).load(imgFile).into(holder.restImage);
+        holder.restName.setText(((Restaurant) mDataset.get(position)).getName());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
