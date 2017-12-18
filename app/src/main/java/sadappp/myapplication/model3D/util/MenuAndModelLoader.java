@@ -65,11 +65,4 @@ public class MenuAndModelLoader {
             }
         });
     }
-
-    //Should downlaod 3 needed files all at once
-    public void iniateModelDownload(Context context, String key, File path){
-
-        AmazonS3Helper s3Helper = new AmazonS3Helper();
-        s3Helper.download(context, key,path);
-    }
 }

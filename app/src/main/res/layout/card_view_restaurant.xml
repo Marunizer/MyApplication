@@ -10,9 +10,11 @@
     android:id="@+id/restaurant_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="2dp"
+    app:cardElevation="20dp"
+    app:cardCornerRadius="10dp"
+
     >
+    <!-- app:cardCornerRadius="20dp" -->
     <!--android:elevation="100dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="100dp" -->
@@ -20,13 +22,13 @@
     <RelativeLayout
         android:id="@+id/card_layout"
         android:layout_width="match_parent"
-        android:layout_height="186dp">
+        android:layout_height="206dp">
 
 
     <ImageView
         android:id="@+id/restaurant_image"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="170dp"
         app:srcCompat="@drawable/sample_food"
         android:scaleType="centerCrop"
         android:layout_alignParentTop="true"

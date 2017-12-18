@@ -20,7 +20,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -51,7 +53,7 @@ public class RestaurantViewActivity extends Activity {
 
     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
-    AmazonS3Helper s3Helper = new AmazonS3Helper();
+    AmazonS3Helper s3Helper;
 
     private Location mLastLocation;
     private RecyclerView mRecyclerView;
@@ -95,8 +97,38 @@ public class RestaurantViewActivity extends Activity {
 
         if(!files_folder.exists())
         {
-            s3Helper.download(this.getApplicationContext(), imageKey, files_folder);
-           // observer = s3Helper.
+            s3Helper = new AmazonS3Helper();
+            s3Helper.initiate(this.getApplicationContext(), imageKey, files_folder);
+            observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), imageKey,files_folder);
+
+            observer.setTransferListener(new TransferListener(){
+
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + "TRANSFER UTILITY");
+                }
+
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                    int percentage = 0;
+                    if (bytesTotal > 0) {
+                        percentage = (int) (bytesCurrent / bytesTotal * 100);
+                    }
+                    System.out.println("YO WE AT *** : " + percentage + "%" );
+
+                    if (percentage == 100)
+                    {
+                        System.out.println("WE FINISHED THE DOWNLOAD 100% !!!");
+                        reloadData();
+                    }
+                }
+
+                @Override
+                public void onError(int id, Exception ex) {
+                    // do something
+                }
+
+            });
         }
     }
 
@@ -247,7 +279,6 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             restDistance = (TextView)itemView.findViewById(R.id.restaurant_distance);
 
             restImage = (ImageView)itemView.findViewById(R.id.restaurant_image);
-
         }
     }
 

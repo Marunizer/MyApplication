@@ -31,21 +31,26 @@ public class AmazonS3Helper {
     //ALL REQUIRED FOR DOWNLOADING FILES IN S3
     private CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
     private AmazonS3 s3Client;
+
     private static final String BUCKET_NAME = "noni1995";
     private static TransferUtility transferUtility;
     private static TransferObserver observer;
     FileOutputStream fos;
 
-    public static TransferUtility getTransferUtility() {
+    public  TransferUtility getTransferUtility() {
         return transferUtility;
     }
 
-    public void download(Context context, String OBJECT_KEY, File MY_FILE) {
+    public  String getBucketName() {
+        return BUCKET_NAME;
+    }
+
+    public void initiate(Context context, String OBJECT_KEY, File MY_FILE) {
 
         System.out.println("🎬 Iniating download for (requestedFile) on menu");
 
         s3credentialsProvider(context);
-        downloadS3(BUCKET_NAME,OBJECT_KEY,MY_FILE);
+        //downloadS3(BUCKET_NAME,OBJECT_KEY,MY_FILE);
         //or downloadFileFromS3(final String myKey, final String file)
     }
 
@@ -89,25 +94,14 @@ public class AmazonS3Helper {
                 MY_FILE        /* The file to download the object to */
         );
 
-        observer.setTransferListener(new TransferListener(){
+    }
 
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                // do something
-            }
 
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-               // int percentage = (int) (bytesCurrent/bytesTotal * 100);
-                //Display percentage transfered to user
-            }
+    //Should downlaod 3 needed files all at once
+    public void iniateModelDownload(Context context, String key, File path){
 
-            @Override
-            public void onError(int id, Exception ex) {
-                // do something
-            }
-
-        });
+        AmazonS3Helper s3Helper = new AmazonS3Helper();
+        s3Helper.initiate(context, key,path);
     }
 
 
