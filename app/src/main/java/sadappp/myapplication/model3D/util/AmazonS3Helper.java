@@ -56,7 +56,7 @@ public class AmazonS3Helper {
             // Initialize the Amazon Cognito credentials provider
             this.cognitoCachingCredentialsProvider = new CognitoCachingCredentialsProvider(
                     context.getApplicationContext(),
-                    "us-east-1:1f71d265-5641-4934-a734-1cae7eb1ff47", // Identity pool ID
+                    "us-east-1:0114edd2-0c3a-4f9b-ba39-8e1b32a9071b", // Identity pool ID
                     Regions.US_EAST_1 // Region
             );
             createAmazonS3Client(cognitoCachingCredentialsProvider, context);
@@ -71,13 +71,14 @@ public class AmazonS3Helper {
             this.s3Client = new AmazonS3Client(credentialsProvider);
 
           // Set the region of your S3 bucket
-            s3Client.setRegion(Region.getRegion(Regions.US_EAST_1));
+            this.s3Client.setRegion(Region.getRegion(Regions.US_EAST_1));
 
             this.transferUtility = new TransferUtility(s3Client, context.getApplicationContext());
     }
 
     //Hopefully i'll be able to use this
     public void downloadS3(String MY_BUCKET, String OBJECT_KEY, File MY_FILE) {
+            System.out.println("File Path : " + MY_FILE);
         this.observer = transferUtility.download(
                 MY_BUCKET,     /* The bucket to download from */
                 OBJECT_KEY,    /* The key for the object to download */
@@ -93,7 +94,7 @@ public class AmazonS3Helper {
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                int percentage = (int) (bytesCurrent/bytesTotal * 100);
+               // int percentage = (int) (bytesCurrent/bytesTotal * 100);
                 //Display percentage transfered to user
             }
 

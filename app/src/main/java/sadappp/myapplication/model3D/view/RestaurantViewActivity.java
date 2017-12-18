@@ -1,7 +1,10 @@
 package sadappp.myapplication.model3D.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -17,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -27,9 +31,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import sadappp.myapplication.R;
+import sadappp.myapplication.model3D.util.AmazonS3Helper;
 import sadappp.myapplication.model3D.util.Restaurant;
 import sadappp.myapplication.util.Utils;
 
@@ -53,6 +59,7 @@ public class RestaurantViewActivity extends Activity {
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.OnClickListener myOnClickListener;
     private ArrayList cards;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +79,22 @@ public class RestaurantViewActivity extends Activity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-//        mAdapter = new MyAdapter(cards);
-//        mRecyclerView.setAdapter(mAdapter);
+        //reloadData();
+    }
+
+
+    //Access AWS S3
+    //Download image from Bucket
+    void downloadImageFromAWS(String imageKey)
+    {
+        AmazonS3Helper s3Helper = new AmazonS3Helper();
+        imageKey = imageKey + "_main_image.png";
+        String path = getFilesDir().toString() + "/" + imageKey;
+
+        //will get folder data/data/packagename/file
+        File files_folder = new File(path);
+
+        s3Helper.download(this.getApplicationContext(), imageKey, files_folder);
     }
 
 
@@ -81,8 +102,8 @@ public class RestaurantViewActivity extends Activity {
     //  Access Firebase
     //  Access GeoFire
     //  Prepare List to display
-    void prepareRestaurantArray() {
-
+    void prepareRestaurantArray()
+    {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference();
         final String NAME_KEY = "restaurant_name";
@@ -95,7 +116,7 @@ public class RestaurantViewActivity extends Activity {
                 GeoFire geoFire;
                 geoFire = new GeoFire(myRef.child("geofire_restaurants"));
 
-                //Dynamic and will actually be used
+                //Dynamic and will actually be used - Crashes, mLastLocation seems to be null :(
                 double latitude;// = mLastLocation.getLatitude();
                 double longitude;// = mLastLocation.getLongitude();
                 double radius;// = .6;
@@ -118,9 +139,6 @@ public class RestaurantViewActivity extends Activity {
 
                         System.out.println("Looking for Location Key : " + locationKey);
 
-                        //if for loops through location and does not return null
-                        //if () if restaurant is found with the right requirements for latitude and longitude
-                        //for loop  to all locationKeys
                         for (DataSnapshot item: dataSnapshot.getChildren()) {
                             if (item.getKey().compareTo(locationKey) >= 0)
                             {
@@ -128,17 +146,22 @@ public class RestaurantViewActivity extends Activity {
                                 String item_lat = item.child(LAT_KEY).getValue().toString();
                                 String item_long = item.child(LONG_KEY).getValue().toString();
 
-                                //if GeoChecker has location
+                                //Checks if we already have this restaurant in our list
                                 if(!restaurantGeoChecker.contains(location)){
+
                                     restaurant.add(new Restaurant(name, item_lat, item_long, location));
                                     restaurantGeoChecker.add(location);
                                     System.out.println("!!!!!!!ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey());
+
+                                    //While we're at it, lets download the image linked with the restaurant
+                                    downloadImageFromAWS(name);
+
                                     setRestaurant(restaurant);
-                                    //TODO Reload cards
+                                    //RELOADS LIST
+                                    reloadData();
                                 }
                             }
                         }
-                        System.out.println("WOWWWWWWWWWWWWWWW" + restaurant);
                         System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                     }
 
@@ -172,10 +195,14 @@ public class RestaurantViewActivity extends Activity {
         });
     }
 
-    //Set new restaurant and possibly relaod
+    //Set new restaurant
     void setRestaurant(ArrayList restaurant)
     {
         this.restaurant = restaurant;
+    }
+
+    void reloadData()
+    {
         mAdapter = new MyAdapter(this.restaurant);
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -196,6 +223,7 @@ class MyOnClickListener implements View.OnClickListener {
 
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+
     private ArrayList mDataset;
 
     // Provide a reference to the views for each data item
@@ -240,10 +268,15 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - replace the contents of the view with that element
 
         Restaurant rest = (Restaurant) mDataset.get(position);
+        String path = holder.restImage.getContext().getFilesDir().toString() + "/" + rest.getName() + "_main_image.png";
+        File imgFile = new File(path);
+        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
         holder.restName.setText(rest.getName());
        // holder.restName.setText(mDataset.get(position).get);
-        holder.restImage.setImageResource(R.drawable.sample_food);
+
+       // holder.restImage.setImageResource(R.drawable.sample_food);
+        holder.restImage.setImageBitmap(bitmap);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

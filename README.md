@@ -27,7 +27,11 @@ Got rid of initial list view of items, and instead have a recycler view being fi
 
 uses GeoFire to have right information to access Firebase, and dynamically fill data
 
-Now working on: Using Firebase data to gather correct data from AWS S3 storage
+Uses Firebase data to gather correct data from AWS S3 storage
+
+Currently working on: Having a default picture to show when
+download not complete, then replacing picture when complete.
+ Will probably need to be done within a thread of some sort
 
 # What API's or librarys are used 
 Google Maps
