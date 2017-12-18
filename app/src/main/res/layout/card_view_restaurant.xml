@@ -29,10 +29,12 @@
         android:id="@+id/restaurant_image"
         android:layout_width="match_parent"
         android:layout_height="170dp"
-        app:srcCompat="@drawable/sample_food"
+        android:src="@drawable/sample_food"
         android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
         />
+
+        <!--app:srcCompat="@drawable/sample_food"-->
 
 
     <LinearLayout

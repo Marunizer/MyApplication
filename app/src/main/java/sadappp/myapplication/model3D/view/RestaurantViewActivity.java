@@ -105,7 +105,16 @@ public class RestaurantViewActivity extends Activity {
 
                 @Override
                 public void onStateChanged(int id, TransferState state) {
-                    System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + "TRANSFER UTILITY");
+                    System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
+                    if (state.toString().compareTo("COMPLETED") == 0 )
+                    {
+                        reloadData();
+                        System.out.println(state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+                    }
+
+
+                    //May want to use reloadData() here instead of when progress is at 100.
+                    //DIDN'T SEEM TO DO MUCH OF A DIFFERENCE :(ALTHOUGH IS MORE ACCURATE AND ONLY CALLS ONCE
                 }
 
                 @Override
@@ -114,13 +123,7 @@ public class RestaurantViewActivity extends Activity {
                     if (bytesTotal > 0) {
                         percentage = (int) (bytesCurrent / bytesTotal * 100);
                     }
-                    System.out.println("YO WE AT *** : " + percentage + "%" );
-
-                    if (percentage == 100)
-                    {
-                        System.out.println("WE FINISHED THE DOWNLOAD 100% !!!");
-                        reloadData();
-                    }
+                    System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
                 }
 
                 @Override
@@ -192,11 +195,11 @@ public class RestaurantViewActivity extends Activity {
                                     downloadImageFromAWS(name);
 
                                     setRestaurant(restaurant);
-                                    //RELOADS LIST
-                                    reloadData();
                                 }
                             }
                         }
+                        //RELOADS LIST
+                        reloadData();
                         System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                     }
 
