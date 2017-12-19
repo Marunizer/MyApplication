@@ -5,13 +5,15 @@ This repository is a prototype for my Senior Design Teams project, Android Versi
 
 # Currently runnable ?
 Yes.
-But not without access to the modeler and AR view as before.
 
-Changing how data is stored in app and how items are traversed.
+But not download function yet to see 3d object and  not with access to the AR view, only 3D modeler.
+
+the modeled item is hardcoded at the moment, so Need to fix downloading
 
  Also: issues may arise when compiling native-lib.cpp, the Draco library is not included
 
 Why?
+
 In the middle of setting up the Decompression system from Draco (https://github.com/google/draco) 
 
 using Draco involves using C/C++ natively within Android Studio to be called by a JAVA Activity.
@@ -29,16 +31,17 @@ uses GeoFire to have right information to access Firebase, and dynamically fill 
 
 Uses Firebase data to gather correct data from AWS S3 storage
 
-Currently working on: Having a default picture to show when
-download not complete, then replacing picture when complete.
- Will probably need to be done within a thread of some sort
+Currently working on: Having transferUtility download the needed 3D model
+then, to download others and cache them ahead of time, and then to navigate between models
 
 # What API's or librarys are used 
 Google Maps
 
 Amazon s3
 
-Firebase 
+Firebase
+
+Picasso
 
 OpenGL ES 2.0 - with the help of : https://github.com/andresoviedo/android-3D-model-viewer
 

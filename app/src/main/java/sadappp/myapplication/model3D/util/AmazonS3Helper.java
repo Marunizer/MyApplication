@@ -32,8 +32,9 @@ public class AmazonS3Helper {
     private CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
     private AmazonS3 s3Client;
 
-    private static final String BUCKET_NAME = "noni1995";
-    private static TransferUtility transferUtility;
+    //Commenting out since I need a different bucket for testing
+   // private static final String BUCKET_NAME = "noni1995";
+    private TransferUtility transferUtility;  //CHANGED THIS TO NON STATIC IF ANYTHING BREAKS START HERE
     private static TransferObserver observer;
     FileOutputStream fos;
 
@@ -42,16 +43,29 @@ public class AmazonS3Helper {
     }
 
     public  String getBucketName() {
-        return BUCKET_NAME;
+        return "noni1995";
     }
 
-    public void initiate(Context context, String OBJECT_KEY, File MY_FILE) {
-
-        System.out.println("🎬 Iniating download for (requestedFile) on menu");
+    public void initiate(Context context) {
 
         s3credentialsProvider(context);
-        //downloadS3(BUCKET_NAME,OBJECT_KEY,MY_FILE);
-        //or downloadFileFromS3(final String myKey, final String file)
+
+    }
+
+    public void maruInitiate(Context context, String O)
+    {
+        marus3credentialsProvider(context);
+
+    }
+
+    private void marus3credentialsProvider(Context context) {
+        // Initialize the Amazon Cognito credentials provider
+        CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = new CognitoCachingCredentialsProvider(
+                context.getApplicationContext(),
+                "us-east-1:1f71d265-5641-4934-a734-1cae7eb1ff47", // Identity pool ID
+                Regions.US_EAST_1 // Region
+        );
+        createAmazonS3Client(cognitoCachingCredentialsProvider, context);
     }
 
     /**
@@ -97,39 +111,39 @@ public class AmazonS3Helper {
     }
 
 
-    //Should downlaod 3 needed files all at once
-    public void iniateModelDownload(Context context, String key, File path){
+//    //Should downlaod 3 needed files all at once
+//    public void iniateModelDownload(Context context, String key, File path){
+//
+//        AmazonS3Helper s3Helper = new AmazonS3Helper();
+//        s3Helper.initiate(context, key,path);
+//    }
 
-        AmazonS3Helper s3Helper = new AmazonS3Helper();
-        s3Helper.initiate(context, key,path);
-    }
 
-
-    //WE CALL THIS TO DOWNLOAD FILES INTO INTERNAL STORAGE AT DATA/DATA/SADAPPP.MYAPPLICATION/FILES
-    public void downloadFileFromS3(final String myKey, final String file) {
-
-        S3Object o = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, myKey));
-
-        try {
-            //         fos = openFileOutput(file, Context.MODE_PRIVATE);
-            InputStream s3is = o.getObjectContent();
-            byte[] read_buf = new byte[1024];
-            int read_len = 0;
-            while ((read_len = s3is.read(read_buf)) > 0) {
-                fos.write(read_buf, 0, read_len);
-            }
-            s3is.close();
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            System.exit(1);
-        } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-    }
+//    //WE CALL THIS TO DOWNLOAD FILES INTO INTERNAL STORAGE AT DATA/DATA/SADAPPP.MYAPPLICATION/FILES
+//    public void downloadFileFromS3(final String myKey, final String file) {
+//
+//        S3Object o = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, myKey));
+//
+//        try {
+//            //         fos = openFileOutput(file, Context.MODE_PRIVATE);
+//            InputStream s3is = o.getObjectContent();
+//            byte[] read_buf = new byte[1024];
+//            int read_len = 0;
+//            while ((read_len = s3is.read(read_buf)) > 0) {
+//                fos.write(read_buf, 0, read_len);
+//            }
+//            s3is.close();
+//        } catch (AmazonServiceException e) {
+//            System.err.println(e.getErrorMessage());
+//            System.exit(1);
+//        } catch (FileNotFoundException e) {
+//            System.err.println(e.getMessage());
+//            System.exit(1);
+//        } catch (IOException e) {
+//            System.err.println(e.getMessage());
+//            System.exit(1);
+//        }
+//    }
 
     //cancel ALL current downloads
     public void cancel(){

@@ -60,7 +60,6 @@ public class RestaurantViewActivity extends Activity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.OnClickListener myOnClickListener;
-    private Context context;
     private static TransferObserver observer;
 
     @Override
@@ -98,7 +97,7 @@ public class RestaurantViewActivity extends Activity {
         if(!files_folder.exists())
         {
             s3Helper = new AmazonS3Helper();
-            s3Helper.initiate(this.getApplicationContext(), imageKey, files_folder);
+            s3Helper.initiate(this.getApplicationContext());
             observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), imageKey,files_folder);
 
             observer.setTransferListener(new TransferListener(){
@@ -112,9 +111,6 @@ public class RestaurantViewActivity extends Activity {
                         System.out.println(state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
                     }
 
-
-                    //May want to use reloadData() here instead of when progress is at 100.
-                    //DIDN'T SEEM TO DO MUCH OF A DIFFERENCE :(ALTHOUGH IS MORE ACCURATE AND ONLY CALLS ONCE
                 }
 
                 @Override
@@ -244,16 +240,37 @@ public class RestaurantViewActivity extends Activity {
         mAdapter = new MyAdapter(this.restaurant, getApplicationContext());
         mRecyclerView.setAdapter(mAdapter);
     }
+
+    public void onRestaurantClick(View view){
+
+        //TODO Probably also want to send this
+        // private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
+
+
+        Intent intent = new Intent(RestaurantViewActivity.this.getApplicationContext(), ModelActivity.class);
+        Bundle b = new Bundle();
+        b.putString("assetDir", getFilesDir().getAbsolutePath());
+        b.putString("modelLocation", "small");
+       // b.putString("assetFilename", selectedItem+".obj");//b.putString("assetFilename", selectedItem+".obj");
+        b.putString("immersiveMode", "true");
+        intent.putExtras(b);
+        RestaurantViewActivity.this.startActivity(intent);
+
+    }
+
 }
 
 
 
 class MyOnClickListener implements View.OnClickListener {
+    RestaurantViewActivity restaurantViewActivity;
     public MyOnClickListener(RestaurantViewActivity restaurantViewActivity) {
+        this.restaurantViewActivity = restaurantViewActivity;
     }
 
     @Override
     public void onClick(View view) {
+        restaurantViewActivity.onRestaurantClick(view);
 
     }
 }

@@ -144,45 +144,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 //				Toast.makeText(MainActivity.this,
 //						"mGoogleApiClient == null", Toast.LENGTH_LONG).show();
 //			}
-
-			// Write a message to the database
-			FirebaseDatabase database = FirebaseDatabase.getInstance();
-			DatabaseReference myRef = database.getReference("Rests");
-
-			// Read from the database
-			myRef.addValueEventListener(new ValueEventListener() {
-				@Override
-				public void onDataChange(DataSnapshot dataSnapshot) {
-					// This method is called once with the initial value and again
-					// whenever data at this location is updated.
-//					objectHashMap = dataSnapshot.getValue(objectsGTypeInd);
-//					objectArrayList = new ArrayList<Object>(objectHashMap.values());
-//
-//					//DO NOT USE OR CRASH//String value = dataSnapshot.getValue(String.class);
-//					objectARests = new ArrayList<String>();
-//
-//					//for every key, go through and assign string to arraylist from hasmap
-//					for (String key: objectHashMap.keySet()) {
-//						objectARests.add(key);
-//					}
-//					//CAN USE THIS TO CHECK WHATS INSIDE THE MAP AND STUFF
-//					//Log.d(TAG, "Key is " + objectHashMap.keySet() + " value for sadbois is " + String.valueOf(objectArrayList.get(1)));
-//					//Log.d(TAG, "here are THESE: "+ objectARests.listIterator());
-
-					//TODO: probably need to close connection to firebase before moving on to next activity??
-
-					//Should have if success, do this
-					Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);//StoreActivity.class);
-					intent.putExtra("LOCATION", mLastLocation);
-					MainActivity.this.startActivity(intent);
-				}
-
-				@Override
-				public void onCancelled(DatabaseError error) {
-					// Failed to read value
-					Log.w(TAG, "Failed to read value.", error.toException());
-				}
-			});
+			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);//StoreActivity.class);
+			intent.putExtra("LOCATION", mLastLocation);
+			MainActivity.this.startActivity(intent);
 		}
 	};
 

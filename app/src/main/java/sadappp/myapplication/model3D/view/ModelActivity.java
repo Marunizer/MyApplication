@@ -28,6 +28,7 @@ public class ModelActivity extends Activity {
 
 	private String paramAssetDir;
 	private String paramAssetFilename;
+	private String model_file;
 	/**
 	 * The file to load. Passed as input parameter
 	 */
@@ -59,8 +60,9 @@ public class ModelActivity extends Activity {
 	//	parent = getIntent().get
 		if (b != null) {
 			this.paramAssetDir = b.getString("assetDir");
+			this.model_file = b.getString("modelLocation");
 			this.paramAssetFilename = b.getString("assetFilename");
-			this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
+		//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
 			this.paramFilename = b.getString("uri");
 			this.immersiveMode = "true".equalsIgnoreCase(b.getString("immersiveMode"));
 			try{
@@ -73,6 +75,31 @@ public class ModelActivity extends Activity {
 				// Assuming default background color
 			}
 		}
+
+		firstAccess();
+		beginLoadingModel();
+		// Show the Up button in the action bar.
+		//setupActionBar();
+
+		//this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	}
+
+	private void firstAccess() {
+		//very first instructions called when Activity is accessed
+		//first time this Activity is created, should just load the very first model
+		//in the restaurant so what should be loaded here is should probably just be the very first model
+
+		this.paramFilename = "mickyd.obj";
+
+	}
+
+	private void access(){
+
+	}
+
+
+	void beginLoadingModel()
+	{
 		handler = new Handler(getMainLooper());
 
 		// Create a GLSurfaceView instance and set it
@@ -81,7 +108,6 @@ public class ModelActivity extends Activity {
 		gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
 		gLView.setModelActivity(this);
 
-
 		System.out.println(paramAssetDir);
 		System.out.println(paramAssetFilename);
 
@@ -89,16 +115,12 @@ public class ModelActivity extends Activity {
 		scene = new SceneLoader(this);
 		scene.init();
 
-		// Show the Up button in the action bar.
-		//setupActionBar();
-
 		// TODO: Alert user when there is no multitouch support (2 fingers). He won't be able to rotate or zoom for
 		// example
 		Utils.printTouchCapabilities(getPackageManager());
 
 		//setupOnSystemVisibilityChangeListener();
 		scene.toggleLighting();
-		//this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	}
 
 	@Override
