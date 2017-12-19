@@ -51,6 +51,8 @@ import static android.content.ContentValues.TAG;
  *              This will update the list of restaurant's in order of what is closest
  *              - For now a simple for loop when making GeoLocation calls, incrementing the radius each time will do.
  *
+ *      * Calculate and show how far away the user is from the restaurant like (less than 1 mile away), (1 mile away), .. (n miles away)
+ *
  *     * When checking if the restaurant found is already within the ArrayList, check based on
  *      2 parameters (name AND location) instead of just one. (Just in case for the future, multiple restaurants with same geoLocation)
  *
