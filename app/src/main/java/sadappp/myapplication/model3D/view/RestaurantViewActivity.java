@@ -66,6 +66,9 @@ import static android.content.ContentValues.TAG;
  *
  *     * Have the same functionality of finding geographical coordinates currently in mainActivity for the reload on swipe
  *          - This probably means there should be a Class for finding your current coordinates to avoid a ton of repeat code.
+ *
+ *     * Not sure where this will be implemented. But maybe onDestroy(); there should be some call to a method to remove
+ *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
  */
 
 public class RestaurantViewActivity extends Activity {
