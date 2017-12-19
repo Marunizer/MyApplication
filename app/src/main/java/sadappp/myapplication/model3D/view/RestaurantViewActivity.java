@@ -3,10 +3,7 @@ package sadappp.myapplication.model3D.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,13 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -49,18 +44,40 @@ import static android.content.ContentValues.TAG;
  * Created by mende on 12/16/2017.
  */
 
+/**
+ * In this Activity, the list of available restaurants nea the user is displayed
+ * TODO List:
+ *     * Make multiple GeoLocation searches, having a small radius(km) to a larger radius(km) each time
+ *              This will update the list of restaurant's in order of what is closest
+ *              - For now a simple for loop when making GeoLocation calls, incrementing the radius each time will do.
+ *
+ *     * When checking if the restaurant found is already within the ArrayList, check based on
+ *      2 parameters (name AND location) instead of just one. (Just in case for the future, multiple restaurants with same geoLocation)
+ *
+ *     * When a default picture was added to the imageView inside card_view_restaurant,
+ *      it seems to delay the process of showing items, and does it all at once instead.
+ *          - Replace default image with a very small default picture unlike the one currently there
+ *
+ *     * After all that, make sure the recycler view is properly displaying everything dynamically
+ *
+ *     * Implement a reload when user swipes all the way down from the top of the screen to update the list
+ *
+ *     * Have the same functionality of finding geographical coordinates currently in mainActivity for the reload on swipe
+ *          - This probably means there should be a Class for finding your current coordinates to avoid a ton of repeat code.
+ */
+
 public class RestaurantViewActivity extends Activity {
 
     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
     AmazonS3Helper s3Helper;
-    private static TransferObserver observer;
+    private static TransferObserver observer; //make want to make local where called
 
-    private Location mLastLocation;
+    private Location mLastLocation;  //only not referenced because currently there is a test location
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerView.OnClickListener myOnClickListener;
+    private RecyclerView.Adapter mAdapter; //may want to make local where called
+    private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
+    private RecyclerView.OnClickListener myOnClickListener; //need this reference even though not used.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +88,6 @@ public class RestaurantViewActivity extends Activity {
         //Grab Location received from start of app
         Intent intent = getIntent();
         this.mLastLocation = (Location) intent.getSerializableExtra("LOCATION");
-        prepareRestaurantArray();
 
         myOnClickListener = new MyOnClickListener(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
@@ -79,6 +95,8 @@ public class RestaurantViewActivity extends Activity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        prepareRestaurantArray();
 
         //reloadData();
     }
@@ -113,6 +131,7 @@ public class RestaurantViewActivity extends Activity {
 
                 }
 
+                //Keeps track of progress of download but isn't really needed. knowing when the state changes to complete is good enough
                 @Override
                 public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                     int percentage = 0;
@@ -130,7 +149,6 @@ public class RestaurantViewActivity extends Activity {
             });
         }
     }
-
 
 
     //  Access Firebase
@@ -161,6 +179,7 @@ public class RestaurantViewActivity extends Activity {
                 radius = 5000;
 
                 //A GeoFire GeoQuery takes in the latitude, longitude, and finally the radius based on kilometers.
+                //Probably want to make multiple queries incrementing the radius based on some calculation
                 GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude,longitude), radius);
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
@@ -194,19 +213,19 @@ public class RestaurantViewActivity extends Activity {
                                 }
                             }
                         }
-                        //RELOADS LIST
+                        //RELOADS LIST now that the arrayList has been set a million times
                         reloadData();
-                        System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+                     //   System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                     }
 
                     @Override
                     public void onKeyExited(String key) {
-                        System.out.println(String.format("Key %s is no longer in the search area", key));
+                 //       System.out.println(String.format("Key %s is no longer in the search area", key));
                     }
 
                     @Override
                     public void onKeyMoved(String key, GeoLocation location) {
-                        System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
+                 //       System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
                     }
 
                     @Override
@@ -243,8 +262,10 @@ public class RestaurantViewActivity extends Activity {
 
     public void onRestaurantClick(View view){
 
-        //TODO Probably also want to send this
+        //Although here is an arrayList with the restaurants, probably don't want to send.
+        //Instead what should be sent is the geolocation Key for firebase access to the restaurants menu.
         // private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
+        //
 
 
         Intent intent = new Intent(RestaurantViewActivity.this.getApplicationContext(), ModelActivity.class);
@@ -261,21 +282,17 @@ public class RestaurantViewActivity extends Activity {
 }
 
 
-
+//This is NOT being used at all,
+//the onClick method is actually routed from the XML
 class MyOnClickListener implements View.OnClickListener {
-    RestaurantViewActivity restaurantViewActivity;
     public MyOnClickListener(RestaurantViewActivity restaurantViewActivity) {
-        this.restaurantViewActivity = restaurantViewActivity;
     }
 
     @Override
     public void onClick(View view) {
-        restaurantViewActivity.onRestaurantClick(view);
 
     }
 }
-
-
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
@@ -285,14 +302,14 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+     static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public CardView cv;
-        public TextView restName;
-        public TextView restDistance;
-        public ImageView restImage;
+         CardView cv;
+         TextView restName;
+         TextView restDistance;
+         ImageView restImage;
 
-        public ViewHolder(View itemView){
+         ViewHolder(View itemView){
             super(itemView);
             cv = (CardView)itemView.findViewById(R.id.restaurant_card);
             restName = (TextView)itemView.findViewById(R.id.restaurant_name);
@@ -303,7 +320,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(ArrayList myDataset, Context context) {
+    MyAdapter(ArrayList myDataset, Context context) {
         this.mDataset = myDataset;
         this.context = context;
     }
