@@ -77,6 +77,28 @@ import java.util.Map;
 
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
+/**
+ * The purpose of this Activity is to be the very first Screen the user see's and find location or choose to include their own.
+ * TODO List:
+ *
+ *      * Have a nice inviting button to " Start ! "
+ *
+ * 		* A better button, have a nicer "Search with Zip-code" instead for a different user option(:
+ *
+ * 	    * Just like in RestaurantActivity, may want to move GoogleMaps functionality to it's own class and access it here
+ *
+ * 	    * Should have an automatic way to check if the user has already given permission for location
+ *
+ * 	    * If user denies permission, send them to the Zip-code activity
+ *
+ *      * If user accepts, cool . Have a way to keep that so you never ask them again !
+ *      	(Although I'm pretty sure that is already handled somewhere in here)
+ *
+ *      * Have a ready animation view for first time access of the app ready for later (:
+ *      	Minght not ever be used. low-low-low priority.
+ *
+ */
+
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener {
 
