@@ -13,6 +13,7 @@ public class Restaurant {
     String latitude;
     String longitude;
     GeoLocation geoLocation;
+    String distanceAway;
 
     public Restaurant(String name, String latitude, String longitude ,GeoLocation geoLocation) {
         this.name = name;

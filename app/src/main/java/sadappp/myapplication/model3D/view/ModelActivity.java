@@ -29,6 +29,39 @@ import java.io.File;
  * This activity represents the container for our 3D viewer.
  * 
  * @author andresoviedo
+ *
+ * --With many Changes by mende
+ *
+ * TODO List:
+ *
+ * 		* first, by using the known location key of the restaurant picked, access firebase and in order (0-1) (gross, should be changed..)
+ * 	          Make an ArrayList that holds the names of the restaurant menu.
+ * 	          Possibly instead add to a menu Class with the restaurant name, and fill in the MenuItems class
+ *
+ * 	    * Now that there should be a set list, download and display the very first contents! (starting at 0)
+ * 	      May actually be better to use a hastable if the number is unique to the item.
+ *
+ * 	    * After the first is downloaded, begin a system that downloads each successive item on the list until they're all there.
+ * 	          - There shouldn't be more than one item being downloaded at a time, Have some sort of flag check for this.
+ *
+ * 	    * Have a previous button only show if the first item is NOT the FIRST item. so on start up, previous button should not be shown,
+ * 	         and should be removed if we're back to the first item.
+ *
+ * 	    * Do not have a next button show if we are at the last item, therefore, keep track of MAX items there are !
+ *
+ * 	    * Implement latest UI design, floating circle back button on top left, Name of item on top right with a clickable text for details for later
+ *
+ * 	    * After button functionality works, Start making the bottom navigatior that has pictures of the items displayed within small circles to choose the item wanted.
+ * 	          - When this is implemented, there will be major changes on how downloads are kept track of
+ *
+ * 	    * There should be a method to remove all the files related to the menu items, might be onDestroy() or maybe just move everything to cache
+ *
+ * 	    * Have an (AR) Button to change to an Augmented Reality view. should just change the surface view.
+ *
+ * 	    * 3d Model Viewer, if zooming in and out, do not allow user to rotate the screen !
+ * 	                       When user has 2 fingsers not zooming on the screen, allow user to move camera position? maybe not
+ *
+ * 	    * After the final 3d model production is decided, will need to change how xyz-axis are disaplyed so model is shown from the front.
  */
 public class ModelActivity extends Activity {
 
@@ -85,7 +118,8 @@ public class ModelActivity extends Activity {
 			}
 		}
 
-
+		//even though model may not be downloaded, probably atleast want to set up the environment so it isn't blank
+		beginLoadingModel();
 		firstAccess();
 		// Show the Up button in the action bar.
 		//setupActionBar();
