@@ -52,7 +52,8 @@ public class AmazonS3Helper {
 
     }
 
-    public void maruInitiate(Context context, String O)
+    //For testing purposes of using a different bucket
+    public void maruInitiate(Context context)
     {
         marus3credentialsProvider(context);
 
@@ -99,7 +100,7 @@ public class AmazonS3Helper {
             this.transferUtility = new TransferUtility(s3Client, context.getApplicationContext());
     }
 
-    //Hopefully i'll be able to use this
+   //Will probably delete later, keeping for reference. This should be done within Activity downloading file
     public void downloadS3(String MY_BUCKET, String OBJECT_KEY, File MY_FILE) {
             System.out.println("File Path : " + MY_FILE);
         this.observer = transferUtility.download(

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,7 +14,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+
 import sadappp.myapplication.model3D.services.SceneLoader;
+import sadappp.myapplication.model3D.util.AmazonS3Helper;
 import sadappp.myapplication.util.Utils;
 import sadappp.myapplication.R;
 
@@ -25,6 +31,9 @@ import java.io.File;
  * @author andresoviedo
  */
 public class ModelActivity extends Activity {
+
+	AmazonS3Helper s3Helper;
+	private static TransferObserver observer;
 
 	private String paramAssetDir;
 	private String paramAssetFilename;
@@ -76,8 +85,8 @@ public class ModelActivity extends Activity {
 			}
 		}
 
+
 		firstAccess();
-		beginLoadingModel();
 		// Show the Up button in the action bar.
 		//setupActionBar();
 
@@ -89,13 +98,87 @@ public class ModelActivity extends Activity {
 		//first time this Activity is created, should just load the very first model
 		//in the restaurant so what should be loaded here is should probably just be the very first model
 
+		//hard coding one model to download for testing purposes
 		this.paramFilename = "mickyd.obj";
+
+		String name = "mickyd";
+		String objName = name + ".obj";
+		String mtlName = name +".mtl";
+		String jpgName = name +"01.jpg";
+		String path1 = getFilesDir().toString() + "/" + objName;
+		String path2 = getFilesDir().toString() + "/" + mtlName;
+		String path3 = getFilesDir().toString() + "/" + jpgName;
+		//will get folder data/data/packagename/file
+		File files_folder1 = new File(path1);
+		File files_folder2 = new File(path2);
+		File files_folder3 = new File(path3);
+
+		//file does not exist, so download it !
+		if(!files_folder1.exists()) {
+			downloadModel(files_folder1, objName, 1);
+			downloadModel(files_folder2, mtlName, 2);
+			downloadModel(files_folder3, jpgName, 3);
+		}
+		else
+			beginLoadingModel();
 
 	}
 
 	private void access(){
 
 	}
+
+	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
+
+		if(!files_folder.exists())
+		{
+			//TODO Move this somewhere else so it's only called once per Activity maybe?
+			s3Helper = new AmazonS3Helper();
+			s3Helper.maruInitiate(this.getApplicationContext());
+
+			//hardcoded for testing purposes both th bucket name and key to download
+			observer = s3Helper.getTransferUtility().download(
+					"verysadbucket",
+					"sadbois" + "/Menu" + "/" + "Mickyd" + "/Key/" + imageKey,
+					 files_folder);
+
+
+
+			observer.setTransferListener(new TransferListener(){
+
+				@Override
+				public void onStateChanged(int id, TransferState state) {
+					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
+					if (state.toString().compareTo("COMPLETED") == 0 )
+					{
+						//This is the last file required, when finished, load the model
+						if(fileNumber == 3)
+							beginLoadingModel();
+
+						System.out.println(state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+					}
+
+				}
+
+				@Override
+				public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+					int percentage = 0;
+					if (bytesTotal > 0) {
+						percentage = (int) (bytesCurrent / bytesTotal * 100);
+					}
+					System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
+				}
+
+				@Override
+				public void onError(int id, Exception ex) {
+					beginLoadingModel();
+					System.out.println("There was an error downloading !!" );
+				}
+
+			});
+		}
+	}
+
 
 
 	void beginLoadingModel()

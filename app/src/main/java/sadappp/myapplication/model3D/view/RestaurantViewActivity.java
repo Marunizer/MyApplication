@@ -54,13 +54,13 @@ public class RestaurantViewActivity extends Activity {
     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
     AmazonS3Helper s3Helper;
+    private static TransferObserver observer;
 
     private Location mLastLocation;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.OnClickListener myOnClickListener;
-    private static TransferObserver observer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
