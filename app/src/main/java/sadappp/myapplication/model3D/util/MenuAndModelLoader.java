@@ -28,41 +28,41 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 //A new instance of this object is created with new menus
 public class MenuAndModelLoader {
 
-    String coordinateKey;
-    Menu menu;
-    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
-
-//    GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
-//    Map<String, Object> objectHashMap;
-//    ArrayList<String> modelFiles;
-
-
-    //CoordinateKey is all thats needed to query Firebase for a restaurants menu.
-    public MenuAndModelLoader(String coordinateKey) {
-        this.menu = new Menu();
-        this.coordinateKey = coordinateKey;
-    }
-
-
-    // Call Firebase, create a Menu object, assign it to self.
-    //TODO Test this. Theoretically works. Not Tested
-    public void createMenu()
-    {
-        myRef.child("menus/" + Utils.cleanLatLongKey(coordinateKey) + "/items").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot item: dataSnapshot.getChildren()) {
-                    menu.allItems.add(new Menu.MenuItem(item.toString()));
-                }
-                Log.w(TAG, "Properly loaded Menu from Firebase with " + menu.allItems.size() + " items.");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
-            }
-        });
-    }
+//    String coordinateKey;
+//    Menu menu;
+//    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+//
+////    GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
+////    Map<String, Object> objectHashMap;
+////    ArrayList<String> modelFiles;
+//
+//
+//    //CoordinateKey is all thats needed to query Firebase for a restaurants menu.
+//    public MenuAndModelLoader(String coordinateKey) {
+//        this.menu = new Menu();
+//        this.coordinateKey = coordinateKey;
+//    }
+//
+//
+//    // Call Firebase, create a Menu object, assign it to self.
+//    //TODO Test this. Theoretically works. Not Tested
+//    public void createMenu()
+//    {
+//        myRef.child("menus/" + Utils.cleanLatLongKey(coordinateKey) + "/items").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                for (DataSnapshot item: dataSnapshot.getChildren()) {
+//                    menu.allItems.add(new Menu.MenuItem(item.toString()));
+//                }
+//                Log.w(TAG, "Properly loaded Menu from Firebase with " + menu.allItems.size() + " items.");
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                // Failed to read value
+//                Log.w(TAG, "Failed to read value.", databaseError.toException());
+//            }
+//        });
+//    }
 }
