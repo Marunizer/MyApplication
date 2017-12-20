@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -71,7 +72,7 @@ import static android.content.ContentValues.TAG;
  *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
  */
 
-public class RestaurantViewActivity extends Activity {
+public class RestaurantViewActivity extends Activity implements MyAdapter.AdapterCallback {
 
     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
@@ -80,9 +81,10 @@ public class RestaurantViewActivity extends Activity {
 
     private Location mLastLocation;  //only not referenced because currently there is a test location
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter; //may want to make local where called
+
+    //private RecyclerView.Adapter mAdapter; //may want to make local where called
+    private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
-    private RecyclerView.OnClickListener myOnClickListener; //need this reference even though not used.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +96,6 @@ public class RestaurantViewActivity extends Activity {
         Intent intent = getIntent();
         this.mLastLocation = (Location) intent.getSerializableExtra("LOCATION");
 
-        myOnClickListener = new MyOnClickListener(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -103,7 +104,14 @@ public class RestaurantViewActivity extends Activity {
 
         prepareRestaurantArray();
 
-        //reloadData();
+        //initial loading data here seems to lessen the time it takes to make everything show up.
+       reloadData();
+    }
+
+    //Communicates with Adapter
+    @Override
+    public void onMethodCallback(String key) {
+        onRestaurantClick(key);
     }
 
 
@@ -207,9 +215,9 @@ public class RestaurantViewActivity extends Activity {
                                 //Checks if we already have this restaurant in our list
                                 if(!restaurantGeoChecker.contains(location)){
 
-                                    restaurant.add(new Restaurant(name, item_lat, item_long, location));
+                                    restaurant.add(new Restaurant(name, item_lat, item_long, item.getKey(), location));
                                     restaurantGeoChecker.add(location);
-                                    System.out.println("!!!!!!!ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey());
+                                    System.out.println("!!!!!!!ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey() + " location = " + location);
 
                                     //While we're at it, lets download the image linked with the restaurant
                                     downloadImageFromAWS(name);
@@ -253,30 +261,31 @@ public class RestaurantViewActivity extends Activity {
         });
     }
 
-    //Set new restaurant
+    //Set new list of restaurants
     void setRestaurant(ArrayList restaurant)
     {
         this.restaurant = restaurant;
     }
+    //set restaurant clicked key
 
     void reloadData()
     {
-        mAdapter = new MyAdapter(this.restaurant, getApplicationContext());
+        mAdapter = new MyAdapter(this.restaurant, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    public void onRestaurantClick(View view){
+    public void onRestaurantClick(String key){
 
         //Although here is an arrayList with the restaurants, probably don't want to send.
         //Instead what should be sent is the geolocation Key for firebase access to the restaurants menu.
         // private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
         //
 
-
         Intent intent = new Intent(RestaurantViewActivity.this.getApplicationContext(), ModelActivity.class);
         Bundle b = new Bundle();
         b.putString("assetDir", getFilesDir().getAbsolutePath());
         b.putString("modelLocation", "small");
+        b.putString("coordinateKey", key);
        // b.putString("assetFilename", selectedItem+".obj");//b.putString("assetFilename", selectedItem+".obj");
         b.putString("immersiveMode", "true");
         intent.putExtras(b);
@@ -286,23 +295,12 @@ public class RestaurantViewActivity extends Activity {
 
 }
 
-
-//This is NOT being used at all,
-//the onClick method is actually routed from the XML
-class MyOnClickListener implements View.OnClickListener {
-    public MyOnClickListener(RestaurantViewActivity restaurantViewActivity) {
-    }
-
-    @Override
-    public void onClick(View view) {
-
-    }
-}
-
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
+    private AdapterCallback adapterCallback;
     private Context context;
     private ArrayList mDataset;
+    private String coordinateKey = " ";
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -314,12 +312,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
          TextView restDistance;
          ImageView restImage;
 
-         ViewHolder(View itemView){
+         ViewHolder(final View itemView){
             super(itemView);
             cv = (CardView)itemView.findViewById(R.id.restaurant_card);
             restName = (TextView)itemView.findViewById(R.id.restaurant_name);
             restDistance = (TextView)itemView.findViewById(R.id.restaurant_distance);
-
             restImage = (ImageView)itemView.findViewById(R.id.restaurant_image);
         }
     }
@@ -328,6 +325,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     MyAdapter(ArrayList myDataset, Context context) {
         this.mDataset = myDataset;
         this.context = context;
+        try {
+            this.adapterCallback = ((AdapterCallback) context);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement AdapterCallback.");
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -355,12 +357,29 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         Picasso.with(context).load(imgFile).into(holder.restImage);
         holder.restName.setText(((Restaurant) mDataset.get(position)).getName());
+
+        this.coordinateKey = (((Restaurant) mDataset.get(position)).getCoordinateKey());
+
+        holder.cv.setOnClickListener(new View.OnClickListener(){
+                                  @Override
+                                  public void onClick(View view)
+                                  {
+                                      adapterCallback.onMethodCallback(getKey());
+                                  }
+                              }
+        );
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public String getKey(){return this.coordinateKey;}
+
+    public interface AdapterCallback {
+        void onMethodCallback(String key);
     }
 }
 
