@@ -28,7 +28,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -300,7 +299,6 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private AdapterCallback adapterCallback;
     private Context context;
     private ArrayList mDataset;
-    private String coordinateKey = " ";
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -311,6 +309,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
          TextView restName;
          TextView restDistance;
          ImageView restImage;
+         String coordinateKey = " ";
 
          ViewHolder(final View itemView){
             super(itemView);
@@ -346,7 +345,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
@@ -358,15 +357,14 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         Picasso.with(context).load(imgFile).into(holder.restImage);
         holder.restName.setText(((Restaurant) mDataset.get(position)).getName());
 
-        this.coordinateKey = (((Restaurant) mDataset.get(position)).getCoordinateKey());
+        holder.coordinateKey = (((Restaurant) mDataset.get(position)).getCoordinateKey());
 
         holder.cv.setOnClickListener(new View.OnClickListener(){
-                                  @Override
-                                  public void onClick(View view)
-                                  {
-                                      adapterCallback.onMethodCallback(getKey());
-                                  }
-                              }
+            @Override
+            public void onClick(View view)
+            {
+                adapterCallback.onMethodCallback(holder.coordinateKey);
+            }}
         );
     }
 
@@ -376,7 +374,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return mDataset.size();
     }
 
-    public String getKey(){return this.coordinateKey;}
+  //  public String getKey(){return this.coordinateKey;}
 
     public interface AdapterCallback {
         void onMethodCallback(String key);

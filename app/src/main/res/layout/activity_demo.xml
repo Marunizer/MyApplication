@@ -30,15 +30,6 @@
             android:layout_height="match_parent"
             android:layout_below="@id/title"
             />
-<!--
-    <ListView
-        android:id="@android:id/list"
-        style="@android:style/Widget.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/wallet_bright_foreground_holo_dark"
-        android:layout_below="@id/title"></ListView>
-        -->
 
     </RelativeLayout>
 

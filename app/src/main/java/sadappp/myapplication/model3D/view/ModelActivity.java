@@ -1,6 +1,7 @@
 package sadappp.myapplication.model3D.view;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
@@ -17,13 +18,27 @@ import android.widget.TextView;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import sadappp.myapplication.model3D.services.SceneLoader;
 import sadappp.myapplication.model3D.util.AmazonS3Helper;
+import sadappp.myapplication.model3D.util.Menu;
+import sadappp.myapplication.model3D.util.Restaurant;
 import sadappp.myapplication.util.Utils;
 import sadappp.myapplication.R;
 
 import java.io.File;
+import java.util.ArrayList;
+
+import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 /**
  * This activity represents the container for our 3D viewer.
@@ -36,10 +51,6 @@ import java.io.File;
  *
  * 		* first, by using the known location key of the restaurant picked, access firebase and in order (0-1) (gross, should be changed..)
  * 	          Make an ArrayList that holds the names of the restaurant menu.
- * 	          Possibly instead add to a menu Class with the restaurant name, and fill in the MenuItems class
- *
- * 	    * Now that there should be a set list, download and display the very first contents! (starting at 0)
- * 	      May actually be better to use a hastable if the number is unique to the item.
  *
  * 	    * After the first is downloaded, begin a system that downloads each successive item on the list until they're all there.
  * 	          - There shouldn't be more than one item being downloaded at a time, Have some sort of flag check for this.
@@ -67,10 +78,14 @@ public class ModelActivity extends Activity {
 
 	AmazonS3Helper s3Helper;
 	private static TransferObserver observer;
+	//private ArrayList<Menu> menu = new ArrayList<Menu>();
 
 	private String paramAssetDir;
 	private String paramAssetFilename;
 	private String model_file;
+	private String coordinateKey;
+	Menu menu;
+	private int menuIndex = 0;
 	/**
 	 * The file to load. Passed as input parameter
 	 */
@@ -89,20 +104,17 @@ public class ModelActivity extends Activity {
 
 	private Handler handler;
 
-	private static DemoActivity parent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		//parent = savedInstanceState.getClass().
-       // parent = savedInstanceState.describeContents().getTheActivity();
-		// Try to get input parameters
 		Bundle b = getIntent().getExtras();
-	//	parent = getIntent().get
+
 		if (b != null) {
 			this.paramAssetDir = b.getString("assetDir");
 			this.model_file = b.getString("modelLocation");
+			this.coordinateKey = b.getString("coordinateKey");
 			this.paramAssetFilename = b.getString("assetFilename");
 		//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
 			this.paramFilename = b.getString("uri");
@@ -117,31 +129,71 @@ public class ModelActivity extends Activity {
 				// Assuming default background color
 			}
 		}
+		//Initiate the Menu class to be used that will hold all the menu items
+		menu = new Menu(this.coordinateKey);
 
-		//even though model may not be downloaded, probably atleast want to set up the environment so it isn't blank
-		beginLoadingModel();
-		firstAccess();
+		//even though model may not be downloaded, probably at least want to set up the environment so it isn't blank
+		//beginLoadingModel();
+
+		prepareMenuArray();
 		// Show the Up button in the action bar.
 		//setupActionBar();
 
 		//this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	}
 
+	private void prepareMenuArray() {
+
+		System.out.println("DO I EVEN GET HERE?***************LOCATION KEY: " + this.coordinateKey + "   !");
+		FirebaseDatabase database = FirebaseDatabase.getInstance();
+		final DatabaseReference myRef = database.getReference();
+
+		myRef.child("menus/" + this.coordinateKey + "/items").addValueEventListener(new ValueEventListener() {
+			@Override
+			public void onDataChange(final DataSnapshot dataSnapshot) {
+
+				for (DataSnapshot item: dataSnapshot.getChildren()) {
+
+					//for each item  in this menu, add it to the the menu class as a menuItem and put it in an arrayList
+					//retrieve both the key and the value
+					//With this line I believe I gain the file name and the basic filename for all needed and an ID
+					menu.allItems.add(new Menu.MenuItem(item.getKey(), item.getValue().toString()));
+					System.out.println("!!!!!!!ADDING NEW item : " + item.getValue().toString() + " to the Menu at coordinate: " + coordinateKey);
+
+					//download ?
+					if(item.getKey().compareTo("0") == 0)
+					{
+						firstAccess();
+						//first item in the list, so should immediately notify that this should be downloaded and loaded
+					}
+
+				}//update menuArray? if we're here then that means we are done with firebase, start downloading !
+				//access();
+			}
+
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// Failed to read value
+				Log.w(ContentValues.TAG, "Failed to read value.", error.toException());
+			}
+		});
+	}
+
 	private void firstAccess() {
+
 		//very first instructions called when Activity is accessed
 		//first time this Activity is created, should just load the very first model
 		//in the restaurant so what should be loaded here is should probably just be the very first model
 
 		//hard coding one model to download for testing purposes
-		this.paramFilename = "mickyd.obj";
+		//this.paramFilename = "mickyd.obj";
+		this.paramFilename = menu.allItems.get(0).getObjPath();
 
-		String name = "mickyd";
-		String objName = name + ".obj";
-		String mtlName = name +".mtl";
-		String jpgName = name +"01.jpg";
-		String path1 = getFilesDir().toString() + "/" + objName;
-		String path2 = getFilesDir().toString() + "/" + mtlName;
-		String path3 = getFilesDir().toString() + "/" + jpgName;
+		//String name = "mickyd";
+
+		String path1 = getFilesDir().toString() + "/" + menu.allItems.get(0).getObjPath();
+		String path2 = getFilesDir().toString() + "/" + menu.allItems.get(0).getMtlPath();
+		String path3 = getFilesDir().toString() + "/" + menu.allItems.get(0).getJpgPath();
 		//will get folder data/data/packagename/file
 		File files_folder1 = new File(path1);
 		File files_folder2 = new File(path2);
@@ -149,9 +201,9 @@ public class ModelActivity extends Activity {
 
 		//file does not exist, so download it !
 		if(!files_folder1.exists()) {
-			downloadModel(files_folder1, objName, 1);
-			downloadModel(files_folder2, mtlName, 2);
-			downloadModel(files_folder3, jpgName, 3);
+			downloadModel(files_folder1, menu.allItems.get(0).getObjPath(), 1);
+			downloadModel(files_folder2, menu.allItems.get(0).getMtlPath(), 2);
+			downloadModel(files_folder3, menu.allItems.get(0).getJpgPath(), 3);
 		}
 		else
 			beginLoadingModel();
@@ -159,6 +211,24 @@ public class ModelActivity extends Activity {
 	}
 
 	private void access(){
+
+		//download 1 model at a time
+		//hard coded downloading the next file. (
+
+		String path1 = getFilesDir().toString() + "/" + menu.allItems.get(1).getObjPath();
+		String path2 = getFilesDir().toString() + "/" + menu.allItems.get(1).getMtlPath();
+		String path3 = getFilesDir().toString() + "/" + menu.allItems.get(1).getJpgPath();
+		//will get folder data/data/packagename/file
+		File files_folder1 = new File(path1);
+		File files_folder2 = new File(path2);
+		File files_folder3 = new File(path3);
+
+		//file does not exist, so download it !
+		if(!files_folder1.exists()) {
+			downloadModel(files_folder1, menu.allItems.get(1).getObjPath(), 1);
+			downloadModel(files_folder2, menu.allItems.get(1).getMtlPath(), 2);
+			downloadModel(files_folder3, menu.allItems.get(1).getJpgPath(), 3);
+		}
 
 	}
 
@@ -168,16 +238,11 @@ public class ModelActivity extends Activity {
 		{
 			//TODO Move this somewhere else so it's only called once per Activity maybe?
 			s3Helper = new AmazonS3Helper();
-			s3Helper.maruInitiate(this.getApplicationContext());
+			s3Helper.initiate(this.getApplicationContext());
 
-			//hardcoded for testing purposes both th bucket name and key to download
-			observer = s3Helper.getTransferUtility().download(
-					"verysadbucket",
-					"sadbois" + "/Menu" + "/" + "Mickyd" + "/Key/" + imageKey,
-					 files_folder);
+			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: small/" + imageKey + "   file_dest" + files_folder);
 
-
-
+			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
 			observer.setTransferListener(new TransferListener(){
 
 				@Override
@@ -189,7 +254,7 @@ public class ModelActivity extends Activity {
 						if(fileNumber == 3)
 							beginLoadingModel();
 
-						System.out.println(state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
 					}
 
 				}
@@ -205,15 +270,13 @@ public class ModelActivity extends Activity {
 
 				@Override
 				public void onError(int id, Exception ex) {
-					beginLoadingModel();
+					//beginLoadingModel();
 					System.out.println("There was an error downloading !!" );
 				}
 
 			});
 		}
 	}
-
-
 
 	void beginLoadingModel()
 	{
@@ -296,35 +359,22 @@ public class ModelActivity extends Activity {
 
 	public void next_model(View view){
 //will crash if try to go to next model too soon, still downloading
-		this.paramFilename = "mickyd"+".obj";
+		this.paramFilename = menu.allItems.get(this.menuIndex + 1).getObjPath();
 		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
 		this.gLView.setModelActivity(this);
 		scene = new SceneLoader(this);
 		scene.init();
 		scene.toggleLighting();
-
-//		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
-//		Bundle b = new Bundle();
-//		b.putString("assetDir", getFilesDir().getAbsolutePath());
-//		b.putString("assetFilename", "mickyd"+".obj");//b.putString("assetFilename", selectedItem+".obj");
-//		b.putString("immersiveMode", "true");
-//		in.putExtras(b);
-//		ModelActivity.this.startActivity(in);
-
-		//DemoActivity demoActivity = new DemoActivity();
-//		parent.clickNextModel();
 	}
 
 	public void previous_model(View view){
 
-		onBackPressed();
-//		Intent in = new Intent(ModelActivity.this.getApplicationContext(), ModelActivity.class);
-//		Bundle b = new Bundle();
-//		b.putString("assetDir", getFilesDir().getAbsolutePath());
-//		b.putString("assetFilename", "cookies"+".obj");//b.putString("assetFilename", selectedItem+".obj");
-//		b.putString("immersiveMode", "true");
-//		in.putExtras(b);
-//		ModelActivity.this.startActivity(in);
-
+	//	onBackPressed();
+		this.paramFilename = menu.allItems.get(this.menuIndex).getObjPath();
+		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
+		this.gLView.setModelActivity(this);
+		scene = new SceneLoader(this);
+		scene.init();
+		scene.toggleLighting();
 	}
 }

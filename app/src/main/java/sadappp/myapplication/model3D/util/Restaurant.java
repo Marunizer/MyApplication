@@ -4,21 +4,23 @@ import com.firebase.geofire.GeoLocation;
 
 /**
  * Created by mende on 12/13/2017.
- * Heavily influenced by Flynn
+ * Influenced by Flynn
  */
 
 public class Restaurant {
 
-    String name;
-    String latitude;
-    String longitude;
-    GeoLocation geoLocation;
-    String distanceAway;
+    private String name;
+    private String latitude;
+    private String longitude;
+    private String coordinateKey;
+    private GeoLocation geoLocation;
+    private String distanceAway; //to be used when finally calculating distance from user
 
-    public Restaurant(String name, String latitude, String longitude ,GeoLocation geoLocation) {
+    public Restaurant(String name, String latitude, String longitude ,String coordinateKey, GeoLocation geoLocation) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.coordinateKey  = coordinateKey;
         this.geoLocation = geoLocation;
     }
 
@@ -28,5 +30,9 @@ public class Restaurant {
 
     public GeoLocation getGeoLocation(){
         return geoLocation;
+    }
+
+    public String getCoordinateKey() {
+        return coordinateKey;
     }
 }

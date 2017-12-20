@@ -12,7 +12,6 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:onClick="onRestaurantClick"
     app:cardElevation="20dp"
     app:cardCornerRadius="10dp"
 

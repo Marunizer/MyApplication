@@ -36,7 +36,7 @@ public class WavefrontLoader2 {
 					if (currentDir != null) {
 						return new FileInputStream(new File(currentDir, modelId));
 					} else if (assetsDir != null) {
-						return new FileInputStream((new File(assetsDir,modelId.toLowerCase())));
+						return new FileInputStream((new File(assetsDir,modelId)));
 					} else {
 						throw new IllegalArgumentException("Model data source not specified");
 					}
