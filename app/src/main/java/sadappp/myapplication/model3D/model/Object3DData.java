@@ -28,7 +28,6 @@ import java.util.List;
  */
 public class Object3DData {
 
-	// opengl version to use to draw this object
 	private int version = 5;
 	/**
 	 * The directory where the files reside so we can build referenced files in the model like material and textures

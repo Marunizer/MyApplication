@@ -39,6 +39,8 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 /**
  * Created by mende on 10/16/2017.
+ *
+ * //TODO : DELETE
  */
 
 public class StoreActivity extends ListActivity{

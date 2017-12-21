@@ -242,17 +242,9 @@ public final class Object3DBuilder {
 					Log.i("Object3DBuilder", "Loading texture '" + assetResourceName + "'...");
 					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 					InputStream fis = new FileInputStream(new File(assetResourceName));
-					//TODO: Clean this up later, leaving as reference for now
-//					for(int c = fis.read();c != -1; c = fis.read())
-//					{
-//						buffer.write(c);
-//					}
 
 					Log.i("Object3DBuilder", "Loading fis'" + fis + "'...");
 
-				//	buffer.flush();
-
-					//IOUtils.toByteArray(fis);
 					textureData = IOUtils.toByteArray(fis);//fis.readAllBytes(); //toByteArray(); //buffer.toByteArray();//bos.toByteArray();
 					fis.close();
 					Log.i("Object3DBuilder", "Length of jpg bytes:'" + textureData.length + "'..." + textureData.toString());

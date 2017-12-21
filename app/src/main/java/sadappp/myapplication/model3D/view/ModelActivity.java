@@ -49,7 +49,7 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
  *
  * TODO List:
  *
- * 		* first, by using the known location key of the restaurant picked, access firebase and in order (0-1) (gross, should be changed..)
+ * 		X* first, by using the known location key of the restaurant picked, access firebase and in order (0-1) (gross, should be changed..)
  * 	          Make an ArrayList that holds the names of the restaurant menu.
  *
  * 	    * After the first is downloaded, begin a system that downloads each successive item on the list until they're all there.
@@ -66,6 +66,7 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
  * 	          - When this is implemented, there will be major changes on how downloads are kept track of
  *
  * 	    * There should be a method to remove all the files related to the menu items, might be onDestroy() or maybe just move everything to cache
+ *				Download into a models folder, delete contents
  *
  * 	    * Have an (AR) Button to change to an Augmented Reality view. should just change the surface view.
  *
@@ -359,9 +360,10 @@ public class ModelActivity extends Activity {
 
 	public void next_model(View view){
 //will crash if try to go to next model too soon, still downloading
-		this.paramFilename = menu.allItems.get(this.menuIndex + 1).getObjPath();
-		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
-		this.gLView.setModelActivity(this);
+	//	this.paramFilename = menu.allItems.get(this.menuIndex + 1).getObjPath();
+		this.paramFilename = "mickyd.obj";
+//		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
+//		this.gLView.setModelActivity(this);
 		scene = new SceneLoader(this);
 		scene.init();
 		scene.toggleLighting();

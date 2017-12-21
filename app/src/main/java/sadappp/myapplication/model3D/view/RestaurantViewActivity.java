@@ -53,7 +53,7 @@ import static android.content.ContentValues.TAG;
  *
  *      * Calculate and show how far away the user is from the restaurant like (less than 1 mile away), (1 mile away), .. (n miles away)
  *
- *     * When checking if the restaurant found is already within the ArrayList, check based on
+ *     * (IGNORE FOR NOW) When checking if the restaurant found is already within the ArrayList, check based on
  *      2 parameters (name AND location) instead of just one. (Just in case for the future, multiple restaurants with same geoLocation)
  *
  *     * When a default picture was added to the imageView inside card_view_restaurant,
@@ -69,6 +69,10 @@ import static android.content.ContentValues.TAG;
  *
  *     * Not sure where this will be implemented. But maybe onDestroy(); there should be some call to a method to remove
  *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
+ *           Probably change location of where png's are added to, into it's own folder
+ *           then delete contents of folder
+ *
+ *           XML is not displaying the shadow(elevation) -> Fix
  */
 
 public class RestaurantViewActivity extends Activity implements MyAdapter.AdapterCallback {
@@ -188,7 +192,7 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
                 //hardcoded values for testing purposes
                 latitude = 28.546373;
                 longitude = -81.162192;
-                radius = 5000;
+                radius = 10;
 
                 //A GeoFire GeoQuery takes in the latitude, longitude, and finally the radius based on kilometers.
                 //Probably want to make multiple queries incrementing the radius based on some calculation
