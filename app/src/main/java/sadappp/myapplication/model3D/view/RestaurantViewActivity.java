@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -88,6 +90,7 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
     //private RecyclerView.Adapter mAdapter; //may want to make local where called
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
+    private SwipeRefreshLayout mySwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,11 +107,29 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         prepareRestaurantArray();
 
         //initial loading data here seems to lessen the time it takes to make everything show up.
-       reloadData();
+        reloadData();
+
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        swipeUpdate();
+                    }
+                }
+        );
+    }
+
+    public void swipeUpdate(){
+        //Toast to notify a refresh has started, calls the prepareRestaurantArray() method again
+        Toast.makeText(getApplicationContext(),"Refreshing",Toast.LENGTH_SHORT).show();
+        prepareRestaurantArray();
     }
 
     //Communicates with Adapter
@@ -273,6 +294,10 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
 
     void reloadData()
     {
+        if (mySwipeRefreshLayout.isRefreshing())
+        {
+            mySwipeRefreshLayout.setRefreshing(false);
+        }
         mAdapter = new MyAdapter(this.restaurant, this);
         mRecyclerView.setAdapter(mAdapter);
     }
