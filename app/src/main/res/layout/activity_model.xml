@@ -1,13 +1,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".model3D.view.ModelActivity" >
+    tools:context=".model3D.view.ModelActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
+
+        <!--<org.rajawali3d.view.SurfaceView-->
+            <!--android:id="@+id/rajwali_surface"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--surfaceview:frameRate="60.0"-->
+            <!--surfaceview:renderMode="RENDER_WHEN_DIRTY"/>
+             Might want to consider using a TextureView instead of a SurfaceView from rajawali-->
+
 
         <sadappp.myapplication.model3D.view.ModelSurfaceView
             android:id="@+id/myglsurfaceView"
@@ -28,6 +38,22 @@
             android:layout_marginTop="40dp"
             android:gravity="center"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/model_recycler_view"
+            android:scrollbars="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+<!--
     <Button
         android:id="@+id/left_button"
         android:layout_width="120dp"
@@ -49,6 +75,8 @@
         android:layout_marginBottom="16dp"
         android:text="next model"
         android:onClick="next_model"/>
+
+-->
 
 
 </RelativeLayout>

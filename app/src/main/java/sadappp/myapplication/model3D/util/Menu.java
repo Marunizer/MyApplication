@@ -24,6 +24,8 @@ public class Menu {
         String mtlPath;
         String jpgPath;
 
+        int downloadChecker;
+
       //  private Boolean currentlyDownloading = false;
       //  private Boolean taskAssigned = false; //? not sure what for yet
       //  private Boolean loadedNode = false; //I think it's suppose to be an object, not a boolean, not sure what for yet
@@ -34,6 +36,7 @@ public class Menu {
             this.objPath = name + ".obj";
             this.mtlPath = name + ".mtl";
             this.jpgPath = name + ".jpg";
+            this.downloadChecker = 0;
         }
 
         public String getObjPath() {
@@ -46,6 +49,14 @@ public class Menu {
 
         public String getJpgPath() {
             return jpgPath;
+        }
+
+        public int getDownloadChecker() {
+            return downloadChecker;
+        }
+
+        public void incrementDownloadChecker() {
+            this.downloadChecker++;
         }
 
     }

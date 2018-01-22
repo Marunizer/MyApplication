@@ -506,7 +506,7 @@ public final class Object3DBuilder {
 
 
 	public static void loadV6AsyncParallel_Obj(final Activity parent, final File file, final String assetsDir, final String assetName,
-										   final Callback callback) {
+											   final Callback callback) {
 
 		String modelId = file != null ? file.getName() : assetName;
 		final File currentDir = file != null ? file.getParentFile() : null;

@@ -1,27 +1,30 @@
 package sadappp.myapplication.model3D.view;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.GeoQuery;
-import com.firebase.geofire.GeoQueryEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +41,10 @@ import sadappp.myapplication.R;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.joooonho.SelectableRoundedImageView;
+
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
+
 
 /**
  * This activity represents the container for our 3D viewer.
@@ -75,7 +81,7 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
  *
  * 	    * After the final 3d model production is decided, will need to change how xyz-axis are disaplyed so model is shown from the front.
  */
-public class ModelActivity extends Activity {
+public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCallback {
 
 	AmazonS3Helper s3Helper;
 	private static TransferObserver observer;
@@ -105,6 +111,15 @@ public class ModelActivity extends Activity {
 
 	private Handler handler;
 
+	private int testingNumber = 0;
+	private int downloadCheck = 0;
+
+	private RecyclerView mRecyclerView;
+
+	//private RecyclerView.Adapter mAdapter; //may want to make local where called
+	private MyCircleAdapter mAdapter;
+	private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +132,7 @@ public class ModelActivity extends Activity {
 			this.model_file = b.getString("modelLocation");
 			this.coordinateKey = b.getString("coordinateKey");
 			this.paramAssetFilename = b.getString("assetFilename");
-		//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
+			//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
 			this.paramFilename = b.getString("uri");
 			this.immersiveMode = "true".equalsIgnoreCase(b.getString("immersiveMode"));
 			try{
@@ -130,13 +145,33 @@ public class ModelActivity extends Activity {
 				// Assuming default background color
 			}
 		}
+
+
+//		setContentView(R.layout.activity_model);
+
+//		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
+//		mRecyclerView.setHasFixedSize(true);
+//		mLayoutManager = new LinearLayoutManager(this);
+//		mRecyclerView.setLayoutManager(mLayoutManager);
+//		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+		//		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
+//		mRecyclerView.setAdapter(mAdapter);
+
 		//Initiate the Menu class to be used that will hold all the menu items
 		menu = new Menu(this.coordinateKey);
 
 		//even though model may not be downloaded, probably at least want to set up the environment so it isn't blank
 		//beginLoadingModel();
 
+		s3Helper = new AmazonS3Helper();
+		s3Helper.initiate(this.getApplicationContext());
+
 		prepareMenuArray();
+
+//		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
+//		mRecyclerView.setAdapter(mAdapter);
+
 		// Show the Up button in the action bar.
 		//setupActionBar();
 
@@ -168,7 +203,9 @@ public class ModelActivity extends Activity {
 						//first item in the list, so should immediately notify that this should be downloaded and loaded
 					}
 
-				}//update menuArray? if we're here then that means we are done with firebase, start downloading !
+				}
+
+				//update menuArray? if we're here then that means we are done with firebase, start downloading !
 				//access();
 			}
 
@@ -187,14 +224,65 @@ public class ModelActivity extends Activity {
 		//in the restaurant so what should be loaded here is should probably just be the very first model
 
 		//hard coding one model to download for testing purposes
-		//this.paramFilename = "mickyd.obj";
-		this.paramFilename = menu.allItems.get(0).getObjPath();
+//		this.paramFilename = testingNumber + menu.allItems.get(menuIndex).getObjPath();
 
+		this.paramFilename = menu.allItems.get(menuIndex).getObjPath();
+		beginLoadingModel();
 		//String name = "mickyd";
 
-		String path1 = getFilesDir().toString() + "/" + menu.allItems.get(0).getObjPath();
-		String path2 = getFilesDir().toString() + "/" + menu.allItems.get(0).getMtlPath();
-		String path3 = getFilesDir().toString() + "/" + menu.allItems.get(0).getJpgPath();
+
+		Thread thread0 = new Thread(){
+			public void run(){
+				System.out.println("Thread0 Running");
+				downloadOneModel(testingNumber);
+				testingNumber++;
+			}
+		};
+
+		Thread thread1 = new Thread(){
+			public void run(){
+				System.out.println("Thread1 Running");
+				downloadOneModel(1);
+				testingNumber++;
+			}
+		};
+
+		Thread thread2 = new Thread(){
+			public void run(){
+				System.out.println("Thread2 Running");
+				downloadOneModel(2);
+				testingNumber++;
+			}
+		};
+
+		Thread thread3 = new Thread(){
+			public void run(){
+				System.out.println("Thread3 Running");
+				downloadOneModel(3);
+				testingNumber++;
+			}
+		};
+
+		Thread thread4 = new Thread(){
+			public void run(){
+				System.out.println("Thread4 Running");
+				downloadOneModel(4);
+				testingNumber++;
+			}
+		};
+
+//		thread0.start();
+//		thread1.start();
+//		thread2.start();
+//		thread3.start();
+//		thread4.start();
+	}
+
+	private void downloadOneModel(final int testingNumb){
+		String path1 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getObjPath();
+		String path2 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getMtlPath();
+		String path3 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getJpgPath();
+
 		//will get folder data/data/packagename/file
 		File files_folder1 = new File(path1);
 		File files_folder2 = new File(path2);
@@ -202,13 +290,12 @@ public class ModelActivity extends Activity {
 
 		//file does not exist, so download it !
 		if(!files_folder1.exists()) {
-			downloadModel(files_folder1, menu.allItems.get(0).getObjPath(), 1);
-			downloadModel(files_folder2, menu.allItems.get(0).getMtlPath(), 2);
-			downloadModel(files_folder3, menu.allItems.get(0).getJpgPath(), 3);
+			downloadModel(files_folder1, menu.allItems.get(menuIndex).getObjPath(), testingNumb);
+			downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
+			downloadModel(files_folder3, menu.allItems.get(menuIndex).getJpgPath(), testingNumb);
 		}
-		else
-			beginLoadingModel();
-
+//		else if (testingNumb == 0)
+//			beginLoadingModel();
 	}
 
 	private void access(){
@@ -227,23 +314,25 @@ public class ModelActivity extends Activity {
 		//file does not exist, so download it !
 		if(!files_folder1.exists()) {
 			downloadModel(files_folder1, menu.allItems.get(1).getObjPath(), 1);
-			downloadModel(files_folder2, menu.allItems.get(1).getMtlPath(), 2);
-			downloadModel(files_folder3, menu.allItems.get(1).getJpgPath(), 3);
+//			downloadModel(files_folder2, menu.allItems.get(1).getMtlPath(), 2);
+//			downloadModel(files_folder3, menu.allItems.get(1).getJpgPath(), 3);
 		}
 
 	}
 
 	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
 
+		final long timeStart = System.currentTimeMillis();
+
 		if(!files_folder.exists())
 		{
 			//TODO Move this somewhere else so it's only called once per Activity maybe?
-			s3Helper = new AmazonS3Helper();
-			s3Helper.initiate(this.getApplicationContext());
+//			s3Helper = new AmazonS3Helper();
+//			s3Helper.initiate(this.getApplicationContext());
 
-			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: small/" + imageKey + "   file_dest" + files_folder);
+			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: FishFilet/" + imageKey + "   file_dest" + files_folder);
 
-			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
+			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "FishFilet/" + imageKey,files_folder);
 			observer.setTransferListener(new TransferListener(){
 
 				@Override
@@ -251,11 +340,13 @@ public class ModelActivity extends Activity {
 					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
 					if (state.toString().compareTo("COMPLETED") == 0 )
 					{
+						menu.allItems.get(menuIndex).incrementDownloadChecker();
 						//This is the last file required, when finished, load the model
-						if(fileNumber == 3)
-							beginLoadingModel();
+						if(fileNumber == 0)
+							//beginLoadingModel();
 
 						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+						System.out.println("For : " + fileNumber + " , The time it took was: " + (System.currentTimeMillis() - timeStart));
 					}
 
 				}
@@ -279,13 +370,73 @@ public class ModelActivity extends Activity {
 		}
 	}
 
+//	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
+//
+//		if(!files_folder.exists())
+//		{
+//			//TODO Move this somewhere else so it's only called once per Activity maybe?
+//			s3Helper = new AmazonS3Helper();
+//			s3Helper.initiate(this.getApplicationContext());
+//
+//			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: small/" + imageKey + "   file_dest" + files_folder);
+//
+//			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
+//			observer.setTransferListener(new TransferListener(){
+//
+//				@Override
+//				public void onStateChanged(int id, TransferState state) {
+//					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
+//					if (state.toString().compareTo("COMPLETED") == 0 )
+//					{
+//						//This is the last file required, when finished, load the model
+//						if(fileNumber == 3)
+//							beginLoadingModel();
+//
+//						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+//					}
+//
+//				}
+//
+//				@Override
+//				public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+//					int percentage = 0;
+//					if (bytesTotal > 0) {
+//						percentage = (int) (bytesCurrent / bytesTotal * 100);
+//					}
+//					System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
+//				}
+//
+//				@Override
+//				public void onError(int id, Exception ex) {
+//					//beginLoadingModel();
+//					System.out.println("There was an error downloading !!" );
+//				}
+//
+//			});
+//		}
+//	}
+
 	void beginLoadingModel()
 	{
+		downloadCheck++;//listens to make sure all three files are ready
+//		if (menu.allItems.get(menuIndex).getDownloadChecker() != 3)
+//			return;
+
 		handler = new Handler(getMainLooper());
+
+		setContentView(R.layout.activity_model);
+
+		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
+		mRecyclerView.setHasFixedSize(true);
+		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+		mRecyclerView.setLayoutManager(mLayoutManager);
+		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
+		mRecyclerView.setAdapter(mAdapter);
 
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
-		setContentView(R.layout.activity_model);
 		gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
 		gLView.setModelActivity(this);
 
@@ -307,18 +458,18 @@ public class ModelActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.model_toggle_wireframe:
-			scene.toggleWireframe();
-			break;
-		case R.id.model_toggle_boundingbox:
-			scene.toggleBoundingBox();
-			break;
-		case R.id.model_toggle_textures:
-			scene.toggleTextures();
-			break;
-		case R.id.model_toggle_lights:
-			scene.toggleLighting();
-			break;
+			case R.id.model_toggle_wireframe:
+				scene.toggleWireframe();
+				break;
+			case R.id.model_toggle_boundingbox:
+				scene.toggleBoundingBox();
+				break;
+			case R.id.model_toggle_textures:
+				scene.toggleTextures();
+				break;
+			case R.id.model_toggle_lights:
+				scene.toggleLighting();
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -359,24 +510,102 @@ public class ModelActivity extends Activity {
 	//
 
 	public void next_model(View view){
-//will crash if try to go to next model too soon, still downloading
-	//	this.paramFilename = menu.allItems.get(this.menuIndex + 1).getObjPath();
-		this.paramFilename = "mickyd.obj";
-//		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
-//		this.gLView.setModelActivity(this);
-		scene = new SceneLoader(this);
-		scene.init();
-		scene.toggleLighting();
+		
+		//	this.paramFilename = menu.allItems.get(this.menuIndex + 1).getObjPath();
+		this.paramFilename = menu.allItems.get(++menuIndex).getObjPath();
+
+		beginLoadingModel();
 	}
 
 	public void previous_model(View view){
 
-	//	onBackPressed();
-		this.paramFilename = menu.allItems.get(this.menuIndex).getObjPath();
-		this.gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
-		this.gLView.setModelActivity(this);
-		scene = new SceneLoader(this);
-		scene.init();
-		scene.toggleLighting();
+		this.paramFilename = menu.allItems.get(--menuIndex).getObjPath();
+		beginLoadingModel();
+	}
+
+	@Override
+	public void onMethodCallback(int key) {
+		this.paramFilename = menu.allItems.get(key).getObjPath();
+		beginLoadingModel();
+// This is what should happen when a circle button is clicked
 	}
 }
+
+class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
+
+	private AdapterCallback adapterCallback;
+	private Context context;
+	private ArrayList mDataset;
+
+	// Provide a reference to the views for each data item
+	// Complex data items may need more than one view per item, and
+	// you provide access to all the views for a data item in a view holder
+	static class ViewHolder extends RecyclerView.ViewHolder {
+		// each data item is just a string in this case
+		TextView restName;
+		TextView restDistance;
+		ImageView restImage;
+		String coordinateKey = " ";
+		SelectableRoundedImageView sriv;
+
+		ViewHolder(final View itemView){
+			super(itemView);
+			sriv = (SelectableRoundedImageView)itemView.findViewById(R.id.circle_image);
+
+		}
+	}
+
+	// Provide a suitable constructor (depends on the kind of dataset)
+	MyCircleAdapter(ArrayList myDataset, Context context) {
+		this.mDataset = myDataset;
+		this.context = context;
+		try {
+			this.adapterCallback = ((AdapterCallback) context);
+		} catch (ClassCastException e) {
+			throw new ClassCastException("Activity must implement AdapterCallback.");
+		}
+	}
+
+	// Create new views (invoked by the layout manager)
+	@Override
+	public MyCircleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+												   int viewType) {
+		// create a new view
+		View v = LayoutInflater.from(parent.getContext())
+				.inflate(R.layout.circle_view_menu, parent, false);
+
+		ViewHolder vh = new ViewHolder(v);
+		return vh;
+	}
+
+	// Replace the contents of a view (invoked by the layout manager)
+	@Override
+	public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+		// - get element from your dataset at this position
+		// - replace the contents of the view with that element
+
+
+
+		holder.sriv.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View view)
+			{
+				adapterCallback.onMethodCallback(position);
+			}}
+		);
+	}
+
+	// Return the size of your dataset (invoked by the layout manager)
+	@Override
+	public int getItemCount() {
+		return mDataset.size();
+	}
+
+	//  public String getKey(){return this.coordinateKey;}
+
+	public interface AdapterCallback {
+		void onMethodCallback(int key);
+	}
+}
+

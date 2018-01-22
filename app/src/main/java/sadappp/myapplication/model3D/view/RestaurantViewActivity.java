@@ -87,7 +87,7 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
     private Location mLastLocation;  //only not referenced because currently there is a test location
     private RecyclerView mRecyclerView;
 
-    //private RecyclerView.Adapter mAdapter; //may want to make local where called
+    //may want to make local where called
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
     private SwipeRefreshLayout mySwipeRefreshLayout;
@@ -109,11 +109,6 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
-        prepareRestaurantArray();
-
-        //initial loading data here seems to lessen the time it takes to make everything show up.
-        reloadData();
-
         mySwipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -124,6 +119,11 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
                     }
                 }
         );
+
+        prepareRestaurantArray();
+
+        //initial loading data here seems to lessen the time it takes to make everything show up.
+        reloadData();
     }
 
     public void swipeUpdate(){
@@ -241,7 +241,7 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
 
                                     restaurant.add(new Restaurant(name, item_lat, item_long, item.getKey(), location));
                                     restaurantGeoChecker.add(location);
-                                    System.out.println("!!!!!!!ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey() + " location = " + location);
+                                    System.out.println("RestaurantViewActivity: ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey() + " location = " + location);
 
                                     //While we're at it, lets download the image linked with the restaurant
                                     downloadImageFromAWS(name);
