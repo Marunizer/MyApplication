@@ -6,9 +6,19 @@
     tools:context=".model3D.view.ModelActivity">
 
     <FrameLayout
+        android:id="@+id/modelFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
+
+        <!--
+        <fragment
+            android:name="sadappp.myapplication.model3D.view.ModelFragment"
+            android:id="@+id/modelFrag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+            -->
 
         <!--<org.rajawali3d.view.SurfaceView-->
             <!--android:id="@+id/rajwali_surface"-->
@@ -18,12 +28,6 @@
             <!--surfaceview:renderMode="RENDER_WHEN_DIRTY"/>
              Might want to consider using a TextureView instead of a SurfaceView from rajawali-->
 
-
-        <sadappp.myapplication.model3D.view.ModelSurfaceView
-            android:id="@+id/myglsurfaceView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
 
     </FrameLayout>
 

@@ -239,7 +239,7 @@ public class ModelRenderer implements GLSurfaceView.Renderer {
 				// TODO: enable this only when user wants it
 				// obj3D.drawVectorNormals(result, modelViewMatrix);
 			} catch (IOException ex) {
-				Toast.makeText(main.getModelActivity().getApplicationContext(),
+				Toast.makeText(main.getModelActivity().getActivity().getApplicationContext(),
 						"There was a problem creating 3D object", Toast.LENGTH_LONG).show();
 			}
 		}

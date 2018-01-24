@@ -1,14 +1,12 @@
 package sadappp.myapplication.model3D.view;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,10 +15,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -34,16 +28,11 @@ import com.google.firebase.database.ValueEventListener;
 import sadappp.myapplication.model3D.services.SceneLoader;
 import sadappp.myapplication.model3D.util.AmazonS3Helper;
 import sadappp.myapplication.model3D.util.Menu;
-import sadappp.myapplication.model3D.util.Restaurant;
-import sadappp.myapplication.util.Utils;
 import sadappp.myapplication.R;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import com.joooonho.SelectableRoundedImageView;
-
-import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 
 /**
@@ -81,7 +70,7 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
  *
  * 	    * After the final 3d model production is decided, will need to change how xyz-axis are disaplyed so model is shown from the front.
  */
-public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCallback {
+public class ModelActivity extends FragmentActivity implements MyCircleAdapter.AdapterCallback{
 
 	AmazonS3Helper s3Helper;
 	private static TransferObserver observer;
@@ -89,7 +78,6 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 
 	private String paramAssetDir;
 	private String paramAssetFilename;
-	private String model_file;
 	private String coordinateKey;
 	Menu menu;
 	private int menuIndex = 0;
@@ -106,9 +94,6 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 	 */
 	private float[] backgroundColor = new float[]{0.2f, 0.2f, 0.2f, 1.0f};
 
-	private ModelSurfaceView gLView;
-	private SceneLoader scene;
-
 	private Handler handler;
 
 	private int testingNumber = 0;
@@ -120,6 +105,10 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 	private MyCircleAdapter mAdapter;
 	private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
 
+	private static final int CONTENT_VIEW_ID = 10101010;
+	private static final String CONTENT_VIEW_TAG = "MODEL_FRAG";
+	private FragmentManager fragMgr;
+	private ModelFragment modelFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +118,6 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 
 		if (b != null) {
 			this.paramAssetDir = b.getString("assetDir");
-			this.model_file = b.getString("modelLocation");
 			this.coordinateKey = b.getString("coordinateKey");
 			this.paramAssetFilename = b.getString("assetFilename");
 			//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
@@ -146,18 +134,6 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 			}
 		}
 
-
-//		setContentView(R.layout.activity_model);
-
-//		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
-//		mRecyclerView.setHasFixedSize(true);
-//		mLayoutManager = new LinearLayoutManager(this);
-//		mRecyclerView.setLayoutManager(mLayoutManager);
-//		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-		//		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
-//		mRecyclerView.setAdapter(mAdapter);
-
 		//Initiate the Menu class to be used that will hold all the menu items
 		menu = new Menu(this.coordinateKey);
 
@@ -168,14 +144,23 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 		s3Helper.initiate(this.getApplicationContext());
 
 		prepareMenuArray();
-
-//		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
-//		mRecyclerView.setAdapter(mAdapter);
+		handler = new Handler(getMainLooper());
 
 		// Show the Up button in the action bar.
 		//setupActionBar();
 
 		//this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		setContentView(R.layout.activity_model);
+
+		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
+		mRecyclerView.setHasFixedSize(true);
+		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+		mRecyclerView.setLayoutManager(mLayoutManager);
+		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
+		mRecyclerView.setAdapter(mAdapter);
 	}
 
 	private void prepareMenuArray() {
@@ -227,9 +212,22 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 //		this.paramFilename = testingNumber + menu.allItems.get(menuIndex).getObjPath();
 
 		this.paramFilename = menu.allItems.get(menuIndex).getObjPath();
-		beginLoadingModel();
-		//String name = "mickyd";
 
+		Bundle b= new Bundle();
+
+		b.putString("assetDir",getParamAssetDir());
+		b.putString("assetFilename",getParamAssetFilename());
+		b.putString("uri", getParamFilename());
+		System.out.println("umm??");
+
+		modelFragment = new ModelFragment();
+		modelFragment.setArguments(b);
+
+		fragMgr = getSupportFragmentManager(); //getFragmentManager();
+		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
+		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG)) {
+			xact.add(R.id.modelFrame,  modelFragment ,CONTENT_VIEW_TAG).commit();
+		}
 
 		Thread thread0 = new Thread(){
 			public void run(){
@@ -327,8 +325,6 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 		if(!files_folder.exists())
 		{
 			//TODO Move this somewhere else so it's only called once per Activity maybe?
-//			s3Helper = new AmazonS3Helper();
-//			s3Helper.initiate(this.getApplicationContext());
 
 			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: FishFilet/" + imageKey + "   file_dest" + files_folder);
 
@@ -418,68 +414,49 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 
 	void beginLoadingModel()
 	{
+		Bundle b= new Bundle();
+		b.putString("assetDir",getParamAssetDir());
+		b.putString("assetFilename",getParamAssetFilename());
+		b.putString("uri", getParamFilename());
+
+		modelFragment = new ModelFragment();
+		modelFragment.setArguments(b);
+
+		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
+
 		downloadCheck++;//listens to make sure all three files are ready
 //		if (menu.allItems.get(menuIndex).getDownloadChecker() != 3)
 //			return;
 
-		handler = new Handler(getMainLooper());
-
-		setContentView(R.layout.activity_model);
-
-		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
-		mRecyclerView.setHasFixedSize(true);
-		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-		mRecyclerView.setLayoutManager(mLayoutManager);
-		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
-		mRecyclerView.setAdapter(mAdapter);
-
-		// Create a GLSurfaceView instance and set it
-		// as the ContentView for this Activity.
-		gLView = (ModelSurfaceView) findViewById(R.id.myglsurfaceView);
-		gLView.setModelActivity(this);
-
 		System.out.println(paramAssetDir);
-		System.out.println(paramAssetFilename);
-
-		// Create our 3D sceneario
-		scene = new SceneLoader(this);
-		scene.init();
 
 		// TODO: Alert user when there is no multitouch support (2 fingers). He won't be able to rotate or zoom for
 		// example
-		Utils.printTouchCapabilities(getPackageManager());
+		//Utils.printTouchCapabilities(getPackageManager());
 
-		//setupOnSystemVisibilityChangeListener();
-		scene.toggleLighting();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.model_toggle_wireframe:
-				scene.toggleWireframe();
+			//	scene.toggleWireframe();
 				break;
 			case R.id.model_toggle_boundingbox:
-				scene.toggleBoundingBox();
+			//	scene.toggleBoundingBox();
 				break;
 			case R.id.model_toggle_textures:
-				scene.toggleTextures();
+			//	scene.toggleTextures();
 				break;
 			case R.id.model_toggle_lights:
-				scene.toggleLighting();
+				////scene.toggleLighting();
 				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	public File getParamFile() {
-		return getParamFilename() != null ? new File(getParamFilename()) : null;
-	}
-
 	public String getParamAssetDir() {
-		return paramAssetDir;
+		return this.paramAssetDir;
 	}
 
 	public String getParamAssetFilename() {
@@ -490,18 +467,6 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 		return paramFilename;
 	}
 
-	public float[] getBackgroundColor(){
-		return backgroundColor;
-	}
-
-	public SceneLoader getScene() {
-		return scene;
-	}
-
-	public GLSurfaceView getgLView() {
-		return gLView;
-	}
-
 	//  _   _ ___   _____                 _
 	// | | | |_ _| | ____|_   _____ _ __ | |_ ___
 	// | | | || |  |  _| \ \ / / _ \ '_ \| __/ __|
@@ -509,43 +474,22 @@ public class ModelActivity extends Activity implements MyCircleAdapter.AdapterCa
 	//  \___/|___| |_____| \_/ \___|_| |_|\__|___/
 	//
 
-	public void next_model(View view){
-		
-		//	this.paramFilename = menu.allItems.get(this.menuIndex + 1).getObjPath();
-		this.paramFilename = menu.allItems.get(++menuIndex).getObjPath();
-
-		beginLoadingModel();
-	}
-
-	public void previous_model(View view){
-
-		this.paramFilename = menu.allItems.get(--menuIndex).getObjPath();
-		beginLoadingModel();
-	}
-
 	@Override
 	public void onMethodCallback(int key) {
 		this.paramFilename = menu.allItems.get(key).getObjPath();
 		beginLoadingModel();
-// This is what should happen when a circle button is clicked
 	}
 }
 
 class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 
 	private AdapterCallback adapterCallback;
-	private Context context;
 	private ArrayList mDataset;
 
 	// Provide a reference to the views for each data item
 	// Complex data items may need more than one view per item, and
 	// you provide access to all the views for a data item in a view holder
 	static class ViewHolder extends RecyclerView.ViewHolder {
-		// each data item is just a string in this case
-		TextView restName;
-		TextView restDistance;
-		ImageView restImage;
-		String coordinateKey = " ";
 		SelectableRoundedImageView sriv;
 
 		ViewHolder(final View itemView){
@@ -558,7 +502,6 @@ class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 	// Provide a suitable constructor (depends on the kind of dataset)
 	MyCircleAdapter(ArrayList myDataset, Context context) {
 		this.mDataset = myDataset;
-		this.context = context;
 		try {
 			this.adapterCallback = ((AdapterCallback) context);
 		} catch (ClassCastException e) {
@@ -582,11 +525,6 @@ class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-		// - get element from your dataset at this position
-		// - replace the contents of the view with that element
-
-
-
 		holder.sriv.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view)
@@ -601,8 +539,6 @@ class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 	public int getItemCount() {
 		return mDataset.size();
 	}
-
-	//  public String getKey(){return this.coordinateKey;}
 
 	public interface AdapterCallback {
 		void onMethodCallback(int key);

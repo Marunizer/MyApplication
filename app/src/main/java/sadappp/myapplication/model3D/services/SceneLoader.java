@@ -8,6 +8,7 @@ import sadappp.myapplication.model3D.model.Object3DBuilder;
 import sadappp.myapplication.model3D.model.Object3DBuilder.Callback;
 import sadappp.myapplication.model3D.model.Object3DData;
 import sadappp.myapplication.model3D.view.ModelActivity;
+import sadappp.myapplication.model3D.view.ModelFragment;
 import sadappp.myapplication.util.url.android.Handler;
 
 import java.io.File;
@@ -31,7 +32,7 @@ public class SceneLoader {
 	/**
 	 * Parent component
 	 */
-	protected final ModelActivity parent;
+	protected final ModelFragment parent;
 	/**
 	 * List of data objects containing info for building the opengl objects
 	 */
@@ -78,7 +79,7 @@ public class SceneLoader {
 	 */
 	private final Object3DData lightPoint = Object3DBuilder.buildPoint(new float[4]).setId("light").setPosition(lightPosition);
 
-	public SceneLoader(ModelActivity main) {
+	public SceneLoader(ModelFragment main) {
 		this.parent = main;
 	}
 
@@ -87,7 +88,7 @@ public class SceneLoader {
 		if (parent.getParamFile() != null || parent.getParamAssetDir() != null) {
 
 			// Initialize assets url handler
-			Handler.assets = parent.getAssets();
+			Handler.assets = parent.getActivity().getAssets();
 			// Handler.classLoader = parent.getClassLoader(); (optional)
 			 //Handler.androidResources = parent.getResources(); (optional)
 
@@ -105,7 +106,7 @@ public class SceneLoader {
 				throw new RuntimeException(e);
 			}
 
-			Object3DBuilder.loadV6AsyncParallel(parent, url, parent.getParamFile(), parent.getParamAssetDir(),
+			Object3DBuilder.loadV6AsyncParallel(parent.getActivity(), url, parent.getParamFile(), parent.getParamAssetDir(),
 					parent.getParamAssetFilename(), new Callback() {
 
 						long startTime = SystemClock.uptimeMillis();
@@ -126,7 +127,7 @@ public class SceneLoader {
 						@Override
 						public void onLoadError(Exception ex) {
 							Log.e("SceneLoader",ex.getMessage(),ex);
-							Toast.makeText(parent.getApplicationContext(),
+							Toast.makeText(parent.getActivity().getApplicationContext(),
 									"There was a problem building the model: " + ex.getMessage(), Toast.LENGTH_LONG)
 									.show();
 						}
@@ -135,9 +136,9 @@ public class SceneLoader {
 	}
 
 	private void makeToastText(final String text, final int toastDuration) {
-		parent.runOnUiThread(new Runnable() {
+		parent.getActivity().runOnUiThread(new Runnable() {
 			public void run() {
-				Toast.makeText(parent.getApplicationContext(), text, toastDuration).show();
+				Toast.makeText(parent.getActivity().getApplicationContext(), text, toastDuration).show();
 			}
 		});
 	}

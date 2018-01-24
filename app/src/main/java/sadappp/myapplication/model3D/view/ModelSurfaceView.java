@@ -17,23 +17,19 @@ import sadappp.myapplication.model3D.controller.TouchController;
  */
 public class ModelSurfaceView extends GLSurfaceView {
 
-	private static ModelActivity parent;
+//	private static ModelActivity parent;
+	private static ModelFragment parent;
 	private ModelRenderer mRenderer;
 	private TouchController touchHandler;
 
 	public ModelSurfaceView(Context context, AttributeSet attrs) {//ModelActivity parent) {Context context, AttributeSet attrs) {
-		//super(parent);
 		super(context,attrs);
-
-		// parent component
-		//this.parent = parent;
 
 		// Create an OpenGL ES 2.0 context.
 		setEGLContextClientVersion(2);
 
 		// This is the actual renderer of the 3D space
 		mRenderer = new ModelRenderer(this);
-	//	mRenderer = new ModelRenderer(context);
 		setRenderer(mRenderer);
 
 		// Render the view only when there is a change in the drawing data
@@ -48,11 +44,11 @@ public class ModelSurfaceView extends GLSurfaceView {
 		return touchHandler.onTouchEvent(event);
 	}
 
-	public ModelActivity getModelActivity() {
+	public ModelFragment getModelActivity() {
 		return parent;
 	}
-	public void setModelActivity(ModelActivity model) {
+
+	public void setModelActivity(ModelFragment model) {
 		this.parent = model;
 	}
-
 }
