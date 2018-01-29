@@ -107,7 +107,7 @@ public final class Object3DBuilder {
 
 	public static Object3DData generateArrays(AssetManager assets, Object3DData obj) throws IOException {
 
-		Faces faces = obj.getFaces(); // model faces
+		Faces faces = obj.getFaces();
 		FaceMaterials faceMats = obj.getFaceMats();
 		Materials materials = obj.getMaterials();
 
@@ -229,8 +229,9 @@ public final class Object3DBuilder {
 			}
 			if (texture != null) {
 				if (obj.getCurrentDir() != null) {
+					//Pretty sure this is not actually accessed
 					File file = new File(obj.getCurrentDir(), texture);
-					Log.i("Object3DBuilder", "Loading texture '" + file + " from " + obj.getCurrentDir() +"...");
+					Log.i("Object3DBuilder", "Loading this texture '" + file + " from " + obj.getCurrentDir() +"...");
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					FileInputStream fis = new FileInputStream(file);
 					IOUtils.copy(fis, bos);
@@ -238,8 +239,11 @@ public final class Object3DBuilder {
 					textureData = bos.toByteArray();
 					bos.close();
 				} else {
+					//I believe this is what is being used
 					String assetResourceName = obj.getAssetsDir() + "/" + texture;
-					Log.i("Object3DBuilder", "Loading texture '" + assetResourceName + "'...");
+					Log.i("Object3DBuilder", "Loading that texture '" + assetResourceName + "'...");
+
+					//Might be able to delete this
 					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 					InputStream fis = new FileInputStream(new File(assetResourceName));
 

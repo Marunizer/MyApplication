@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.File;
-import java.util.zip.Inflater;
 
 import sadappp.myapplication.R;
 import sadappp.myapplication.model3D.services.SceneLoader;

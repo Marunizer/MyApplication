@@ -9,9 +9,10 @@
         android:id="@+id/modelFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        >
 
         <!--
+        android:layout_weight="1"
         <fragment
             android:name="sadappp.myapplication.model3D.view.ModelFragment"
             android:id="@+id/modelFrag"

@@ -33,7 +33,8 @@ public class AmazonS3Helper {
     private AmazonS3 s3Client;
 
     //Commenting out since I need a different bucket for testing
-    private static final String BUCKET_NAME = "noni1995";
+    //noni1995
+    private static final String BUCKET_NAME = "verysadbucket";
     private TransferUtility transferUtility;  //CHANGED THIS TO NON STATIC IF ANYTHING BREAKS START HERE
 
     public  TransferUtility getTransferUtility() {
@@ -59,7 +60,8 @@ public class AmazonS3Helper {
             // Initialize the Amazon Cognito credentials provider
             this.cognitoCachingCredentialsProvider = new CognitoCachingCredentialsProvider(
                     context.getApplicationContext(),
-                    "us-east-1:0114edd2-0c3a-4f9b-ba39-8e1b32a9071b", // Identity pool ID
+                    "us-east-1:1f71d265-5641-4934-a734-1cae7eb1ff47",
+                   // "us-east-1:0114edd2-0c3a-4f9b-ba39-8e1b32a9071b", // Identity pool ID
                     Regions.US_EAST_1 // Region
             );
             createAmazonS3Client(cognitoCachingCredentialsProvider, context);

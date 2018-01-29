@@ -20,9 +20,11 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import org.apache.commons.io.FileUtils;
 
 import sadappp.myapplication.R;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -30,11 +32,13 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
-import de.javagl.Obj;
-import de.javagl.ObjData;
-import de.javagl.ObjReader;
-import de.javagl.ObjUtils;
+import de.javagl.obj.Obj;
+import de.javagl.obj.ObjData;
+import de.javagl.obj.ObjReader;
+import de.javagl.obj.ObjUtils;
 
 /**
  * Renders an object loaded from an OBJ file in OpenGL.
@@ -52,12 +56,12 @@ public class ObjectRenderer {
         Shadow,
         /** Normal alpha blending. */
         Grid
-    };
+    }
 
     private static final int COORDS_PER_VERTEX = 3;
 
     // Note: the last component must be zero to avoid applying the translational part of the matrix.
-    private static final float[] LIGHT_DIRECTION = new float[] { 0.0f, 1.0f, 0.0f, 0.0f };
+    private static final float[] LIGHT_DIRECTION = new float[] { 0.250f, 0.866f, 0.433f, 0.0f };
     private float[] mViewLightDirection = new float[4];
 
     // Object vertex buffer variables.
@@ -102,8 +106,15 @@ public class ObjectRenderer {
     private float mSpecular = 1.0f;
     private float mSpecularPower = 6.0f;
 
+    //MY STUFF
+    private Map<byte[], Integer> textures = new HashMap<byte[], Integer>();
+    private Obj mObj;
+    private int[] vectorArrayObjectIds;
+
     public ObjectRenderer() {
     }
+String textureName;
+
 
     /**
      * Creates and initializes OpenGL resources needed for rendering the model.
@@ -114,29 +125,46 @@ public class ObjectRenderer {
      */
     public void createOnGlThread(Context context, String objAssetName,
                                  String diffuseTextureAssetName) throws IOException {
-        // Read the texture.
-        Bitmap textureBitmap = BitmapFactory.decodeStream(
-            context.getAssets().open(diffuseTextureAssetName));
+
+        textureName = diffuseTextureAssetName;
+        System.out.println(" ******** WE ARE MAKING OBJECT ******** - MARU");
+        //TODO: Some void function that reads mtl and returns appropriate information.
+//        setMaterialProperties(
+//        float ambient, float diffuse, float specular, float specularPower);
+
+        // TODO: Read the texture. That's gonna have to change to a jpg bruh
+
+        //Read the jpg
+        InputStream inputStream;
+        inputStream = FileUtils.openInputStream(new File("/data/user/0/sadappp.myapplication/files",textureName));
+        Bitmap textureBitmap = BitmapFactory.decodeStream(inputStream);
+        inputStream.close();
+
+        System.out.println(" ******** WE ARE MAKING BIT MAP******** - MARU");
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glGenTextures(mTextures.length, mTextures, 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures[0]);//
 
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
-            GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+            GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);//GL_NEAREST
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
-            GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);
+            GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);//GL_NEAREST
+        //**********************************************************************
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);//
         GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
+        //*******************************************************************
         textureBitmap.recycle();
 
         ShaderUtil.checkGLError(TAG, "Texture loading");
 
         // Read the obj file.
-        InputStream objInputStream = context.getAssets().open(objAssetName);
+        InputStream objInputStream;
+        objInputStream = FileUtils.openInputStream(new File("/data/user/0/sadappp.myapplication/files",objAssetName));
         Obj obj = ObjReader.read(objInputStream);
+        objInputStream.close();
 
         // Prepare the Obj so that its structure is suitable for
         // rendering with OpenGL:
@@ -150,7 +178,7 @@ public class ObjectRenderer {
         // that OpenGL understands.
 
         // Obtain the data from the OBJ, as direct buffers:
-        IntBuffer wideIndices = ObjData.getFaceVertexIndices(obj, 3);
+        IntBuffer wideIndices = ObjData.getFaceVertexIndices(obj, 3);//was 4
         FloatBuffer vertices = ObjData.getVertices(obj);
         FloatBuffer texCoords = ObjData.getTexCoords(obj, 2);
         FloatBuffer normals = ObjData.getNormals(obj);
@@ -214,6 +242,7 @@ public class ObjectRenderer {
         mNormalAttribute = GLES20.glGetAttribLocation(mProgram, "a_Normal");
         mTexCoordAttribute = GLES20.glGetAttribLocation(mProgram, "a_TexCoord");
 
+        //**************************************************************WTF IS THIS
         mTextureUniform = GLES20.glGetUniformLocation(mProgram, "u_Texture");
 
         mLightingParametersUniform = GLES20.glGetUniformLocation(mProgram, "u_LightingParameters");
@@ -361,7 +390,7 @@ public class ObjectRenderer {
         ShaderUtil.checkGLError(TAG, "After draw");
     }
 
-    public static void normalizeVec3(float[] v) {
+    private static void normalizeVec3(float[] v) {
         float reciprocalLength = 1.0f / (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         v[0] *= reciprocalLength;
         v[1] *= reciprocalLength;

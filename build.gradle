@@ -19,6 +19,9 @@ allprojects {
     repositories {
         jcenter()
         google()
+        maven {
+            url "${project.rootDir}/../../libraries/m2repository"
+        }
     }
 }
 

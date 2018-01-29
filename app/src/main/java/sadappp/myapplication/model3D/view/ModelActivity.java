@@ -107,6 +107,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 	private static final int CONTENT_VIEW_ID = 10101010;
 	private static final String CONTENT_VIEW_TAG = "MODEL_FRAG";
+	private static final String CONTENT_VIEW_TAG_AR = "MODEL_FRAG_AR";
 	private FragmentManager fragMgr;
 	private ModelFragment modelFragment;
 
@@ -153,14 +154,14 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 		setContentView(R.layout.activity_model);
 
-		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
-		mRecyclerView.setHasFixedSize(true);
-		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-		mRecyclerView.setLayoutManager(mLayoutManager);
-		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
-		mRecyclerView.setAdapter(mAdapter);
+//		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
+//		mRecyclerView.setHasFixedSize(true);
+//		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+//		mRecyclerView.setLayoutManager(mLayoutManager);
+//		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+//
+//		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
+//		mRecyclerView.setAdapter(mAdapter);
 	}
 
 	private void prepareMenuArray() {
@@ -220,6 +221,25 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("uri", getParamFilename());
 		System.out.println("umm??");
 
+		//Used for deleting  files
+//		File file = new File(getFilesDir().toString() + "/TheRyanBurger.mtl");
+//		file.delete();
+
+
+		//If we wanted to display AR right away in the app.
+		//AR currently happens after pressing an oval button for testing purposes
+		//*******************AR
+//		ARModelFragment modelARFragment = new ARModelFragment();
+//
+//		fragMgr = getSupportFragmentManager(); //getFragmentManager();
+//		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
+//		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
+//			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
+//		}
+		//*******************AR
+
+
+		//3D model Viwer***********************
 		modelFragment = new ModelFragment();
 		modelFragment.setArguments(b);
 
@@ -228,7 +248,19 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG)) {
 			xact.add(R.id.modelFrame,  modelFragment ,CONTENT_VIEW_TAG).commit();
 		}
+		//3D model Viwer***********************
 
+
+		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
+		mRecyclerView.setHasFixedSize(true);
+		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+		mRecyclerView.setLayoutManager(mLayoutManager);
+		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
+		mRecyclerView.setAdapter(mAdapter);
+
+		//Threads for the purpose of running multiple (3 at a time) downloads at the same time
 		Thread thread0 = new Thread(){
 			public void run(){
 				System.out.println("Thread0 Running");
@@ -269,6 +301,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			}
 		};
 
+		//Run a download or not
 //		thread0.start();
 //		thread1.start();
 //		thread2.start();
@@ -277,16 +310,21 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	}
 
 	private void downloadOneModel(final int testingNumb){
-		String path1 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getObjPath();
-		String path2 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getMtlPath();
-		String path3 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getJpgPath();
+		String path1 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getObjPath();
+		String path2 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getMtlPath();
+		String path3 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getJpgPath();
+//		String path1 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getObjPath();
+//		String path2 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getMtlPath();
+//		String path3 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getJpgPath();
 
 		//will get folder data/data/packagename/file
 		File files_folder1 = new File(path1);
 		File files_folder2 = new File(path2);
 		File files_folder3 = new File(path3);
 
-		//file does not exist, so download it !
+		//download only the mtl for testing
+	//	downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
+		//file object does not exist, so download it !
 		if(!files_folder1.exists()) {
 			downloadModel(files_folder1, menu.allItems.get(menuIndex).getObjPath(), testingNumb);
 			downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
@@ -296,6 +334,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 //			beginLoadingModel();
 	}
 
+	//Not currently used
 	private void access(){
 
 		//download 1 model at a time
@@ -318,64 +357,16 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 	}
 
-	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
-
-		final long timeStart = System.currentTimeMillis();
-
-		if(!files_folder.exists())
-		{
-			//TODO Move this somewhere else so it's only called once per Activity maybe?
-
-			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: FishFilet/" + imageKey + "   file_dest" + files_folder);
-
-			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "FishFilet/" + imageKey,files_folder);
-			observer.setTransferListener(new TransferListener(){
-
-				@Override
-				public void onStateChanged(int id, TransferState state) {
-					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
-					if (state.toString().compareTo("COMPLETED") == 0 )
-					{
-						menu.allItems.get(menuIndex).incrementDownloadChecker();
-						//This is the last file required, when finished, load the model
-						if(fileNumber == 0)
-							//beginLoadingModel();
-
-						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
-						System.out.println("For : " + fileNumber + " , The time it took was: " + (System.currentTimeMillis() - timeStart));
-					}
-
-				}
-
-				@Override
-				public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-					int percentage = 0;
-					if (bytesTotal > 0) {
-						percentage = (int) (bytesCurrent / bytesTotal * 100);
-					}
-					System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
-				}
-
-				@Override
-				public void onError(int id, Exception ex) {
-					//beginLoadingModel();
-					System.out.println("There was an error downloading !!" );
-				}
-
-			});
-		}
-	}
-
 //	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
+//
+//		final long timeStart = System.currentTimeMillis();
 //
 //		if(!files_folder.exists())
 //		{
 //			//TODO Move this somewhere else so it's only called once per Activity maybe?
-//			s3Helper = new AmazonS3Helper();
-//			s3Helper.initiate(this.getApplicationContext());
 //
-//			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: small/" + imageKey + "   file_dest" + files_folder);
-//
+//			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: FishFilet/" + imageKey + "   file_dest" + files_folder);
+//																						//"FishFilet/"
 //			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
 //			observer.setTransferListener(new TransferListener(){
 //
@@ -384,11 +375,13 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 //					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
 //					if (state.toString().compareTo("COMPLETED") == 0 )
 //					{
+//						menu.allItems.get(menuIndex).incrementDownloadChecker();
 //						//This is the last file required, when finished, load the model
-//						if(fileNumber == 3)
-//							beginLoadingModel();
+//						if(fileNumber == 0)
+//							//beginLoadingModel();
 //
 //						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+//						System.out.println("For : " + fileNumber + " , The time it took was: " + (System.currentTimeMillis() - timeStart));
 //					}
 //
 //				}
@@ -412,6 +405,52 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 //		}
 //	}
 
+	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
+
+		if(!files_folder.exists())
+		{
+			//TODO Move this somewhere else so it's only called once per Activity maybe?
+			s3Helper = new AmazonS3Helper();
+			s3Helper.initiate(this.getApplicationContext());
+
+			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: small/" + imageKey + "   file_dest" + files_folder);
+
+			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
+			observer.setTransferListener(new TransferListener(){
+
+				@Override
+				public void onStateChanged(int id, TransferState state) {
+					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
+					if (state.toString().compareTo("COMPLETED") == 0 )
+					{
+						//This is the last file required, when finished, load the model
+						if(fileNumber == 3)
+							beginLoadingModel();
+
+						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
+					}
+
+				}
+
+				@Override
+				public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+					int percentage = 0;
+					if (bytesTotal > 0) {
+						percentage = (int) (bytesCurrent / bytesTotal * 100);
+					}
+					System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
+				}
+
+				@Override
+				public void onError(int id, Exception ex) {
+					//beginLoadingModel();
+					System.out.println("There was an error downloading !!" );
+				}
+
+			});
+		}
+	}
+
 	void beginLoadingModel()
 	{
 		Bundle b= new Bundle();
@@ -419,10 +458,25 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("assetFilename",getParamAssetFilename());
 		b.putString("uri", getParamFilename());
 
-		modelFragment = new ModelFragment();
-		modelFragment.setArguments(b);
+		//Will be what is used, for clicking an oval
+//		modelFragment = new ModelFragment();
+//		modelFragment.setArguments(b);
+//
+//		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
 
-		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
+
+//For testing purposes AR is displayed here
+//*******************AR
+		ARModelFragment modelARFragment = new ARModelFragment();
+
+		fragMgr = getSupportFragmentManager(); //getFragmentManager();
+		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
+		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
+			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
+		}
+//*******************AR
+
+
 
 		downloadCheck++;//listens to make sure all three files are ready
 //		if (menu.allItems.get(menuIndex).getDownloadChecker() != 3)

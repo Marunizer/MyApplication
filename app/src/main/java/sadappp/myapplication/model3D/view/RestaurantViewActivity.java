@@ -49,6 +49,9 @@ import static android.content.ContentValues.TAG;
 /**
  * In this Activity, the list of available restaurants nea the user is displayed
  * TODO List:
+ *
+ *     * Consider making the recycler view happen within a thread so it doesn't slow the UI from displaying
+ *
  *     * Make multiple GeoLocation searches, having a small radius(km) to a larger radius(km) each time
  *              This will update the list of restaurant's in order of what is closest
  *              - For now a simple for loop when making GeoLocation calls, incrementing the radius each time will do.
