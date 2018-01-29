@@ -302,7 +302,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		};
 
 		//Run a download or not
-//		thread0.start();
+		thread0.start();
 //		thread1.start();
 //		thread2.start();
 //		thread3.start();

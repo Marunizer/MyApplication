@@ -6,10 +6,9 @@ This repository is a prototype for my Senior Design Teams project, Android Versi
 # Currently runnable ?
 Yes.
 
-But not with access to the AR view, only 3D modeler, and only access to 1 model at the moment.
+But for testing, only one model can be a seen at the moment. May crash first run for downloading
 
-
- Also: issues may arise when compiling native-lib.cpp, the Draco library is not included
+ Also: issues may arise when compiling native-lib.cpp, the Draco library is not included, as well as ARCore library
 
 Why?
 
@@ -17,25 +16,16 @@ In the middle of setting up the Decompression system from Draco (https://github.
 
 using Draco involves using C/C++ natively within Android Studio to be called by a JAVA Activity.
 
-There are some struggles working with the NDK, but I'm on the case as we speak ! ;) 
+There are some struggles working with the NDK
 
 Besides Draco decompression, the rest is up and running
 
 # Latest Update:
-Got rid of initial list view of items, and instead have a recycler view being filled with cardViews
-
-uses GeoFire to have right information to access Firebase, and dynamically fill data
-
-Uses Firebase data to gather correct data from AWS S3 storage
-
-note: after adding in a default picture for image in Cards,
-everything seems to load at once instead of when finished downloading..
- Will look into later !
-
+Bug: Camera permissions need to be revoked and then re-accepted for AR to access Camera
 
 Currently working on: downloading models behind the scenes, having some logic to
 keep track of all the download processes, Smoothen out activity transitions,
-Make a new navigation method that creates circles.
+making models appear right
 
 # What API's or librarys are used 
 Google Maps
@@ -51,3 +41,5 @@ OpenGL ES 2.0 - with the help of : https://github.com/andresoviedo/android-3D-mo
 Google ARCore                    : https://github.com/google-ar/arcore-android-sdk
 
 Draco                            : https://github.com/google/draco
+
+AND more, will add later
