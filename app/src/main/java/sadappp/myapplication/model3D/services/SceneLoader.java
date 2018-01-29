@@ -178,23 +178,6 @@ public class SceneLoader {
 		return objects;
 	}
 
-	public void toggleWireframe() {
-		if (this.drawWireframe && !this.drawingPoints) {
-			this.drawWireframe = false;
-			this.drawingPoints = true;
-			makeToastText("Points", Toast.LENGTH_SHORT);
-		}
-		else if (this.drawingPoints){
-			this.drawingPoints = false;
-			makeToastText("Faces", Toast.LENGTH_SHORT);
-		}
-		else {
-			makeToastText("Wireframe", Toast.LENGTH_SHORT);
-			this.drawWireframe = true;
-		}
-		requestRender();
-	}
-
 	public boolean isDrawWireframe() {
 		return this.drawWireframe;
 	}
@@ -203,10 +186,6 @@ public class SceneLoader {
 		return this.drawingPoints;
 	}
 
-	public void toggleBoundingBox() {
-		this.drawBoundingBox = !drawBoundingBox;
-		requestRender();
-	}
 
 	public boolean isDrawBoundingBox() {
 		return drawBoundingBox;
@@ -216,23 +195,20 @@ public class SceneLoader {
 		return drawNormals;
 	}
 
-	public void toggleTextures() {
-		this.drawTextures = !drawTextures;
-	}
 
 	public void toggleLighting() {
 		if (this.drawLighting && this.rotatingLight){
 			this.rotatingLight = false;
-			makeToastText("Light stopped", Toast.LENGTH_SHORT);
+		//	makeToastText("Light stopped", Toast.LENGTH_SHORT);
 		}
 		else if (this.drawLighting && !this.rotatingLight){
 			this.drawLighting = false;
-			makeToastText("Lightsoff", Toast.LENGTH_SHORT);
+		//	makeToastText("Lightsoff", Toast.LENGTH_SHORT);
 		}
 		else {
 			this.drawLighting = true;
 			this.rotatingLight = true;
-			makeToastText("Light on", Toast.LENGTH_SHORT);
+		//	makeToastText("Light on", Toast.LENGTH_SHORT);
 		}
 		requestRender();
 	}

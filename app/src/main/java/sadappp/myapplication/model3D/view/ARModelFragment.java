@@ -22,8 +22,6 @@ import sadappp.myapplication.model3D.rendering.BackgroundRenderer;
 import sadappp.myapplication.model3D.rendering.ObjectRenderer;
 import sadappp.myapplication.model3D.rendering.PlaneRenderer;
 import sadappp.myapplication.model3D.rendering.PointCloudRenderer;
-import sadappp.myapplication.model3D.util.CameraPermissionHelper;
-
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -171,23 +169,24 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
             CameraPermissionHelper.requestCameraPermission(getActivity());
         }
 
-        final ViewTreeObserver viewTreeObserver = view.getViewTreeObserver();
-        viewTreeObserver.addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
-            @Override
-            public void onWindowFocusChanged(boolean hasFocus) {
-                if (hasFocus) {
-                    // Standard Android full-screen functionality.
-                    getActivity().getWindow().getDecorView().setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-                    getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                }
-            }
-        });
+        //Doesn't seem to effect whether anything works or not
+//        final ViewTreeObserver viewTreeObserver = view.getViewTreeObserver();
+//        viewTreeObserver.addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
+//            @Override
+//            public void onWindowFocusChanged(boolean hasFocus) {
+//                if (hasFocus) {
+//                    // Standard Android full-screen functionality.
+//                    getActivity().getWindow().getDecorView().setSystemUiVisibility(
+//                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+//                    getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -394,7 +393,7 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
                         @Override
                         public void onDismissed(Snackbar transientBottomBar, int event) {
                             super.onDismissed(transientBottomBar, event);
-                            getActivity().getParent().finish();
+                            getActivity().finish();
                         }
                     });
         }

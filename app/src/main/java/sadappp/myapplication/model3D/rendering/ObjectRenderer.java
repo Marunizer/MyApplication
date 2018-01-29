@@ -32,8 +32,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.javagl.obj.Obj;
 import de.javagl.obj.ObjData;
@@ -106,14 +104,8 @@ public class ObjectRenderer {
     private float mSpecular = 1.0f;
     private float mSpecularPower = 6.0f;
 
-    //MY STUFF
-    private Map<byte[], Integer> textures = new HashMap<byte[], Integer>();
-    private Obj mObj;
-    private int[] vectorArrayObjectIds;
-
     public ObjectRenderer() {
     }
-String textureName;
 
 
     /**
@@ -126,7 +118,6 @@ String textureName;
     public void createOnGlThread(Context context, String objAssetName,
                                  String diffuseTextureAssetName) throws IOException {
 
-        textureName = diffuseTextureAssetName;
         System.out.println(" ******** WE ARE MAKING OBJECT ******** - MARU");
         //TODO: Some void function that reads mtl and returns appropriate information.
 //        setMaterialProperties(
@@ -136,7 +127,7 @@ String textureName;
 
         //Read the jpg
         InputStream inputStream;
-        inputStream = FileUtils.openInputStream(new File("/data/user/0/sadappp.myapplication/files",textureName));
+        inputStream = FileUtils.openInputStream(new File("/data/user/0/sadappp.myapplication/files",diffuseTextureAssetName));
         Bitmap textureBitmap = BitmapFactory.decodeStream(inputStream);
         inputStream.close();
 
@@ -178,7 +169,7 @@ String textureName;
         // that OpenGL understands.
 
         // Obtain the data from the OBJ, as direct buffers:
-        IntBuffer wideIndices = ObjData.getFaceVertexIndices(obj, 3);//was 4
+        IntBuffer wideIndices = ObjData.getFaceVertexIndices(obj, 3);//my app I think uses 4
         FloatBuffer vertices = ObjData.getVertices(obj);
         FloatBuffer texCoords = ObjData.getTexCoords(obj, 2);
         FloatBuffer normals = ObjData.getNormals(obj);
@@ -242,7 +233,6 @@ String textureName;
         mNormalAttribute = GLES20.glGetAttribLocation(mProgram, "a_Normal");
         mTexCoordAttribute = GLES20.glGetAttribLocation(mProgram, "a_TexCoord");
 
-        //**************************************************************WTF IS THIS
         mTextureUniform = GLES20.glGetUniformLocation(mProgram, "u_Texture");
 
         mLightingParametersUniform = GLES20.glGetUniformLocation(mProgram, "u_LightingParameters");

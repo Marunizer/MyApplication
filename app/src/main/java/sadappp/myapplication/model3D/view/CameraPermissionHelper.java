@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sadappp.myapplication.model3D.util;
+package sadappp.myapplication.model3D.view;
 
 import android.Manifest;
 import android.app.Activity;

@@ -40,6 +40,7 @@ public class ModelFragment extends Fragment {
         if (b != null) {
             this.paramAssetDir = b.getString("assetDir");
             this.paramAssetFilename = b.getString("assetFilename");
+            //Used if the file just happens to not be fully lowercase, would need to add more checks in actual downloading though
             //	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
             this.paramFilename = b.getString("uri");
             try{

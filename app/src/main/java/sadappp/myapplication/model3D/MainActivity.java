@@ -2,81 +2,31 @@ package sadappp.myapplication.model3D;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Looper;
-import android.os.Parcelable;
-import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.GeoQuery;
-import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
-import sadappp.myapplication.model3D.util.Restaurant;
+import sadappp.myapplication.model3D.view.CameraPermissionHelper;
 import sadappp.myapplication.model3D.view.LocationActivity;
 import sadappp.myapplication.model3D.view.RestaurantViewActivity;
-import sadappp.myapplication.model3D.view.StoreActivity;
 import sadappp.myapplication.R;
-import sadappp.myapplication.util.Utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 /**
  * The purpose of this Activity is to be the very first Screen the user see's and find location or choose to include their own.
@@ -116,13 +66,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	Button btnGetLastLocation;
 	Button btnCheckDownload;
 
-	GenericTypeIndicator<HashMap<String, Object>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Object>>() {};
-	Map<String, Object> objectHashMap;//HOLDS ALL INFO FROM FIREBASE
-	ArrayList<Object> objectArrayList;//HOLDS VALUES IN HASHMAP
-	ArrayList<String> objectARests; //HOLDS KEYS(RESAURANTS) IN HASHMAP
-
 	static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-	static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_CAMERA = 1;
+	//static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_CAMERA = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -182,21 +127,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	View.OnClickListener btnGetLastLocationOnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(final View v) {
-
-			//TODO: EITHER DELETE CODE OR FIND OUT IF WE NEED IT, SEEMS LIKE NOT USEFUL BECAUSE WE ALREADY ASK FOR LOCATION
-			//Might want to consider commenting this out. No help for functionality, only testing
-//			if (mGoogleApiClient != null) {
-//				if (mGoogleApiClient.isConnected()) {
-//					getMyLocation();
-//				} else {
-//					Toast.makeText(MainActivity.this,
-//							"!mGoogleApiClient.isConnected()", Toast.LENGTH_LONG).show();
-//				}
-//			} else {
-//				Toast.makeText(MainActivity.this,
-//						"mGoogleApiClient == null", Toast.LENGTH_LONG).show();
-//			}
-			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);//StoreActivity.class);
+			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
 			intent.putExtra("LOCATION", mLastLocation);
 			MainActivity.this.startActivity(intent);
 		}
@@ -295,9 +226,21 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				}
 				return;
 			}
+//			case MY_PERMISSIONS_REQUEST_ACCESS_FINE_CAMERA: {
+//				if (!CameraPermissionHelper.hasCameraPermission(this)) {
+//					Toast.makeText(this,
+//							"Camera permission is needed to run this application", Toast.LENGTH_LONG).show();
+//					if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+//						// Permission denied with checking "Do not ask again".
+//						CameraPermissionHelper.launchPermissionSettings(this);
+//					}
+//					this.finish();
+//				}
+//			}
 
 			// other 'case' lines to check for other
 			// permissions this app might request
+
 		}
 	}
 
@@ -331,4 +274,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				"onConnectionFailed: \n" + connectionResult.toString(),
 				Toast.LENGTH_LONG).show();
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// ARCore requires camera permissions to operate. If we did not yet obtain runtime
+		// permission on Android M and above, now is a good time to ask the user for it.
+//		if (CameraPermissionHelper.hasCameraPermission(this)) {
+//
+//	} else {
+//		CameraPermissionHelper.requestCameraPermission(this);
+//	}
+}
 }
