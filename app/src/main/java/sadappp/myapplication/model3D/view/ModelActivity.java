@@ -302,7 +302,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		};
 
 		//Run a download or not
-//		thread0.start();
+		thread0.start();
 //		thread1.start();
 //		thread2.start();
 //		thread3.start();
@@ -458,25 +458,10 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("assetFilename",getParamAssetFilename());
 		b.putString("uri", getParamFilename());
 
-		//Will be what is used, for clicking an oval
-//		modelFragment = new ModelFragment();
-//		modelFragment.setArguments(b);
-//
-//		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
+		modelFragment = new ModelFragment();
+		modelFragment.setArguments(b);
 
-
-//For testing purposes AR is displayed here
-//*******************AR
-		ARModelFragment modelARFragment = new ARModelFragment();
-
-		fragMgr = getSupportFragmentManager(); //getFragmentManager();
-		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
-		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
-			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
-		}
-//*******************AR
-
-
+		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
 
 		downloadCheck++;//listens to make sure all three files are ready
 //		if (menu.allItems.get(menuIndex).getDownloadChecker() != 3)
@@ -532,6 +517,18 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	public void onMethodCallback(int key) {
 		this.paramFilename = menu.allItems.get(key).getObjPath();
 		beginLoadingModel();
+	}
+
+	public void arMode(View view) {
+		//*******************AR
+		ARModelFragment modelARFragment = new ARModelFragment();
+
+		fragMgr = getSupportFragmentManager(); //getFragmentManager();
+		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
+		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
+			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
+		}
+		//*******************AR
 	}
 }
 

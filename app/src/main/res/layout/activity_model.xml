@@ -11,26 +11,24 @@
         android:layout_height="match_parent"
         >
 
-        <!--
-        android:layout_weight="1"
-        <fragment
-            android:name="sadappp.myapplication.model3D.view.ModelFragment"
-            android:id="@+id/modelFrag"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-            -->
-
-        <!--<org.rajawali3d.view.SurfaceView-->
-            <!--android:id="@+id/rajwali_surface"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="fill_parent"-->
-            <!--surfaceview:frameRate="60.0"-->
-            <!--surfaceview:renderMode="RENDER_WHEN_DIRTY"/>
-             Might want to consider using a TextureView instead of a SurfaceView from rajawali-->
-
-
     </FrameLayout>
+
+    <com.joooonho.SelectableRoundedImageView
+        android:id="@+id/AR_image"
+        android:layout_width="74dp"
+        android:layout_height="74dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/cast_album_art_placeholder"
+        app:sriv_border_color="#FFCC00"
+        app:sriv_border_width="2dp"
+        app:sriv_oval="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="30dp"
+        android:onClick="arMode"
+        />
 
         <TextView
             android:id="@+id/title_text"
@@ -40,7 +38,7 @@
             android:textSize="36sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_light"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"/>
 
     <LinearLayout

@@ -21,11 +21,12 @@ There are some struggles working with the NDK
 Besides Draco decompression, the rest is up and running
 
 # Latest Update:
-Bug: Camera permissions need to be revoked and then re-accepted for AR to access Camera
+Bug: Models are not dynamically scaled in AR view, Some models come out yellow in normal view
+
 
 Currently working on: downloading models behind the scenes, having some logic to
 keep track of all the download processes, Smoothen out activity transitions,
-making models appear right
+making models appear correctly
 
 # What API's or librarys are used 
 Google Maps

@@ -21,7 +21,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
-import sadappp.myapplication.model3D.view.CameraPermissionHelper;
 import sadappp.myapplication.model3D.view.LocationActivity;
 import sadappp.myapplication.model3D.view.RestaurantViewActivity;
 import sadappp.myapplication.R;
@@ -67,7 +66,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	Button btnCheckDownload;
 
 	static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-	//static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_CAMERA = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,35 +91,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		// From here we get the WebView component then we load the gif from the jar
 		// WebView myWebView = (WebView) findViewById(R.id.main_logo_webview);
 		// myWebView.loadUrl("file:///android_res/raw/ic_launcher.gif");
-		// init();
-
-		//THIS SHOULD PROBABLY BE HANDLED BEFORE ACCEPTING AR VIEW
-//		// Here, thisActivity is the current activity
-//		if (ContextCompat.checkSelfPermission(this,
-//				Manifest.permission.CAMERA)
-//				!= PackageManager.PERMISSION_GRANTED) {
-//
-//			// Should we show an explanation?
-//			if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-//					Manifest.permission.CAMERA)) {
-//
-//				// Show an explanation to the user *asynchronously* -- don't block
-//				// this thread waiting for the user's response! After the user
-//				// sees the explanation, try again to request the permission.
-//
-//			} else {
-//
-//				// No explanation needed, we can request the permission.
-//
-//				ActivityCompat.requestPermissions(this,
-//						new String[]{Manifest.permission.CAMERA},
-//						MY_PERMISSIONS_REQUEST_ACCESS_FINE_CAMERA);
-//
-//				// MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-//				// app-defined int constant. The callback method gets the
-//				// result of the request.
-//			}
-//		}
 	}
 
 	View.OnClickListener btnGetLastLocationOnClickListener = new View.OnClickListener() {
@@ -226,18 +195,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				}
 				return;
 			}
-//			case MY_PERMISSIONS_REQUEST_ACCESS_FINE_CAMERA: {
-//				if (!CameraPermissionHelper.hasCameraPermission(this)) {
-//					Toast.makeText(this,
-//							"Camera permission is needed to run this application", Toast.LENGTH_LONG).show();
-//					if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-//						// Permission denied with checking "Do not ask again".
-//						CameraPermissionHelper.launchPermissionSettings(this);
-//					}
-//					this.finish();
-//				}
-//			}
-
 			// other 'case' lines to check for other
 			// permissions this app might request
 
@@ -274,16 +231,4 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				"onConnectionFailed: \n" + connectionResult.toString(),
 				Toast.LENGTH_LONG).show();
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// ARCore requires camera permissions to operate. If we did not yet obtain runtime
-		// permission on Android M and above, now is a good time to ask the user for it.
-//		if (CameraPermissionHelper.hasCameraPermission(this)) {
-//
-//	} else {
-//		CameraPermissionHelper.requestCameraPermission(this);
-//	}
-}
 }
