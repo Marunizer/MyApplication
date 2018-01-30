@@ -55,7 +55,7 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
     private GestureDetector mGestureDetector;
     private Snackbar mMessageSnackbar;
     private DisplayRotationHelper mDisplayRotationHelper;
-    private int objectBuilt = 0;
+    private int objectBuiltFlag = 0;
 
     private final BackgroundRenderer mBackgroundRenderer = new BackgroundRenderer();
     private final ObjectRenderer mVirtualObject = new ObjectRenderer();
@@ -69,9 +69,19 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
     // Tap handling and UI.
     private final ArrayBlockingQueue<MotionEvent> mQueuedSingleTaps = new ArrayBlockingQueue<>(16);
     private final ArrayList<Anchor> mAnchors = new ArrayList<>();
+    private String paramFilename;
+    private String paramFileTexture;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        Bundle b = this.getArguments();
+
+        if (b != null) {
+            this.paramFilename = b.getString("uri");
+            this.paramFileTexture = paramFilename.replace(".obj",".jpg");
+        }
+
         View v= inflater.inflate(R  .layout.fragment_model_ar, container, false);
 
         init(v);
@@ -155,7 +165,7 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
 
         // ARCore requires camera permissions to operate. If we did not yet obtain runtime
         // permission on Android M and above, now is a good time to ask the user for it.
-        if (CameraPermissionHelper.hasCameraPermission(getActivity()) && objectBuilt == 1) {
+        if (CameraPermissionHelper.hasCameraPermission(getActivity()) && objectBuiltFlag == 1) {
 
             if (mSession != null) {
                 showLoadingMessage();
@@ -190,9 +200,9 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
         if (!CameraPermissionHelper.hasCameraPermission(getActivity())) {
             Toast.makeText(getContext(),
                     "Camera permission is needed to run this application", Toast.LENGTH_LONG).show();
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(getActivity().getParent())) {
+            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(getActivity())) {
                 // Permission denied with checking "Do not ask again".
-                CameraPermissionHelper.launchPermissionSettings(getActivity().getParent());
+                CameraPermissionHelper.launchPermissionSettings(getActivity());
             }
             getActivity().finish();
         }
@@ -217,12 +227,13 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
 
         // Prepare the other rendering objects.
         try {
-            mVirtualObject.createOnGlThread(getContext(), "TheRyanBurger.obj","TheRyanBurger.jpg");
-            this.objectBuilt = 1;
-            //mVirtualObject.createOnGlThread(getContext(), "small.obj","andy.jpg");
+            mVirtualObject.createOnGlThread(getContext(), paramFilename,paramFileTexture);
+            this.objectBuiltFlag = 1;
+
             //Reading  hard coded mtl
             mVirtualObject.setMaterialProperties(1.0f, 1.0f, 0.0f, 1.0f);
 
+            //Reading shadow that can be applied, this one is specifically for andy model
           //  mVirtualObjectShadow.createOnGlThread(getContext(),
            //         "andy_shadow.obj", "andy_shadow.png");
           //  mVirtualObjectShadow.setBlendMode(ObjectRenderer.BlendMode.Shadow);

@@ -74,8 +74,6 @@ public class ModelFragment extends Fragment {
     public void onStart() {
         //this is where I do my stuff (:
         super.onStart();
-
-
     }
 
     @Override

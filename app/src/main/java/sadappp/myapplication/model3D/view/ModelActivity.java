@@ -50,21 +50,11 @@ import com.joooonho.SelectableRoundedImageView;
  * 	    * After the first is downloaded, begin a system that downloads each successive item on the list until they're all there.
  * 	          - There shouldn't be more than one item being downloaded at a time, Have some sort of flag check for this.
  *
- * 	    * Have a previous button only show if the first item is NOT the FIRST item. so on start up, previous button should not be shown,
- * 	         and should be removed if we're back to the first item.
- *
- * 	    * Do not have a next button show if we are at the last item, therefore, keep track of MAX items there are !
- *
  * 	    * Implement latest UI design, floating circle back button on top left, Name of item on top right with a clickable text for details for later
- *
- * 	    * After button functionality works, Start making the bottom navigatior that has pictures of the items displayed within small circles to choose the item wanted.
- * 	          - When this is implemented, there will be major changes on how downloads are kept track of
  *
  * 	    * There should be a method to remove all the files related to the menu items, might be onDestroy() or maybe just move everything to cache
  *				Download into a models folder, delete contents
- *
- * 	    * Have an (AR) Button to change to an Augmented Reality view. should just change the surface view.
- *
+
  * 	    * 3d Model Viewer, if zooming in and out, do not allow user to rotate the screen !
  * 	                       When user has 2 fingsers not zooming on the screen, allow user to move camera position? maybe not
  *
@@ -74,7 +64,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 	AmazonS3Helper s3Helper;
 	private static TransferObserver observer;
-	//private ArrayList<Menu> menu = new ArrayList<Menu>();
 
 	private String paramAssetDir;
 	private String paramAssetFilename;
@@ -101,11 +90,9 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 	private RecyclerView mRecyclerView;
 
-	//private RecyclerView.Adapter mAdapter; //may want to make local where called
 	private MyCircleAdapter mAdapter;
 	private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
 
-	private static final int CONTENT_VIEW_ID = 10101010;
 	private static final String CONTENT_VIEW_TAG = "MODEL_FRAG";
 	private static final String CONTENT_VIEW_TAG_AR = "MODEL_FRAG_AR";
 	private FragmentManager fragMgr;
@@ -118,11 +105,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		Bundle b = getIntent().getExtras();
 
 		if (b != null) {
-			this.paramAssetDir = b.getString("assetDir");
+			this.paramAssetDir = b.getString("assetDir");//the directory where the files are stored perfectly
 			this.coordinateKey = b.getString("coordinateKey");
-			this.paramAssetFilename = b.getString("assetFilename");
+			this.paramAssetFilename = b.getString("assetFilename");//NULL should remove everywhere
 			//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
-			this.paramFilename = b.getString("uri");
+			this.paramFilename = b.getString("uri");//the important one
 			this.immersiveMode = "true".equalsIgnoreCase(b.getString("immersiveMode"));
 			try{
 				String[] backgroundColors = b.getString("backgroundColor").split(" ");
@@ -147,21 +134,12 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		prepareMenuArray();
 		handler = new Handler(getMainLooper());
 
-		// Show the Up button in the action bar.
+		// Show the Up button in the action bar. aka. the menu bar on top
 		//setupActionBar();
 
 		//this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.activity_model);
-
-//		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
-//		mRecyclerView.setHasFixedSize(true);
-//		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-//		mRecyclerView.setLayoutManager(mLayoutManager);
-//		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-//
-//		mAdapter = new MyCircleAdapter(this.menu.allItems, this);
-//		mRecyclerView.setAdapter(mAdapter);
 	}
 
 	private void prepareMenuArray() {
@@ -219,26 +197,12 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("assetDir",getParamAssetDir());
 		b.putString("assetFilename",getParamAssetFilename());
 		b.putString("uri", getParamFilename());
-		System.out.println("umm??");
-
 		//Used for deleting  files
 //		File file = new File(getFilesDir().toString() + "/TheRyanBurger.mtl");
 //		file.delete();
 
 
-		//If we wanted to display AR right away in the app.
-		//AR currently happens after pressing an oval button for testing purposes
-		//*******************AR
-//		ARModelFragment modelARFragment = new ARModelFragment();
-//
-//		fragMgr = getSupportFragmentManager(); //getFragmentManager();
-//		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
-//		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
-//			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
-//		}
-		//*******************AR
-
-
+		//Always start out with Viewer for direct access to user
 		//3D model Viwer***********************
 		modelFragment = new ModelFragment();
 		modelFragment.setArguments(b);
@@ -313,9 +277,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		String path1 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getObjPath();
 		String path2 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getMtlPath();
 		String path3 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getJpgPath();
-//		String path1 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getObjPath();
-//		String path2 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getMtlPath();
-//		String path3 = getFilesDir().toString() + "/" + testingNumb + menu.allItems.get(menuIndex).getJpgPath();
 
 		//will get folder data/data/packagename/file
 		File files_folder1 = new File(path1);
@@ -330,8 +291,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
 			downloadModel(files_folder3, menu.allItems.get(menuIndex).getJpgPath(), testingNumb);
 		}
-//		else if (testingNumb == 0)
-//			beginLoadingModel();
 	}
 
 	//Not currently used
@@ -451,6 +410,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		}
 	}
 
+	//Should check what view is currently on (3D or AR) then change appropriate fragment
 	void beginLoadingModel()
 	{
 		Bundle b= new Bundle();
@@ -475,6 +435,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 	}
 
+	//This refers to the menubar that can optionally be placed. Might just remove entirely though.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -519,12 +480,20 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		beginLoadingModel();
 	}
 
+	//AR Button on top right of screen
+	//Should be made into a flag system, to go from AR to 3D view interchangeably
 	public void arMode(View view) {
+
+		Bundle bundle= new Bundle();
+
+		bundle.putString("uri", getParamFilename());
+
 		//*******************AR
 		ARModelFragment modelARFragment = new ARModelFragment();
+		modelARFragment.setArguments(bundle);
 
-		fragMgr = getSupportFragmentManager(); //getFragmentManager();
-		FragmentTransaction xact = fragMgr.beginTransaction();//.beginTransaction();
+		fragMgr = getSupportFragmentManager();
+		FragmentTransaction xact = fragMgr.beginTransaction();
 		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
 			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
 		}
