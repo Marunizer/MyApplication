@@ -6,7 +6,7 @@ This repository is a prototype for my Senior Design Teams project, Android Versi
 # Currently runnable ?
 Yes.
 
-But for testing, only one model can be a seen at the moment. May crash first run for downloading
+But for testing, only one model can be accessed to the public. First attempt may not work because I have taken out the handler that manages what to do when a download is complete. Restarting app will make it functional.
 
  Also: issues may arise when compiling native-lib.cpp, the Draco library is not included, as well as ARCore library
 
@@ -21,12 +21,12 @@ There are some struggles working with the NDK
 Besides Draco decompression, the rest is up and running
 
 # Latest Update:
-Bug: Models are not dynamically scaled in AR view, Some models come out yellow in normal view
+Bug: Models are not dynamically scaled in AR view, textures do not cover model correctly or at all in AR view
 
 
 Currently working on: downloading models behind the scenes, having some logic to
 keep track of all the download processes, Smoothen out activity transitions,
-making models appear correctly
+making models in AR appear correctly. models in 3D view appear perfect
 
 # What API's or librarys are used 
 Google Maps
@@ -43,4 +43,4 @@ Google ARCore                    : https://github.com/google-ar/arcore-android-s
 
 Draco                            : https://github.com/google/draco
 
-AND more, will add later
+AND more, will add later...

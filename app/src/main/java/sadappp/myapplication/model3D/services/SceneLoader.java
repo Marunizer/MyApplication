@@ -99,7 +99,7 @@ public class SceneLoader {
 					url = parent.getParamFile().toURI().toURL();
 				} else {//TODO:  probaably should at least attach the appropriate URL, No idea why it is needed
 					url = new URL("android:/" +parent.getParamAssetDir() + File.separator + parent.getParamAssetFilename());
-					//??????? LMAO SOMEHOW THIS URL WORKS, don't know why android part is needed, will crash without it
+					//SOMEHOW THIS URL WORKS, not sure why android part is needed, will crash without it
 				}
 			} catch (MalformedURLException e) {
 				Log.e("SceneLoader", e.getMessage(), e);

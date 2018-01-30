@@ -25,7 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import sadappp.myapplication.model3D.services.SceneLoader;
 import sadappp.myapplication.model3D.util.AmazonS3Helper;
 import sadappp.myapplication.model3D.util.Menu;
 import sadappp.myapplication.R;
@@ -199,7 +198,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("uri", getParamFilename());
 		//Used for deleting  files
 //		File file = new File(getFilesDir().toString() + "/TheRyanBurger.mtl");
+//		File file2 = new File(getFilesDir().toString() + "/TheRyanBurger.obj");
+//		File file3 = new File(getFilesDir().toString() + "/TheRyanBurger.jpg");
 //		file.delete();
+//		file2.delete();
+//		file3.delete();
 
 
 		//Always start out with Viewer for direct access to user

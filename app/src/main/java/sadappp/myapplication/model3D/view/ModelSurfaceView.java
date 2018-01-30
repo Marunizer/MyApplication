@@ -17,7 +17,6 @@ import sadappp.myapplication.model3D.controller.TouchController;
  */
 public class ModelSurfaceView extends GLSurfaceView {
 
-//	private static ModelActivity parent;
 	private static ModelFragment parent;
 	private ModelRenderer mRenderer;
 	private TouchController touchHandler;
