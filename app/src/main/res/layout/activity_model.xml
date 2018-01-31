@@ -20,7 +20,7 @@
         android:layout_gravity="center"
         android:scaleType="centerCrop"
         android:src="@drawable/cast_album_art_placeholder"
-        app:sriv_border_color="#FFCC00"
+        app:sriv_border_color="#F29AB2"
         app:sriv_border_width="2dp"
         app:sriv_oval="true"
         android:layout_alignParentTop="true"

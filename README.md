@@ -21,7 +21,7 @@ There are some struggles working with the NDK
 Besides Draco decompression, the rest is up and running
 
 # Latest Update:
-Bug: Models are not dynamically scaled in AR view, textures do not cover model correctly or at all in AR view
+Bug: Models are not dynamically scaled in AR view, textures do not cover model correctly or at all in AR viewmmmmmm
 
 
 Currently working on: downloading models behind the scenes, having some logic to

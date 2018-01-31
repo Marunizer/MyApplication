@@ -228,6 +228,7 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
         // Prepare the other rendering objects.
         try {
             mVirtualObject.createOnGlThread(getContext(), paramFilename,paramFileTexture);
+           // mVirtualObject.createOnGlThread(getContext(), "andy.obj","andy.jpg");
             this.objectBuiltFlag = 1;
 
             //Reading  hard coded mtl
@@ -347,7 +348,7 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
             // Visualize anchors created by touch.
 
             //TODO: Make Scaling dynamic on its own: Original number set to 1
-            float scaleFactor = 0.01f;//CHANGED ORIGINAL : 1
+            float scaleFactor = 1.0f;//CHANGED ORIGINAL : 1
             for (Anchor anchor : mAnchors) {
                 if (anchor.getTrackingState() != Trackable.TrackingState.TRACKING) {
                     continue;
