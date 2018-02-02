@@ -2,6 +2,7 @@ package sadappp.myapplication.model3D.view;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -96,6 +98,8 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	private static final String CONTENT_VIEW_TAG_AR = "MODEL_FRAG_AR";
 	private FragmentManager fragMgr;
 	private ModelFragment modelFragment;
+	private ARModelFragment arModelFragment;
+	private boolean viewFlag = false; //If viewFlag = false -> 3D viewer (default)|| If viewFlag = true -> AR viewer
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -463,11 +467,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	}
 
 	public String getParamAssetFilename() {
-		return paramAssetFilename;
+		return this.paramAssetFilename;
 	}
 
 	public String getParamFilename() {
-		return paramFilename;
+		return this.paramFilename;
 	}
 
 	//  _   _ ___   _____                 _
@@ -480,29 +484,54 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	@Override
 	public void onMethodCallback(int key) {
 		this.paramFilename = menu.allItems.get(key).getObjPath();
-		beginLoadingModel();
+		if (viewFlag)
+		{
+			arModelFragment.passData(getParamFilename());
+		}
+		else
+			beginLoadingModel();
 	}
 
 	//AR Button on top right of screen
 	//Should be made into a flag system, to go from AR to 3D view interchangeably
-	public void arMode(View view) {
+	public void loadMode(View view) {
 
-		Bundle bundle= new Bundle();
 
-		bundle.putString("uri", getParamFilename());
+		//MARU - made a change here where AR now 'replaces' the 3d view frag instead of technically creating one over it.
+		//Also made it so it goes back to the 3D model view if it's already in AR view
 
-		//*******************AR
-		ARModelFragment modelARFragment = new ARModelFragment();
-		modelARFragment.setArguments(bundle);
+		if (!viewFlag)
+		{
+			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.N){
+				System.out.println("I hope this is not reached");
 
-		fragMgr = getSupportFragmentManager();
-		FragmentTransaction xact = fragMgr.beginTransaction();
-		if (null == fragMgr.findFragmentByTag(CONTENT_VIEW_TAG_AR)) {
-			xact.add(R.id.modelFrame,  modelARFragment ,CONTENT_VIEW_TAG_AR).commit();
+				viewFlag = true;
+
+				Bundle bundle= new Bundle();
+
+				bundle.putString("uri", getParamFilename());
+
+				//*******************AR
+				arModelFragment = new ARModelFragment();
+				arModelFragment.setArguments(bundle);
+
+				fragMgr = getSupportFragmentManager();
+				fragMgr.beginTransaction().replace(R.id.modelFrame, arModelFragment, arModelFragment.getTag()).commit();
+				//*******************AR
+
+			} else{
+				Toast.makeText(this,
+						"Sorry, This Device does not support Augmented Reality", Toast.LENGTH_LONG).show();
+			}
 		}
-		//*******************AR
+		else
+		{
+			viewFlag = false;
+			beginLoadingModel();
+		}
 	}
-}
+
+	}
 
 class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 
@@ -518,7 +547,6 @@ class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 		ViewHolder(final View itemView){
 			super(itemView);
 			sriv = (SelectableRoundedImageView)itemView.findViewById(R.id.circle_image);
-
 		}
 	}
 

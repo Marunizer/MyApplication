@@ -82,7 +82,7 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
             this.paramFileTexture = paramFilename.replace(".obj",".jpg");
         }
 
-        View v= inflater.inflate(R  .layout.fragment_model_ar, container, false);
+        View v= inflater.inflate(R.layout.fragment_model_ar, container, false);
 
         init(v);
         
@@ -287,7 +287,8 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
                             && ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) {
                         // Cap the number of objects created. This avoids overloading both the
                         // rendering system and ARCore.
-                        if (mAnchors.size() >= 20) {
+                        //MARU - I changed 20 to 1 , lets see what happens. to limit the model
+                        if (mAnchors.size() >= 1) {
                             mAnchors.get(0).detach();
                             mAnchors.remove(0);
                         }
@@ -417,4 +418,9 @@ public class ARModelFragment extends Fragment implements GLSurfaceView.Renderer{
         });
     }
 
+    public void passData(String paramFilename) {
+        this.paramFilename = paramFilename;
+        this.paramFileTexture = paramFilename.replace(".obj",".jpg");
+        System.out.println("We hit this B");
+    }
 }

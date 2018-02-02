@@ -163,14 +163,14 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 			textLastLocation.setText(
 					String.valueOf(mLastLocation.getLatitude()) + "\n"
 							+ String.valueOf(mLastLocation.getLongitude()));
-			Toast.makeText(MainActivity.this,
-					String.valueOf(mLastLocation.getLatitude()) + "\n"
-							+ String.valueOf(mLastLocation.getLongitude()),
-					Toast.LENGTH_LONG).show();
+//			Toast.makeText(MainActivity.this,
+//					String.valueOf(mLastLocation.getLatitude()) + "\n"
+//							+ String.valueOf(mLastLocation.getLongitude()),
+//					Toast.LENGTH_LONG).show();
 		}else{
-			Toast.makeText(MainActivity.this,
-					"mLastLocation == null",
-					Toast.LENGTH_LONG).show();
+//			Toast.makeText(MainActivity.this,
+//					"mLastLocation == null",
+//					Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -220,15 +220,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 	@Override
 	public void onConnectionSuspended(int i) {
-		Toast.makeText(MainActivity.this,
-				"onConnectionSuspended: " + String.valueOf(i),
-				Toast.LENGTH_LONG).show();
+//		Toast.makeText(MainActivity.this,
+//				"onConnectionSuspended: " + String.valueOf(i),
+//				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-		Toast.makeText(MainActivity.this,
-				"onConnectionFailed: \n" + connectionResult.toString(),
-				Toast.LENGTH_LONG).show();
+//		Toast.makeText(MainActivity.this,
+//				"onConnectionFailed: \n" + connectionResult.toString(),
+//				Toast.LENGTH_LONG).show();
 	}
 }

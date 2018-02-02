@@ -4,7 +4,8 @@
     android:layout_height="fill_parent"
     android:gravity="center_vertical|center_horizontal|center"
     android:orientation="vertical"
-    android:background="@color/wallet_bright_foreground_holo_dark">
+    android:theme="@style/SplashTheme"
+    android:background="@color/noni_theme">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,7 +20,6 @@
             android:layout_gravity="center"
             android:text="Restaurants near you"
             android:gravity="center"
-            android:textColor="@android:color/holo_green_dark"
             android:textSize="36sp" />
 
         <android.support.v4.widget.SwipeRefreshLayout
