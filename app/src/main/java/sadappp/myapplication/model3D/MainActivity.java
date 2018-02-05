@@ -30,22 +30,10 @@ import java.io.File;
 /**
  * The purpose of this Activity is to be the very first Screen the user see's and find location or choose to include their own.
  * TODO List:
- *
- *      * Have a nice inviting button to " Start ! "
- *
- * 		* A better button, have a nicer "Search with Zip-code" instead for a different user option(:
- *
- * 	    * Just like in RestaurantActivity, may want to move GoogleMaps functionality to it's own class and access it here
- *
- * 	    * Should have an automatic way to check if the user has already given permission for location
- *
- * 	    * If user denies permission, send them to the Zip-code activity
+ * 	    * Just like in RestaurantActivity, may want to move GoogleMaps functionality to it's own class and access it here]
  *
  *      * If user accepts, cool . Have a way to keep that so you never ask them again !
  *      	(Although I'm pretty sure that is already handled somewhere in here)
- *
- *      * Have a ready animation view for first time access of the app ready for later (:
- *      	Minght not ever be used. low-low-low priority.
  *
  */
 
@@ -56,14 +44,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	 * User's directory where we are going store the assets (models, textures, etc). It will be copied to
 	 * /storage/OpenSource3DModelViewer
 	 */
-	private static final String ASSETS_TARGET_DIRECTORY = Environment.getExternalStorageDirectory() + File.separator
-			+ "3DModelViewerOS";
+//	private static final String ASSETS_TARGET_DIRECTORY = Environment.getExternalStorageDirectory() + File.separator
+//			+ "3DModelViewerOS";
 
 	GoogleApiClient mGoogleApiClient;
 	Location mLastLocation;
-	TextView textLastLocation;
-	Button btnGetLastLocation;
-	Button btnCheckDownload;
 
 	static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
@@ -77,38 +62,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 		// Create an instance of GoogleAPIClient.
 		createGoogleAPIClient();
-
-		textLastLocation   = (TextView) findViewById(R.id.location_text);
-		textLastLocation.setTextColor(Color.BLUE);
-		btnGetLastLocation = (Button) findViewById(R.id.location_button);
-		btnGetLastLocation.setOnClickListener(btnGetLastLocationOnClickListener);
-		btnCheckDownload= (Button) findViewById(R.id.check_download);
-		btnCheckDownload.setOnClickListener(btnCheckDownloadLocationOnClickListener);
-
-		// TODO: Enable this when I have stabilized the app
-		//MARU NOTES: WE MIGHT WANT TO INCORPORATE SOME KIND OF LOADING LOGO
-		// This is the animated logo
-		// From here we get the WebView component then we load the gif from the jar
-		// WebView myWebView = (WebView) findViewById(R.id.main_logo_webview);
-		// myWebView.loadUrl("file:///android_res/raw/ic_launcher.gif");
 	}
-
-	View.OnClickListener btnGetLastLocationOnClickListener = new View.OnClickListener() {
-		@Override
-		public void onClick(final View v) {
-			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-			intent.putExtra("LOCATION", mLastLocation);
-			MainActivity.this.startActivity(intent);
-		}
-	};
-
-	View.OnClickListener btnCheckDownloadLocationOnClickListener = new View.OnClickListener() {
-		@Override
-		public void onClick(final View v) {
-				Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
-				MainActivity.this.startActivity(intent);
-		}
-	};
 
 //	@Override
 //	public boolean onCreateOptionsMenu(Menu menu) {
@@ -160,17 +114,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		}
 		this.mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 		if (mLastLocation != null) {
-			textLastLocation.setText(
-					String.valueOf(mLastLocation.getLatitude()) + "\n"
-							+ String.valueOf(mLastLocation.getLongitude()));
-//			Toast.makeText(MainActivity.this,
-//					String.valueOf(mLastLocation.getLatitude()) + "\n"
-//							+ String.valueOf(mLastLocation.getLongitude()),
-//					Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+			intent.putExtra("LOCATION", mLastLocation);
+			MainActivity.this.startActivity(intent);
 		}else{
-//			Toast.makeText(MainActivity.this,
-//					"mLastLocation == null",
-//					Toast.LENGTH_LONG).show();
+
 		}
 	}
 
@@ -183,21 +131,17 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				// If request is cancelled, the result arrays are empty.
 				if (grantResults.length > 0
 						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					Toast.makeText(MainActivity.this,
-							"permission was granted, :)",
-							Toast.LENGTH_LONG).show();
 					getMyLocation();
+					Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+					intent.putExtra("LOCATION", mLastLocation);
+					MainActivity.this.startActivity(intent);
 
 				} else {
-					Toast.makeText(MainActivity.this,
-							"permission denied, ...:(",
-							Toast.LENGTH_LONG).show();
+					Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
+					MainActivity.this.startActivity(intent);
 				}
 				return;
 			}
-			// other 'case' lines to check for other
-			// permissions this app might request
-
 		}
 	}
 
@@ -220,15 +164,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 	@Override
 	public void onConnectionSuspended(int i) {
-//		Toast.makeText(MainActivity.this,
-//				"onConnectionSuspended: " + String.valueOf(i),
-//				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-//		Toast.makeText(MainActivity.this,
-//				"onConnectionFailed: \n" + connectionResult.toString(),
-//				Toast.LENGTH_LONG).show();
 	}
 }

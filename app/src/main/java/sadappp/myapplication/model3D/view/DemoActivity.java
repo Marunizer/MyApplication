@@ -53,8 +53,8 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 public class DemoActivity extends ListActivity {
 
-	public static final Integer[] images = { R.drawable.ic_launcher2, R.drawable.ic_launcher2, R.drawable.ic_launcher2,
-			R.drawable.ic_launcher2 };
+//	public static final Integer[] images = { R.drawable.ic_launcher2, R.drawable.ic_launcher2, R.drawable.ic_launcher2,
+//			R.drawable.ic_launcher2 };
 
 	List<RowItem> rowItems;
 	ArrayList<String> menuList;
@@ -88,6 +88,8 @@ public class DemoActivity extends ListActivity {
 
 		Intent intent = getIntent();
 
+		//TODO: Extract location from bundle OR make a class and get information from there
+
 		menuList = (ArrayList<String>)intent.getSerializableExtra("MENU");
 		store = intent.getStringExtra("STORE_NAME");
 		title = (TextView) findViewById(R.id.title);
@@ -106,16 +108,6 @@ public class DemoActivity extends ListActivity {
 
 		CustomListViewAdapter adapter = new CustomListViewAdapter(this, R.layout.activity_demo, rowItems);
 		setListAdapter(adapter);
-	}
-
-	private void hardDownload()
-	{
-		//downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.mtl", "mickyd.mtl");
-		//downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd.obj", "mickyd.obj");
-		//downloadFileFromS3("sadbois/Menu/Mickyd/Key/mickyd01.jpg", "mickyd01.jpg");
-		//downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v2.mtl", "cookie_v2.mtl");
-		//downloadFileFromS3("sadbois/Menu/Cookies/Key/cookies.obj", "cookies.obj");
-		//downloadFileFromS3("sadbois/Menu/Cookies/Key/cookie_v201.jpg", "cookie_v201.jpg");
 	}
 
 	private void loadDemo(final String selectedItem) {
@@ -183,7 +175,6 @@ public class DemoActivity extends ListActivity {
 
 					new Thread(new Runnable() {
 						public void run() {
-							hardDownload();
 							loadDemo(selectedItem.name);
 //							downloadFileFromS3(store + "/Menu" + "/" + selectedItem.name + "/Key/" + String.valueOf(objectArrayList.get(0)),
 //									String.valueOf(objectArrayList.get(0)));//.jpg  //DRC WITH DRC

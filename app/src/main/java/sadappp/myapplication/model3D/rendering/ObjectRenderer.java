@@ -123,7 +123,7 @@ public class ObjectRenderer {
 //        setMaterialProperties(
 //        float ambient, float diffuse, float specular, float specularPower);
 
-        // TODO: Read the texture. That's gonna have to change to a jpg bruh
+        // TODO: dont hard code
 
         //Read the jpg
         InputStream inputStream;
