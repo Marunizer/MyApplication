@@ -6,11 +6,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.text.Editable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 import sadappp.myapplication.R;
+import sadappp.myapplication.model3D.util.LocationHelper;
 
 /**
  * Created by mauricio mendez on 10/20/2017.
@@ -65,9 +64,15 @@ public class LocationActivity  extends Activity{
                         mLastLocation.setLatitude((float) address.getLatitude());
                         mLastLocation.setLongitude((float)address.getLongitude());
 
+                        LocationHelper.setLocation(mLastLocation);
+                        LocationHelper.setLongitude((float)address.getLongitude());
+                        LocationHelper.setLatitude((float)address.getLatitude());
+                        LocationHelper.setAddress(address.getAddressLine(0));
+                        LocationHelper.setZipcode(zip);
+                        LocationHelper.setLocationPermission(false);
+
                         //If true
                         Intent intent = new Intent(LocationActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-                        intent.putExtra("LOCATION", mLastLocation);
                         LocationActivity.this.startActivity(intent);
 
 
@@ -78,8 +83,6 @@ public class LocationActivity  extends Activity{
                 } catch (IOException e) {
                     // handle exception
                 }
-
-
             }
         }
     };

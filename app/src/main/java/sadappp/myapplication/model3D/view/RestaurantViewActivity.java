@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import sadappp.myapplication.R;
 import sadappp.myapplication.model3D.util.AmazonS3Helper;
+import sadappp.myapplication.model3D.util.LocationHelper;
 import sadappp.myapplication.model3D.util.Restaurant;
 import sadappp.myapplication.util.Utils;
 
@@ -88,6 +89,7 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
     private static TransferObserver observer; //make want to make local where called
 
     private Location mLastLocation;  //only not referenced because currently there is a test location
+    //TODO: Make sure new locations are properly aaccessed
     private RecyclerView mRecyclerView;
 
     //may want to make local where called
@@ -100,10 +102,6 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
-
-        //Grab Location received from start of app
-        Intent intent = getIntent();
-        this.mLastLocation = (Location) intent.getSerializableExtra("LOCATION");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);

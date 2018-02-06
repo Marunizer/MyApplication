@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//TODO: Delete or tur to categories
+
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 public class DemoActivity extends ListActivity {
@@ -87,8 +89,6 @@ public class DemoActivity extends ListActivity {
 		s3credentialsProvider();
 
 		Intent intent = getIntent();
-
-		//TODO: Extract location from bundle OR make a class and get information from there
 
 		menuList = (ArrayList<String>)intent.getSerializableExtra("MENU");
 		store = intent.getStringExtra("STORE_NAME");

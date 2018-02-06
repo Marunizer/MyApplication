@@ -4,48 +4,34 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import sadappp.myapplication.model3D.util.LocationHelper;
 import sadappp.myapplication.model3D.view.LocationActivity;
 import sadappp.myapplication.model3D.view.RestaurantViewActivity;
 import sadappp.myapplication.R;
 
-import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * The purpose of this Activity is to be the very first Screen the user see's and find location or choose to include their own.
- * TODO List:
- * 	    * Just like in RestaurantActivity, may want to move GoogleMaps functionality to it's own class and access it here]
- *
- *      * If user accepts, cool . Have a way to keep that so you never ask them again !
- *      	(Although I'm pretty sure that is already handled somewhere in here)
- *
  */
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener {
-
-	/**
-	 * User's directory where we are going store the assets (models, textures, etc). It will be copied to
-	 * /storage/OpenSource3DModelViewer
-	 */
-//	private static final String ASSETS_TARGET_DIRECTORY = Environment.getExternalStorageDirectory() + File.separator
-//			+ "3DModelViewerOS";
 
 	GoogleApiClient mGoogleApiClient;
 	Location mLastLocation;
@@ -91,7 +77,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 	//ref: Requesting Permissions at Run Time
 	//http://developer.android.com/training/permissions/requesting.html
 	//------------------------------------------------------------------------------
-	private void getMyLocation() {
+	private void getMyLocation() throws IOException {
 		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 				!= PackageManager.PERMISSION_GRANTED
 				&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -114,11 +100,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		}
 		this.mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 		if (mLastLocation != null) {
+			sendLocation();
 			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-			intent.putExtra("LOCATION", mLastLocation);
 			MainActivity.this.startActivity(intent);
 		}else{
-
+			Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
+			MainActivity.this.startActivity(intent);
 		}
 	}
 
@@ -131,9 +118,13 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				// If request is cancelled, the result arrays are empty.
 				if (grantResults.length > 0
 						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					getMyLocation();
+					try {
+						getMyLocation();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 					Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-					intent.putExtra("LOCATION", mLastLocation);
 					MainActivity.this.startActivity(intent);
 
 				} else {
@@ -143,6 +134,23 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 				return;
 			}
 		}
+	}
+
+	void sendLocation() throws IOException {
+		Geocoder geocoder;
+		List<Address> addresses;
+		geocoder = new Geocoder(this, Locale.getDefault());
+
+		addresses = geocoder.getFromLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude(), 1);
+
+		LocationHelper.setLocation(mLastLocation);
+		LocationHelper.setLongitude((float)mLastLocation.getLongitude());
+		LocationHelper.setLatitude((float)mLastLocation.getLatitude());
+		LocationHelper.setAddress(addresses.get(0).getAddressLine(0));
+		LocationHelper.setState(addresses.get(0).getAdminArea());
+		LocationHelper.setCity(addresses.get(0).getLocality());
+		LocationHelper.setZipcode(addresses.get(0).getPostalCode());
+		LocationHelper.setLocationPermission(true);
 	}
 
 	@Override
@@ -159,7 +167,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 	@Override
 	public void onConnected(@Nullable Bundle bundle) {
-		getMyLocation();
+		try {
+			getMyLocation();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

@@ -40,7 +40,7 @@ import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 /**
  * Created by mende on 10/16/2017.
  *
- * //TODO : DELETE
+ * //TODO : DELETE OR REMAKE to include  Categories
  */
 
 public class StoreActivity extends ListActivity{
