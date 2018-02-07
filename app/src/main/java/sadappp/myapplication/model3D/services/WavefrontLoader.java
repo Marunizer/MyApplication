@@ -576,7 +576,7 @@ public class WavefrontLoader {
 					System.out.println("Loading material from " + file);
 					is = new FileInputStream(file);
 				} else {
-					is = new FileInputStream((new File(assetsDir,mfnm)));//am.open(assetsDir + "/" + mfnm);
+					is = new FileInputStream((new File(assetsDir + "/model/",mfnm)));//am.open(assetsDir + "/" + mfnm);
 				}
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);

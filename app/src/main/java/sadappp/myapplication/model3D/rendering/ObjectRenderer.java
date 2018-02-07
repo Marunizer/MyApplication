@@ -127,7 +127,8 @@ public class ObjectRenderer {
 
         //Read the jpg
         InputStream inputStream;
-        inputStream = FileUtils.openInputStream(new File("/data/user/0/sadappp.myapplication/files",diffuseTextureAssetName));
+
+        inputStream = FileUtils.openInputStream(new File(context.getFilesDir().toString()+"/model",diffuseTextureAssetName));
         Bitmap textureBitmap = BitmapFactory.decodeStream(inputStream);
         inputStream.close();
 
@@ -153,7 +154,7 @@ public class ObjectRenderer {
 
         // Read the obj file.
         InputStream objInputStream;
-        objInputStream = FileUtils.openInputStream(new File("/data/user/0/sadappp.myapplication/files",objAssetName));
+        objInputStream = FileUtils.openInputStream(new File(context.getFilesDir().toString()+"/model",objAssetName));
         Obj obj = ObjReader.read(objInputStream);
         objInputStream.close();
 

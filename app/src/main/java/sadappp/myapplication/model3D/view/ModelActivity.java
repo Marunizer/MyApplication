@@ -32,8 +32,11 @@ import sadappp.myapplication.model3D.util.Menu;
 import sadappp.myapplication.R;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import com.joooonho.SelectableRoundedImageView;
+
+import org.apache.commons.io.FileUtils;
 
 
 /**
@@ -281,9 +284,9 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	}
 
 	private void downloadOneModel(final int testingNumb){
-		String path1 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getObjPath();
-		String path2 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getMtlPath();
-		String path3 = getFilesDir().toString() + "/" +  menu.allItems.get(menuIndex).getJpgPath();
+		String path1 = getFilesDir().toString() + "/model/" +  menu.allItems.get(menuIndex).getObjPath();
+		String path2 = getFilesDir().toString() + "/model/" +  menu.allItems.get(menuIndex).getMtlPath();
+		String path3 = getFilesDir().toString() + "/model/" +  menu.allItems.get(menuIndex).getJpgPath();
 
 		//will get folder data/data/packagename/file
 		File files_folder1 = new File(path1);
@@ -439,7 +442,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		// TODO: Alert user when there is no multitouch support (2 fingers). He won't be able to rotate or zoom for
 		// example
 		//Utils.printTouchCapabilities(getPackageManager());
+	}
 
+	public void deleteFiles() throws IOException {
+		File file = new File(getFilesDir().toString() + "/model");
+		FileUtils.deleteDirectory(file);
 	}
 
 	//This refers to the menubar that can optionally be placed. Might just remove entirely though.
@@ -530,7 +537,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			beginLoadingModel();
 		}
 	}
-
 	}
 
 class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {

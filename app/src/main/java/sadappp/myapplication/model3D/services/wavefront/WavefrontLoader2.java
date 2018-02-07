@@ -1,5 +1,6 @@
 package sadappp.myapplication.model3D.services.wavefront;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -24,6 +25,7 @@ import java.net.URL;
 
 public class WavefrontLoader2 {
 
+	@SuppressLint("StaticFieldLeak")
 	public static void loadAsync(final Activity parent, URL url, final File currentDir,
 								 final String assetsDir, final String modelId, final Object3DBuilder.Callback callback)
 	{
@@ -35,10 +37,10 @@ public class WavefrontLoader2 {
 				try {
 					if (currentDir != null) {
 						Log.i("LoaderTask", "Opening this " + modelId + "... at :  " + currentDir);
-						return new FileInputStream(new File(currentDir, modelId));
+						return new FileInputStream(new File(currentDir+"/model/", modelId));
 					} else if (assetsDir != null) {
 						Log.i("LoaderTask", "Opening this " + modelId + "... at :  " + assetsDir);
-						return new FileInputStream((new File(assetsDir,modelId)));
+						return new FileInputStream((new File(assetsDir+"/model/",modelId)));
 					} else {
 						throw new IllegalArgumentException("Model data source not specified");
 					}

@@ -32,7 +32,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import sadappp.myapplication.R;
@@ -77,6 +80,7 @@ import static android.content.ContentValues.TAG;
  *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
  *           Probably change location of where png's are added to, into it's own folder
  *           then delete contents of folder
+ *           UPDATE: Have made a delete function, just needs to be called
  *
  *           XML is not displaying the shadow(elevation) -> Fix
  */
@@ -89,7 +93,7 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
     private static TransferObserver observer; //make want to make local where called
 
     private Location mLastLocation;  //only not referenced because currently there is a test location
-    //TODO: Make sure new locations are properly aaccessed
+    //TODO: Make sure new locations are properly accessed
     private RecyclerView mRecyclerView;
 
     //may want to make local where called
@@ -139,15 +143,13 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
         onRestaurantClick(key);
     }
 
-
     //Access AWS S3
     //Download image from Bucket
     void downloadImageFromAWS(String imageKey)
     {
         imageKey = imageKey + "_main_image.png";
-        String path = getFilesDir().toString() + "/" + imageKey;
+        String path = getFilesDir().toString() + "/card/" + imageKey;
 
-        //will get folder data/data/packagename/file
         File files_folder = new File(path);
 
         if(!files_folder.exists())
@@ -183,7 +185,6 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
                 public void onError(int id, Exception ex) {
                     // do something
                 }
-
             });
         }
     }
@@ -322,6 +323,11 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
 
     }
 
+    public void deleteFiles() throws IOException {
+        File file = new File(getFilesDir().toString() + "/card");
+        FileUtils.deleteDirectory(file);
+    }
+
 }
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -380,7 +386,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        String path = context.getFilesDir().toString() + "/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
+        String path = context.getFilesDir().toString() + "/card/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
 
         File imgFile = new File(path);
 
