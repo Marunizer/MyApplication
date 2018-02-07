@@ -1,6 +1,5 @@
 package sadappp.myapplication.model3D.view;
 
-import android.app.Activity;
 import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
@@ -34,7 +33,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

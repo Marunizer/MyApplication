@@ -30,7 +30,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,9 +53,6 @@ import java.util.Map;
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 public class DemoActivity extends ListActivity {
-
-//	public static final Integer[] images = { R.drawable.ic_launcher2, R.drawable.ic_launcher2, R.drawable.ic_launcher2,
-//			R.drawable.ic_launcher2 };
 
 	List<RowItem> rowItems;
 	ArrayList<String> menuList;
