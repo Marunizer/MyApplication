@@ -103,9 +103,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 			sendLocation();
 			Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
 			MainActivity.this.startActivity(intent);
+			finish();
 		}else{
 			Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
 			MainActivity.this.startActivity(intent);
+			finish();
 		}
 	}
 
@@ -126,10 +128,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 					Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
 					MainActivity.this.startActivity(intent);
+					finish();
 
 				} else {
 					Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
 					MainActivity.this.startActivity(intent);
+					finish();
 				}
 				return;
 			}

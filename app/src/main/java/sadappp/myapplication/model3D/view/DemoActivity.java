@@ -324,15 +324,6 @@ public class DemoActivity extends ListActivity {
 	//  \___/|___| |_____| \_/ \___|_| |_|\__|___/
 	//
 
-	public void next_model(View view){
-
-		//DemoActivity demoActivity = new DemoActivity();
-		clickNextModel();
-	}
-
-	public void previous_model(View view){
-
-	}
 }
 
 class RowItem {

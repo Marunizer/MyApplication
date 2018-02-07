@@ -230,7 +230,7 @@ public final class Object3DBuilder {
 			if (texture != null) {
 				if (obj.getCurrentDir() != null) {
 					//Pretty sure this is not actually accessed
-					File file = new File(obj.getCurrentDir(), texture);
+					File file = new File(obj.getCurrentDir() + "/model/", texture);
 					Log.i("Object3DBuilder", "Loading this texture '" + file + " from " + obj.getCurrentDir() +"...");
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					FileInputStream fis = new FileInputStream(file);
@@ -240,7 +240,7 @@ public final class Object3DBuilder {
 					bos.close();
 				} else {
 					//I believe this is what is being used
-					String assetResourceName = obj.getAssetsDir() + "/" + texture;
+					String assetResourceName = obj.getAssetsDir() + "/model/" + texture;
 					Log.i("Object3DBuilder", "Loading that texture '" + assetResourceName + "'...");
 
 					//Might be able to delete this

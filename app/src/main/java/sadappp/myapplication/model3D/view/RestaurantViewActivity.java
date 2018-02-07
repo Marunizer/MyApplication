@@ -336,6 +336,10 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
     }
 
+    public void changeAddress(View view) {
+        //Make a pop up asking for the address or zipcode the user would rather use instead
+    }
+
     public void deleteFiles() throws IOException {
         File file = new File(getFilesDir().toString() + "/card");
         FileUtils.deleteDirectory(file);
