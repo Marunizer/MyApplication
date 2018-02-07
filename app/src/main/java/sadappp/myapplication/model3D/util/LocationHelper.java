@@ -6,7 +6,7 @@ import android.location.Location;
  * Created by mende on 10/30/2017.
  */
 
-public class LocationHelper {
+public final class LocationHelper {
 
     private static Location location;
     private static float latitude;

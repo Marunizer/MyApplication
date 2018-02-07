@@ -5,6 +5,15 @@
     android:gravity="center_vertical|center_horizontal|center"
     android:orientation="vertical">
 
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/app_bar"
+        />
+
+    <View  android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/black_overlay"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,9 +25,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_gravity="center"
-            android:text="Restaurants near you"
+            android:text="These are restaurants near you!"
             android:gravity="center"
-            android:textSize="36sp" />
+            android:textSize="20sp" />
 
         <android.support.v4.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"

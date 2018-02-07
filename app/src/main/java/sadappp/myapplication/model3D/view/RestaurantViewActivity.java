@@ -1,6 +1,8 @@
 package sadappp.myapplication.model3D.view;
 
 import android.app.Activity;
+import android.graphics.Paint;
+import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -10,6 +12,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,7 +88,7 @@ import static android.content.ContentValues.TAG;
  *           XML is not displaying the shadow(elevation) -> Fix
  */
 
-public class RestaurantViewActivity extends Activity implements MyAdapter.AdapterCallback {
+public class RestaurantViewActivity extends AppCompatActivity implements MyAdapter.AdapterCallback {
 
     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
@@ -100,12 +103,22 @@ public class RestaurantViewActivity extends Activity implements MyAdapter.Adapte
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
     private SwipeRefreshLayout mySwipeRefreshLayout;
+    Toolbar toolbar;
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+
+        toolbar= (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
         setContentView(R.layout.activity_demo);
+        textView = (TextView) findViewById(R.id.address_text);
+        textView.setText(LocationHelper.getAddress());
+        textView.setPaintFlags(textView.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
