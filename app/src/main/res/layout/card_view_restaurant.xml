@@ -60,7 +60,7 @@
                 android:paddingRight="16dp"
                 android:text="sample distance"
                 android:layout_alignParentRight="true"
-                android:textSize="24sp"/>
+                android:textSize="12sp"/>
         </RelativeLayout>
     </LinearLayout>
     </RelativeLayout>

@@ -1,5 +1,7 @@
 package sadappp.myapplication.model3D.util;
 
+import android.location.Location;
+
 import com.firebase.geofire.GeoLocation;
 
 /**
@@ -10,26 +12,21 @@ import com.firebase.geofire.GeoLocation;
 public class Restaurant {
 
     private String name;
-    private String latitude;
-    private String longitude;
     private String coordinateKey;
-    private GeoLocation geoLocation;
-    private String distanceAway; //to be used when finally calculating distance from user
+    private float distanceAway; //to be used when finally calculating distance from user
 
-    public Restaurant(String name, String latitude, String longitude ,String coordinateKey, GeoLocation geoLocation) {
+    public Restaurant(String name,Location location,String coordinateKey) {
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.coordinateKey  = coordinateKey;
-        this.geoLocation = geoLocation;
+        this.distanceAway = location.distanceTo(LocationHelper.getLocation());
     }
 
     public String getName() {
         return name;
     }
 
-    public GeoLocation getGeoLocation(){
-        return geoLocation;
+    public float getDistanceAway() {
+        return distanceAway;
     }
 
     public String getCoordinateKey() {

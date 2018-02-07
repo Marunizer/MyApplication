@@ -39,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import sadappp.myapplication.R;
@@ -78,6 +79,8 @@ import static android.content.ContentValues.TAG;
  *
  *     * Have the same functionality of finding geographical coordinates currently in mainActivity for the reload on swipe
  *          - This probably means there should be a Class for finding your current coordinates to avoid a ton of repeat code.
+ *          X I think Nick has done this, Have not actually tested in real time environment.
+ *            Would be nice if the swipe up moved the entire screen down instead of having a circle come out of nowhere
  *
  *     * Not sure where this will be implemented. But maybe onDestroy(); there should be some call to a method to remove
  *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
@@ -250,11 +253,15 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                                 String name = item.child(NAME_KEY).getValue().toString();
                                 String item_lat = item.child(LAT_KEY).getValue().toString();
                                 String item_long = item.child(LONG_KEY).getValue().toString();
+                                Location rest_location = new Location(String.valueOf(location));
+                                rest_location.setLongitude(Double.parseDouble(item_long));
+                                rest_location.setLatitude(Double.parseDouble(item_lat));
+
 
                                 //Checks if we already have this restaurant in our list
                                 if(!restaurantGeoChecker.contains(location)){
 
-                                    restaurant.add(new Restaurant(name, item_lat, item_long, item.getKey(), location));
+                                    restaurant.add(new Restaurant(name, rest_location, item.getKey()));
                                     restaurantGeoChecker.add(location);
                                     System.out.println("RestaurantViewActivity: ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey() + " location = " + location);
 
@@ -410,6 +417,23 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         Picasso.with(context).load(imgFile).into(holder.restImage);
         holder.restName.setText(((Restaurant) mDataset.get(position)).getName());
 
+        float milesAway = metersToMiles(((Restaurant) mDataset.get(position)).getDistanceAway());
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        milesAway = Float.valueOf(decimalFormat.format(milesAway));
+
+        if (milesAway < 1)
+        {
+            holder.restDistance.setText("less than a mile away");
+        }
+        else if (milesAway == 1)
+        {
+            holder.restDistance.setText(String.valueOf(milesAway) + " mile away");
+        }
+        else
+        {
+            holder.restDistance.setText(String.valueOf(milesAway) + " miles away");
+        }
+
         holder.coordinateKey = (((Restaurant) mDataset.get(position)).getCoordinateKey());
 
         holder.cv.setOnClickListener(new View.OnClickListener(){
@@ -419,6 +443,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 adapterCallback.onMethodCallback(holder.coordinateKey);
             }}
         );
+    }
+
+    public float metersToMiles(float meters)
+    {
+        return (float) (meters*0.000621371192);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
