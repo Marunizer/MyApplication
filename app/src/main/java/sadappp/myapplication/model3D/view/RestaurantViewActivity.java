@@ -39,6 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import sadappp.myapplication.R;
 import sadappp.myapplication.model3D.util.AmazonS3Helper;
@@ -55,15 +58,6 @@ import static android.content.ContentValues.TAG;
 /**
  * In this Activity, the list of available restaurants nea the user is displayed
  * TODO List:
- *
- *     * Consider making the recycler view happen within a thread so it doesn't slow the UI from displaying
- *
- *     * Make multiple GeoLocation searches, having a small radius(km) to a larger radius(km) each time
- *              This will update the list of restaurant's in order of what is closest
- *              - For now a simple for loop when making GeoLocation calls, incrementing the radius each time will do.
- *
- *      * Calculate and show how far away the user is from the restaurant like (less than 1 mile away), (1 mile away), .. (n miles away)
- *
  *     * (IGNORE FOR NOW) When checking if the restaurant found is already within the ArrayList, check based on
  *      2 parameters (name AND location) instead of just one. (Just in case for the future, multiple restaurants with same geoLocation)
  *
@@ -74,19 +68,17 @@ import static android.content.ContentValues.TAG;
  *     * After all that, make sure the recycler view is properly displaying everything dynamically
  *
  *     * Implement a reload when user swipes all the way down from the top of the screen to update the list
+ *     X I think Nick has done this, Have not actually tested in real time environment.
+ *            Would be nice if the swipe up moved the entire screen down instead of having a circle come out of nowhere
  *
  *     * Have the same functionality of finding geographical coordinates currently in mainActivity for the reload on swipe
  *          - This probably means there should be a Class for finding your current coordinates to avoid a ton of repeat code.
- *          X I think Nick has done this, Have not actually tested in real time environment.
- *            Would be nice if the swipe up moved the entire screen down instead of having a circle come out of nowhere
  *
  *     * Not sure where this will be implemented. But maybe onDestroy(); there should be some call to a method to remove
  *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
  *           Probably change location of where png's are added to, into it's own folder
  *           then delete contents of folder
  *           UPDATE: Have made a delete function, just needs to be called
- *
- *           XML is not displaying the shadow(elevation) -> Fix
  */
 
 public class RestaurantViewActivity extends AppCompatActivity implements MyAdapter.AdapterCallback {
@@ -95,9 +87,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
     AmazonS3Helper s3Helper;
     private static TransferObserver observer; //make want to make local where called
-
-    private Location mLastLocation;  //only not referenced because currently there is a test location
-    //TODO: Make sure new locations are properly accessed
     private RecyclerView mRecyclerView;
 
     //may want to make local where called
@@ -111,7 +100,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
 
         toolbar= (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -182,7 +170,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                         reloadData();
                         System.out.println(state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
                     }
-
                 }
 
                 //Keeps track of progress of download but isn't really needed. knowing when the state changes to complete is good enough
@@ -222,9 +209,10 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                 geoFire = new GeoFire(myRef.child("geofire_restaurants"));
 
                 //Dynamic and will actually be used - Crashes, mLastLocation seems to be null :(
-                double latitude;// = mLastLocation.getLatitude();
+                double latitude = LocationHelper.getLatitude();
                 double longitude;// = mLastLocation.getLongitude();
                 double radius;// = .6;
+                //TODO: make radius a variable that can be changed by the user, default wll be 10 miles
 
                 //hardcoded values for testing purposes
                 latitude = 28.546373;
@@ -255,7 +243,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                                 rest_location.setLongitude(Double.parseDouble(item_long));
                                 rest_location.setLatitude(Double.parseDouble(item_lat));
 
-
                                 //Checks if we already have this restaurant in our list
                                 if(!restaurantGeoChecker.contains(location)){
 
@@ -265,28 +252,34 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
                                     //While we're at it, lets download the image linked with the restaurant
                                     downloadImageFromAWS(name);
-
                                     setRestaurant(restaurant);
                                 }
                             }
                         }
-                        //RELOADS LIST now that the arrayList has been set a million times
-                        reloadData();
-                     //   System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                     }
 
                     @Override
                     public void onKeyExited(String key) {
-                 //       System.out.println(String.format("Key %s is no longer in the search area", key));
+                               System.out.println(String.format("Key %s is no longer in the search area", key));
                     }
 
                     @Override
                     public void onKeyMoved(String key, GeoLocation location) {
-                 //       System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
+                               System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
                     }
 
                     @Override
                     public void onGeoQueryReady() {
+                        //stackoverflow.com/questions/4066538/sort-an-arraylist-based-on-an-object-field
+                        Collections.sort(restaurant, new Comparator<Restaurant>(){
+                            public int compare(Restaurant o1, Restaurant o2){
+                                if(o1.getDistanceAway() == o2.getDistanceAway())
+                                    return 0;
+                                return o1.getDistanceAway() < o2.getDistanceAway() ? -1 : 1;
+                            }
+                        });
+                        reloadData();
+                        //This is where the list should be loaded and where I should sort my restaurants
                         System.out.println("All initial data has been loaded and events have been fired!");
                     }
 
@@ -314,27 +307,22 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
     void reloadData()
     {
+        final Context context = this;
         if (mySwipeRefreshLayout.isRefreshing())
         {
             mySwipeRefreshLayout.setRefreshing(false);
         }
-        mAdapter = new MyAdapter(this.restaurant, this);
+        mAdapter = new MyAdapter(restaurant, context);
         mRecyclerView.setAdapter(mAdapter);
     }
 
     public void onRestaurantClick(String key){
-
-        //Although here is an arrayList with the restaurants, probably don't want to send.
-        //Instead what should be sent is the geolocation Key for firebase access to the restaurants menu.
-        // private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
-        //
 
         Intent intent = new Intent(RestaurantViewActivity.this.getApplicationContext(), ModelActivity.class);
         Bundle b = new Bundle();
         b.putString("assetDir", getFilesDir().getAbsolutePath());
         b.putString("modelLocation", "small");
         b.putString("coordinateKey", key);
-       // b.putString("assetFilename", selectedItem+".obj");//b.putString("assetFilename", selectedItem+".obj");
         b.putString("immersiveMode", "true");
         intent.putExtras(b);
         RestaurantViewActivity.this.startActivity(intent);
@@ -342,7 +330,8 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     }
 
     public void changeAddress(View view) {
-        //Make a pop up asking for the address or zipcode the user would rather use instead
+
+        // TODO: Make a pop up asking for the address or zipcode the user would rather use instead
     }
 
     public void deleteFiles() throws IOException {

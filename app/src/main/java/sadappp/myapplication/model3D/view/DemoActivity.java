@@ -357,7 +357,6 @@ class CustomListViewAdapter extends ArrayAdapter<RowItem> {
 	private class ViewHolder {
 		ImageView imageView;
 		TextView txtTitle;
-		TextView txtDesc;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
