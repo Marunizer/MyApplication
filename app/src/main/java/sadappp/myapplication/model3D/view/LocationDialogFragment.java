@@ -2,6 +2,8 @@ package sadappp.myapplication.model3D.view;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,6 +13,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.Objects;
 
 import javax.microedition.khronos.egl.EGLDisplay;
 
@@ -26,6 +32,7 @@ public class LocationDialogFragment extends DialogFragment {
     EditText newRadius;
     EditText newZip;
     Button submitButton;
+    Context context;
 
 //    public static LocationDialogFragment newInstance() {
 //        LocationDialogFragment  f = new LocationDialogFragment ();
@@ -47,6 +54,7 @@ public class LocationDialogFragment extends DialogFragment {
         newRadius = (EditText) rootView.findViewById(R.id.newRadius);
         newZip = (EditText) rootView.findViewById(R.id.newAddress);
         submitButton= (Button)rootView.findViewById(R.id.submit_but);
+        context = getContext();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,9 +79,26 @@ public class LocationDialogFragment extends DialogFragment {
 
     public void submitButton(View view)
     {
-        LocationHelper.setZipcode(newZip.getText().toString());
-        LocationHelper.setRadius(Integer.parseInt(newRadius.getText().toString()));
-        dismiss();
+        try {
+            if (!Objects.equals(newZip.getText().toString(), ""))
+                LocationHelper.setZipcodeAndAll(newZip.getText().toString(), context);
+
+            if (!Objects.equals(newRadius.getText().toString(), ""))
+                LocationHelper.setRadius(Integer.parseInt(newRadius.getText().toString()));
+
+            if (!Objects.equals(newZip.getText().toString(), "")){
+                SharedPreferences.Editor editor = context.getSharedPreferences("ZIP_PREF", context.MODE_PRIVATE).edit();
+                editor.putString("zipCode", newZip.getText().toString());
+                editor.apply();
+            }
+
+            //CALL Parent activity to reset list
+            //probably will need an interphase
+
+            dismiss();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

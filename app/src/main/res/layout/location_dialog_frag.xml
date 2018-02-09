@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Address used: "
+        android:text="Zip code used: "
         android:layout_margin="8dp"
         android:textSize="24sp"/>
 
@@ -22,7 +22,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="24sp"
-            android:hint="address"
+            android:hint="zip code"
+            android:digits="0123456789+"
+            android:maxLength="5"
+            android:lines = "1"
             android:layout_margin="8dp"/>
 
     </LinearLayout>
@@ -44,6 +47,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
+        android:digits="0123456789+"
+        android:maxLength="3"
+        android:lines = "1"
         android:hint="miles"
         android:layout_margin="8dp"
         android:inputType="number"/>

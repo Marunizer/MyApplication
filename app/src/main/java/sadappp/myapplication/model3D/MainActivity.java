@@ -39,12 +39,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 	GoogleApiClient mGoogleApiClient;
 	Location mLastLocation;
+	Context context;
 
 	static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		context = this;
 
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -109,24 +112,27 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 			MainActivity.this.startActivity(intent);
 			finish();
 		}else{
-			SharedPreferences sharedZip = getSharedPreferences("ZIP_PREF",MODE_PRIVATE);
+            SharedPreferences sharedZip = getSharedPreferences("ZIP_PREF",MODE_PRIVATE);
 
-			String restoredText = sharedZip.getString("text", null);
-			Toast.makeText(this, "SharedPref = " + restoredText, Toast.LENGTH_LONG).show();
-			if (restoredText != null)
-			{
-				String savedZip = sharedZip.getString("zipCode", null);
-				LocationHelper.setZipcode(savedZip);
-				Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-				MainActivity.this.startActivity(intent);
-				finish();
-			}
-			else
-			{
-				Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
-				MainActivity.this.startActivity(intent);
-				finish();
-			}
+            String restoredZip = sharedZip.getString("zipCode", null);
+            if (restoredZip != null)
+            {
+                try {
+                    LocationHelper.setZipcodeAndAll(restoredZip,context);
+                    Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+                    MainActivity.this.startActivity(intent);
+                    finish();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
+                MainActivity.this.startActivity(intent);
+                finish();
+            }
 		}
 	}
 
@@ -149,19 +155,22 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 					MainActivity.this.startActivity(intent);
 					finish();
 
-				} else {
-
+				}
+				else {
 					SharedPreferences sharedZip = getSharedPreferences("ZIP_PREF",MODE_PRIVATE);
 
-					String restoredText = sharedZip.getString("text", null);
-					Toast.makeText(this, "SharedPref = " + restoredText, Toast.LENGTH_LONG).show();
-					if (restoredText != null)
+					String restoredZip = sharedZip.getString("zipCode", null);
+					if (restoredZip != null)
 					{
-						String savedZip = sharedZip.getString("zipCode", null);
-						LocationHelper.setZipcode(savedZip);
-						Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-						MainActivity.this.startActivity(intent);
-						finish();
+                        try {
+                            LocationHelper.setZipcodeAndAll(restoredZip,context);
+                            Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+                            MainActivity.this.startActivity(intent);
+                            finish();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
 					}
 					else
 					{
