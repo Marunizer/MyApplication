@@ -1,6 +1,10 @@
 package sadappp.myapplication.model3D.view;
 
+import android.annotation.SuppressLint;
 import android.graphics.Paint;
+import android.support.v4.app.DialogFragment;
+import android.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +16,12 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -95,6 +100,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     private SwipeRefreshLayout mySwipeRefreshLayout;
     Toolbar toolbar;
     TextView textView;
+    public static final int DIALOG_FRAGMENT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -326,11 +332,30 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         b.putString("immersiveMode", "true");
         intent.putExtras(b);
         RestaurantViewActivity.this.startActivity(intent);
-
     }
 
+    @SuppressLint("WrongConstant")
     public void changeAddress(View view) {
 
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+        FragmentManager fragmentManager = getFragmentManager();
+        LocationDialogFragment locationDialogFragment =  new LocationDialogFragment();
+//        locationDialogFragment.setRetainInstance    (true);
+//        locationDialogFragment.show(fragmentManager, "location_dialog_frag");
+//       // locationDialogFragment.getDialog().getWindow().setLayout((6 * width)/7, (4 * height)/5);
+//        locationDialogFragment.getActivity().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+//
+
+        android.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(android.R.id.content,locationDialogFragment)
+                .addToBackStack(null).commit();
         // TODO: Make a pop up asking for the address or zipcode the user would rather use instead
     }
 
@@ -338,7 +363,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         File file = new File(getFilesDir().toString() + "/card");
         FileUtils.deleteDirectory(file);
     }
-
 }
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {

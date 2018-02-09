@@ -2,7 +2,9 @@ package sadappp.myapplication.model3D;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -12,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -19,6 +22,7 @@ import com.google.android.gms.location.LocationServices;
 
 import sadappp.myapplication.model3D.util.LocationHelper;
 import sadappp.myapplication.model3D.view.LocationActivity;
+import sadappp.myapplication.model3D.view.LocationDialogFragment;
 import sadappp.myapplication.model3D.view.RestaurantViewActivity;
 import sadappp.myapplication.R;
 
@@ -105,9 +109,24 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 			MainActivity.this.startActivity(intent);
 			finish();
 		}else{
-			Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
-			MainActivity.this.startActivity(intent);
-			finish();
+			SharedPreferences sharedZip = getSharedPreferences("ZIP_PREF",MODE_PRIVATE);
+
+			String restoredText = sharedZip.getString("text", null);
+			Toast.makeText(this, "SharedPref = " + restoredText, Toast.LENGTH_LONG).show();
+			if (restoredText != null)
+			{
+				String savedZip = sharedZip.getString("zipCode", null);
+				LocationHelper.setZipcode(savedZip);
+				Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+				MainActivity.this.startActivity(intent);
+				finish();
+			}
+			else
+			{
+				Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
+				MainActivity.this.startActivity(intent);
+				finish();
+			}
 		}
 	}
 
@@ -131,9 +150,25 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 					finish();
 
 				} else {
-					Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
-					MainActivity.this.startActivity(intent);
-					finish();
+
+					SharedPreferences sharedZip = getSharedPreferences("ZIP_PREF",MODE_PRIVATE);
+
+					String restoredText = sharedZip.getString("text", null);
+					Toast.makeText(this, "SharedPref = " + restoredText, Toast.LENGTH_LONG).show();
+					if (restoredText != null)
+					{
+						String savedZip = sharedZip.getString("zipCode", null);
+						LocationHelper.setZipcode(savedZip);
+						Intent intent = new Intent(MainActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+						MainActivity.this.startActivity(intent);
+						finish();
+					}
+					else
+					{
+						Intent intent = new Intent(MainActivity.this.getApplicationContext(), LocationActivity.class);
+						MainActivity.this.startActivity(intent);
+						finish();
+					}
 				}
 				return;
 			}

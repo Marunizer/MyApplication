@@ -41,28 +41,20 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * This activity represents the container for our 3D viewer.
- * 
- * @author andresoviedo
- *
- * --With many Changes by mende
- *
  * TODO List:
  *
  * 		X* first, by using the known location key of the restaurant picked, access firebase and in order (0-1) (gross, should be changed..)
  * 	          Make an ArrayList that holds the names of the restaurant menu.
  *
- * 	    * After the first is downloaded, begin a system that downloads each successive item on the list until they're all there.
- * 	          - There shouldn't be more than one item being downloaded at a time, Have some sort of flag check for this.
- *
  * 	    * Implement latest UI design, floating circle back button on top left, Name of item on top right with a clickable text for details for later
  *
- * 	    * There should be a method to remove all the files related to the menu items, might be onDestroy() or maybe just move everything to cache
- *				Download into a models folder, delete contents
-
  * 	    * 3d Model Viewer, if zooming in and out, do not allow user to rotate the screen !
  * 	                       When user has 2 fingsers not zooming on the screen, allow user to move camera position? maybe not
  *
  * 	    * After the final 3d model production is decided, will need to change how xyz-axis are disaplyed so model is shown from the front.
+ *
+ * 	    * Make a onCreateOptionsMenu with a back button  at top left corner of screen
+ * 	    * Add item name and description option and have a textView float for at least the name
  */
 public class ModelActivity extends FragmentActivity implements MyCircleAdapter.AdapterCallback{
 
@@ -98,7 +90,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	private RecyclerView.LayoutManager mLayoutManager; //may want to make local where called
 
 	private static final String CONTENT_VIEW_TAG = "MODEL_FRAG";
-	private static final String CONTENT_VIEW_TAG_AR = "MODEL_FRAG_AR";
 	private FragmentManager fragMgr;
 	private ModelFragment modelFragment;
 	private ARModelFragment arModelFragment;
@@ -114,7 +105,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			this.paramAssetDir = b.getString("assetDir");//the directory where the files are stored perfectly
 			this.coordinateKey = b.getString("coordinateKey");
 			this.paramAssetFilename = b.getString("assetFilename");//NULL should remove everywhere
-			//	this.paramAssetFilename = this.paramAssetFilename.toLowerCase();
 			this.paramFilename = b.getString("uri");//the important one
 			this.immersiveMode = "true".equalsIgnoreCase(b.getString("immersiveMode"));
 			try{
@@ -193,9 +183,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		//first time this Activity is created, should just load the very first model
 		//in the restaurant so what should be loaded here is should probably just be the very first model
 
-		//hard coding one model to download for testing purposes
-//		this.paramFilename = testingNumber + menu.allItems.get(menuIndex).getObjPath();
-
 		this.paramFilename = menu.allItems.get(menuIndex).getObjPath();
 
 		Bundle b= new Bundle();
@@ -223,7 +210,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			xact.add(R.id.modelFrame,  modelFragment ,CONTENT_VIEW_TAG).commit();
 		}
 		//3D model Viwer***********************
-
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
@@ -502,7 +488,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	//AR Button on top right of screen
 	//Should be made into a flag system, to go from AR to 3D view interchangeably
 	public void loadMode(View view) {
-
 
 		//MARU - made a change here where AR now 'replaces' the 3d view frag instead of technically creating one over it.
 		//Also made it so it goes back to the 3D model view if it's already in AR view

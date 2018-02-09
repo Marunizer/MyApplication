@@ -1,7 +1,9 @@
 package sadappp.myapplication.model3D.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -27,8 +29,8 @@ public class LocationActivity  extends Activity{
     TextView queryText;
     EditText zipcodeText;
     Button enterQuery;
-    Location mLastLocation;
     String zip;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +40,8 @@ public class LocationActivity  extends Activity{
         queryText = (TextView) findViewById(R.id.zipcode_text);
         zipcodeText = (EditText) findViewById(R.id.add_zip);
         enterQuery = (Button) findViewById(R.id.zipcode_button);
-
         enterQuery.setOnClickListener(btnCheckDownloadLocationOnClickListener);
+        context = this;
     }
 
     View.OnClickListener btnCheckDownloadLocationOnClickListener = new View.OnClickListener() {
@@ -47,42 +49,30 @@ public class LocationActivity  extends Activity{
         public void onClick(final View v) {
 
             zip = zipcodeText.getText().toString();
+
             if (zip.length() == 0)
                 Toast.makeText(LocationActivity.this, "Cannot leave zip code empty", Toast.LENGTH_SHORT).show();
             else if(zip.length() != 5)
                 Toast.makeText(LocationActivity.this, "Please enter a full zip code", Toast.LENGTH_LONG).show();
             else
             {
-                final Geocoder geocoder = new Geocoder(LocationActivity.this);
                 try {
-                    List<Address> addresses = geocoder.getFromLocationName(zip, 1);
-                    if (addresses != null && !addresses.isEmpty()) {
-                        Address address = addresses.get(0);
-//                        // Use the address as needed
+                    LocationHelper.setZipcodeAndAll(zip, context);
+                    LocationHelper.setLocationPermission(false);
 
-                        mLastLocation = new Location(zip);
-                        mLastLocation.setLatitude((float) address.getLatitude());
-                        mLastLocation.setLongitude((float)address.getLongitude());
+                    SharedPreferences.Editor editor = getSharedPreferences("ZIP_PREF", MODE_PRIVATE).edit();
+                    editor.putString("zipCode", zip);
+                    editor.apply();
 
-                        LocationHelper.setLocation(mLastLocation);
-                        LocationHelper.setLongitude((float)address.getLongitude());
-                        LocationHelper.setLatitude((float)address.getLatitude());
-                        LocationHelper.setAddress(address.getAddressLine(0));
-                        LocationHelper.setZipcode(zip);
-                        LocationHelper.setLocationPermission(false);
-
-                        //If true
-                        Intent intent = new Intent(LocationActivity.this.getApplicationContext(), RestaurantViewActivity.class);
-                        LocationActivity.this.startActivity(intent);
-
-
-                    } else {
-                        // Display appropriate message when Geocoder services are not available
-                        Toast.makeText(LocationActivity.this, "Unable to geocode zipcode, Please allow the noni to access location", Toast.LENGTH_LONG).show();
-                    }
-                } catch (IOException e) {
-                    // handle exception
+                    Intent intent = new Intent(LocationActivity.this.getApplicationContext(), RestaurantViewActivity.class);
+                    LocationActivity.this.startActivity(intent);
                 }
+                catch (IOException e) {
+                    Toast.makeText(LocationActivity.this, "Unable to geocode zipcode, Please allow the noni to access location",
+                            Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+
             }
         }
     };
