@@ -80,20 +80,22 @@ public class LocationDialogFragment extends DialogFragment {
     public void submitButton(View view)
     {
         try {
-            if (!Objects.equals(newZip.getText().toString(), ""))
+            //if we have a new zip code -> change current location AND change shared pref
+            if (!Objects.equals(newZip.getText().toString(), "")) {
                 LocationHelper.setZipcodeAndAll(newZip.getText().toString(), context);
 
-            if (!Objects.equals(newRadius.getText().toString(), ""))
-                LocationHelper.setRadius(Integer.parseInt(newRadius.getText().toString()));
-
-            if (!Objects.equals(newZip.getText().toString(), "")){
                 SharedPreferences.Editor editor = context.getSharedPreferences("ZIP_PREF", context.MODE_PRIVATE).edit();
                 editor.putString("zipCode", newZip.getText().toString());
                 editor.apply();
             }
+            //if we have a new radius
+            if (!Objects.equals(newRadius.getText().toString(), "")) {
+                LocationHelper.setRadius(Integer.parseInt(newRadius.getText().toString()));
+            }
 
             //CALL Parent activity to reset list
-            //probably will need an interphase
+            ((RestaurantViewActivity)getActivity()).prepareRestaurantArray();
+            ((RestaurantViewActivity) getActivity()).reloadData();
 
             dismiss();
         } catch (IOException e) {

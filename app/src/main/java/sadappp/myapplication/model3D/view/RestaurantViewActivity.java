@@ -207,6 +207,8 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         final String NAME_KEY = "restaurant_name";
         final String LAT_KEY = "lat";
         final String LONG_KEY = "long";
+        restaurant.clear();
+        restaurantGeoChecker.clear();
 
         myRef.child("restaurants").addValueEventListener(new ValueEventListener() {
             @Override
@@ -313,6 +315,8 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
     void reloadData()
     {
+        textView.setText(LocationHelper.getAddress());
+        
         final Context context = this;
         if (mySwipeRefreshLayout.isRefreshing())
         {
@@ -337,17 +341,8 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     @SuppressLint("WrongConstant")
     public void changeAddress(View view) {
 
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-
         FragmentManager fragmentManager = getFragmentManager();
         LocationDialogFragment locationDialogFragment =  new LocationDialogFragment();
-//        locationDialogFragment.setRetainInstance    (true);
-//        locationDialogFragment.show(fragmentManager, "location_dialog_frag");
-//       // locationDialogFragment.getDialog().getWindow().setLayout((6 * width)/7, (4 * height)/5);
-//        locationDialogFragment.getActivity().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-//
 
         android.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         // For a little polish, specify a transition animation
@@ -356,7 +351,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         // for the fragment, which is always the root view for the activity
         transaction.add(android.R.id.content,locationDialogFragment)
                 .addToBackStack(null).commit();
-        // TODO: Make a pop up asking for the address or zipcode the user would rather use instead
     }
 
     public void deleteFiles() throws IOException {
