@@ -38,6 +38,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import org.apache.commons.io.FileUtils;
 
@@ -153,7 +155,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
     //Access AWS S3
     //Download image from Bucket
-    void downloadImageFromAWS(String imageKey)
+    /*void downloadImageFromAWS(String imageKey)
     {
         imageKey = imageKey + "_main_image.png";
         String path = getFilesDir().toString() + "/card/" + imageKey;
@@ -194,7 +196,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                 }
             });
         }
-    }
+    }*/
 
 
     //  Access Firebase
@@ -259,7 +261,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                                     System.out.println("RestaurantViewActivity: ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey() + " location = " + location);
 
                                     //While we're at it, lets download the image linked with the restaurant
-                                    downloadImageFromAWS(name);
+                                    //downloadImageFromAWS(name);
                                     setRestaurant(restaurant);
                                 }
                             }
@@ -364,6 +366,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private AdapterCallback adapterCallback;
     private Context context;
     private ArrayList mDataset;
+    private StorageReference fbStorageReference = FirebaseStorage.getInstance().getReference();
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -414,12 +417,21 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+        //String path = context.getFilesDir().toString() + "/card/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
+        //File imgFile = new File(path);
 
-        String path = context.getFilesDir().toString() + "/card/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
 
-        File imgFile = new File(path);
+        //Get the path to the file from the dataset
+        String path = ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
+        //Create a StorageRefrence variable to store the path to the image
+        StorageReference image = fbStorageReference.child(path);
+        //Serve this path to Glide which is put into the image holder and cached for us
+        GlideApp.with(context)
+                .load(image)
+                .override(600,600)
+                .into(holder.restImage);
 
-        Picasso.with(context).load(imgFile).into(holder.restImage);
+        //Picasso.with(context).load(imgFile).into(holder.restImage);
         holder.restName.setText(((Restaurant) mDataset.get(position)).getName());
 
         float milesAway = metersToMiles(((Restaurant) mDataset.get(position)).getDistanceAway());
