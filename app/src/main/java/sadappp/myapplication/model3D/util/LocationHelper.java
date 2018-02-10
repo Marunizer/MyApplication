@@ -1,7 +1,6 @@
 package sadappp.myapplication.model3D.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,9 +10,6 @@ import java.util.List;
 
 /**
  * Created by mende on 10/30/2017.
- *
- *      * USE A SHARED PREFERENCE VARIABLE
- *       - Keep track of the last zipcode that has been used, that way user never has to see zipcode screen again
  */
 
 public final class LocationHelper {

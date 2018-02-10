@@ -13,12 +13,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Objects;
-
-import javax.microedition.khronos.egl.EGLDisplay;
 
 import sadappp.myapplication.R;
 import sadappp.myapplication.model3D.util.LocationHelper;
@@ -32,17 +29,8 @@ public class LocationDialogFragment extends DialogFragment {
     EditText newRadius;
     EditText newZip;
     Button submitButton;
+    Button cancelButton;
     Context context;
-
-//    public static LocationDialogFragment newInstance() {
-//        LocationDialogFragment  f = new LocationDialogFragment ();
-//        // Supply index input as an argument.
-//        Bundle args = new Bundle();
-//
-//
-//        return f;
-//    }
-
 
     /** The system calls this to get the DialogFragment's layout, regardless
      of whether it's being displayed as a dialog or an embedded fragment. */
@@ -53,7 +41,8 @@ public class LocationDialogFragment extends DialogFragment {
         // Inflate the layout to use as dialog or embedded fragment
         newRadius = (EditText) rootView.findViewById(R.id.newRadius);
         newZip = (EditText) rootView.findViewById(R.id.newAddress);
-        submitButton= (Button)rootView.findViewById(R.id.submit_but);
+        submitButton= (Button)rootView.findViewById(R.id.submit_butt);
+        cancelButton = (Button)rootView.findViewById(R.id.cancel_butt);
         context = getContext();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +51,14 @@ public class LocationDialogFragment extends DialogFragment {
                 submitButton(view);
             }
         });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelButton(view);
+            }
+        });
+
         return rootView;
     }
 
@@ -101,6 +98,11 @@ public class LocationDialogFragment extends DialogFragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void cancelButton(View view)
+    {
+        dismiss();
     }
 
     @Override

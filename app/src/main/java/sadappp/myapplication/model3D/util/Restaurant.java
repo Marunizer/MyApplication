@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 /**
  * Created by mende on 12/13/2017.
- * Influenced by Flynn
  */
 
 public class Restaurant {
