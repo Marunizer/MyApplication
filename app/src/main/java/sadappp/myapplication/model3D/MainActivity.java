@@ -22,7 +22,6 @@ import com.google.android.gms.location.LocationServices;
 
 import sadappp.myapplication.model3D.util.LocationHelper;
 import sadappp.myapplication.model3D.view.LocationActivity;
-import sadappp.myapplication.model3D.view.LocationDialogFragment;
 import sadappp.myapplication.model3D.view.RestaurantViewActivity;
 import sadappp.myapplication.R;
 

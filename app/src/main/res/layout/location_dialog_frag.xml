@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/noni_theme"
+    android:orientation="vertical" android:layout_width="350dp"
+    android:layout_height="400dp"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:background="@color/cardview_light_background"
+    android:elevation="20dp"
     >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         >
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Zip code used: "
+
         android:layout_margin="8dp"
-        android:textSize="24sp"/>
+        android:textSize="20sp"/>
 
         <EditText
             android:id="@+id/newAddress"
             android:inputType="textPostalAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:hint="zip code"
             android:digits="0123456789+"
             android:maxLength="5"
@@ -33,6 +38,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         >
 
     <TextView
@@ -40,27 +46,52 @@
         android:layout_height="wrap_content"
         android:text="Search Distance: "
         android:layout_margin="8dp"
-        android:textSize="24sp"/>
+        android:textSize="20sp"/>
 
     <EditText
         android:id="@+id/newRadius"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:digits="0123456789+"
         android:maxLength="3"
         android:lines = "1"
         android:hint="miles"
         android:layout_margin="8dp"
-        android:inputType="number"/>
+        android:inputType="number"
+        android:gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mile(s)"
+            android:textSize="20dp"
+            android:layout_margin="8dp"/>
 
 </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/cancel_butt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:text="@string/cancel"/>
+
     <Button
-        android:id="@+id/submit_but"
+        android:id="@+id/submit_butt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Submit" />
+        android:layout_marginLeft="20dp"
+        android:text="Save" />
+
+    </LinearLayout>
 
 </LinearLayout>

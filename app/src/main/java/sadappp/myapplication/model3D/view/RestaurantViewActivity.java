@@ -71,15 +71,10 @@ import static android.content.ContentValues.TAG;
  *     * When a default picture was added to the imageView inside card_view_restaurant,
  *      it seems to delay the process of showing items, and does it all at once instead.
  *          - Replace default image with a very small default picture unlike the one currently there
- *
- *     * After all that, make sure the recycler view is properly displaying everything dynamically
- *
+
  *     * Implement a reload when user swipes all the way down from the top of the screen to update the list
  *     X I think Nick has done this, Have not actually tested in real time environment.
  *            Would be nice if the swipe up moved the entire screen down instead of having a circle come out of nowhere
- *
- *     * Have the same functionality of finding geographical coordinates currently in mainActivity for the reload on swipe
- *          - This probably means there should be a Class for finding your current coordinates to avoid a ton of repeat code.
  *
  *     * Not sure where this will be implemented. But maybe onDestroy(); there should be some call to a method to remove
  *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
@@ -102,6 +97,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     private SwipeRefreshLayout mySwipeRefreshLayout;
     Toolbar toolbar;
     TextView textView;
+    double radius;// = .6; //should default be something
     public static final int DIALOG_FRAGMENT = 1;
 
     @Override
@@ -187,7 +183,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                     if (bytesTotal > 0) {
                         percentage = (int) (bytesCurrent / bytesTotal * 100);
                     }
-                    System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
+                    System.out.println("Progress of download is at : " + percentage + "%" );
                 }
 
                 @Override
@@ -197,7 +193,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
             });
         }
     }*/
-
 
     //  Access Firebase
     //  Access GeoFire
@@ -220,14 +215,15 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
                 //Dynamic and will actually be used - Crashes, mLastLocation seems to be null :(
                 double latitude = LocationHelper.getLatitude();
-                double longitude;// = mLastLocation.getLongitude();
-                double radius;// = .6;
+                double longitude  = LocationHelper.getLongitude();
                 //TODO: make radius a variable that can be changed by the user, default wll be 10 miles
 
                 //hardcoded values for testing purposes
                 latitude = 28.546373;
                 longitude = -81.162192;
+                //radius = LocationHelper.getRadius();
                 radius = 10;
+                LocationHelper.setRadius((int) radius);
 
                 //A GeoFire GeoQuery takes in the latitude, longitude, and finally the radius based on kilometers.
                 //Probably want to make multiple queries incrementing the radius based on some calculation
@@ -318,7 +314,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     void reloadData()
     {
         textView.setText(LocationHelper.getAddress());
-        
+
         final Context context = this;
         if (mySwipeRefreshLayout.isRefreshing())
         {
@@ -390,6 +386,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     // Provide a suitable constructor (depends on the kind of dataset)
     MyAdapter(ArrayList myDataset, Context context) {
+
         this.mDataset = myDataset;
         this.context = context;
         try {
@@ -479,5 +476,3 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         void onMethodCallback(String key);
     }
 }
-
-

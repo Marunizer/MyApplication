@@ -11,14 +11,12 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Objects;
-
-import javax.microedition.khronos.egl.EGLDisplay;
 
 import sadappp.myapplication.R;
 import sadappp.myapplication.model3D.util.LocationHelper;
@@ -32,17 +30,8 @@ public class LocationDialogFragment extends DialogFragment {
     EditText newRadius;
     EditText newZip;
     Button submitButton;
+    Button cancelButton;
     Context context;
-
-//    public static LocationDialogFragment newInstance() {
-//        LocationDialogFragment  f = new LocationDialogFragment ();
-//        // Supply index input as an argument.
-//        Bundle args = new Bundle();
-//
-//
-//        return f;
-//    }
-
 
     /** The system calls this to get the DialogFragment's layout, regardless
      of whether it's being displayed as a dialog or an embedded fragment. */
@@ -52,8 +41,11 @@ public class LocationDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.location_dialog_frag, container, false);
         // Inflate the layout to use as dialog or embedded fragment
         newRadius = (EditText) rootView.findViewById(R.id.newRadius);
+        newRadius.setText(String.valueOf(LocationHelper.getRadius()));
         newZip = (EditText) rootView.findViewById(R.id.newAddress);
-        submitButton= (Button)rootView.findViewById(R.id.submit_but);
+        newZip.setText(LocationHelper.getZipcode());
+        submitButton= (Button)rootView.findViewById(R.id.submit_butt);
+        cancelButton = (Button)rootView.findViewById(R.id.cancel_butt);
         context = getContext();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +54,14 @@ public class LocationDialogFragment extends DialogFragment {
                 submitButton(view);
             }
         });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelButton(view);
+            }
+        });
+
         return rootView;
     }
 
@@ -73,6 +73,8 @@ public class LocationDialogFragment extends DialogFragment {
         // title by default, but your custom layout might not need it. So here you can
         // remove the dialog title, but you must call the superclass to get the Dialog.
         Dialog dialog = super.onCreateDialog(savedInstanceState);
+        //DIM/BLUR THE SCREEN BEHIND DIALOG SOMEWHERE PLEASE
+        
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
@@ -101,6 +103,11 @@ public class LocationDialogFragment extends DialogFragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void cancelButton(View view)
+    {
+        dismiss();
     }
 
     @Override
