@@ -221,6 +221,7 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                 longitude = -81.162192;
                 //radius = LocationHelper.getRadius();
                 radius = 10;
+                LocationHelper.setRadius((int) radius);
 
                 //A GeoFire GeoQuery takes in the latitude, longitude, and finally the radius based on kilometers.
                 //Probably want to make multiple queries incrementing the radius based on some calculation

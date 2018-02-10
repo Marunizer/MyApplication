@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -40,7 +41,9 @@ public class LocationDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.location_dialog_frag, container, false);
         // Inflate the layout to use as dialog or embedded fragment
         newRadius = (EditText) rootView.findViewById(R.id.newRadius);
+        newRadius.setText(String.valueOf(LocationHelper.getRadius()));
         newZip = (EditText) rootView.findViewById(R.id.newAddress);
+        newZip.setText(LocationHelper.getZipcode());
         submitButton= (Button)rootView.findViewById(R.id.submit_butt);
         cancelButton = (Button)rootView.findViewById(R.id.cancel_butt);
         context = getContext();
@@ -70,6 +73,8 @@ public class LocationDialogFragment extends DialogFragment {
         // title by default, but your custom layout might not need it. So here you can
         // remove the dialog title, but you must call the superclass to get the Dialog.
         Dialog dialog = super.onCreateDialog(savedInstanceState);
+        //DIM/BLUR THE SCREEN BEHIND DIALOG SOMEWHERE PLEASE
+        
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
