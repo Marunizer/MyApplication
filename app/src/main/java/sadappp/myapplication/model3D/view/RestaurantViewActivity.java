@@ -1,9 +1,8 @@
 package sadappp.myapplication.model3D.view;
 
 import android.annotation.SuppressLint;
+import android.app.DialogFragment;
 import android.graphics.Paint;
-import android.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -64,10 +63,10 @@ import static android.content.ContentValues.TAG;
  *    * Make images appear fluidly with little to no delay
  */
 
-public class RestaurantViewActivity extends AppCompatActivity implements MyAdapter.AdapterCallback {
+public class RestaurantViewActivity extends AppCompatActivity implements MyAdapter.AdapterCallback, LocationDialogFragment.NoticeDialogListener {
 
-    private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
-    private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
+    private ArrayList<Restaurant> restaurant = new ArrayList<>();
+    private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<>();
     private RecyclerView mRecyclerView;
 
     //may want to make local where called
@@ -268,17 +267,14 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
 
     @SuppressLint("WrongConstant")
     public void changeAddress(View view) {
+        DialogFragment newFragment = new LocationDialogFragment();
+        newFragment.show(getFragmentManager(), "missiles");
+    }
 
-        FragmentManager fragmentManager = getFragmentManager();
-        LocationDialogFragment locationDialogFragment =  new LocationDialogFragment();
-
-        android.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
-        // For a little polish, specify a transition animation
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        // To make it fullscreen, use the 'content' root view as the container
-        // for the fragment, which is always the root view for the activity
-        transaction.add(android.R.id.content,locationDialogFragment)
-                .addToBackStack(null).commit();
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        prepareRestaurantArray();
+        //reloadData();
     }
 }
 
