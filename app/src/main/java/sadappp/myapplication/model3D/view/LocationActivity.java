@@ -33,9 +33,9 @@ public class LocationActivity  extends Activity{
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_location);
-        queryText = (TextView) findViewById(R.id.zipcode_text);
-        zipcodeText = (EditText) findViewById(R.id.add_zip);
-        enterQuery = (Button) findViewById(R.id.zipcode_button);
+        queryText = findViewById(R.id.zipcode_text);
+        zipcodeText = findViewById(R.id.add_zip);
+        enterQuery = findViewById(R.id.zipcode_button);
         enterQuery.setOnClickListener(btnCheckDownloadLocationOnClickListener);
         context = this;
     }
@@ -68,7 +68,6 @@ public class LocationActivity  extends Activity{
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
-
             }
         }
     };

@@ -130,17 +130,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		prepareMenuArray();
 		handler = new Handler(getMainLooper());
 
-		// Show the Up button in the action bar. aka. the menu bar on top
-		//setupActionBar();
-
-		//this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
 		setContentView(R.layout.activity_model);
 	}
 
 	private void prepareMenuArray() {
 
-		System.out.println("DO I EVEN GET HERE?***************LOCATION KEY: " + this.coordinateKey + "   !");
 		FirebaseDatabase database = FirebaseDatabase.getInstance();
 		final DatabaseReference myRef = database.getReference();
 
@@ -211,7 +205,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		}
 		//3D model Viwer***********************
 
-		mRecyclerView = (RecyclerView) findViewById(R.id.model_recycler_view);
+		mRecyclerView = findViewById(R.id.model_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
 		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 		mRecyclerView.setLayoutManager(mLayoutManager);
@@ -237,36 +231,9 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			}
 		};
 
-		Thread thread2 = new Thread(){
-			public void run(){
-				System.out.println("Thread2 Running");
-				downloadOneModel(2);
-				testingNumber++;
-			}
-		};
-
-		Thread thread3 = new Thread(){
-			public void run(){
-				System.out.println("Thread3 Running");
-				downloadOneModel(3);
-				testingNumber++;
-			}
-		};
-
-		Thread thread4 = new Thread(){
-			public void run(){
-				System.out.println("Thread4 Running");
-				downloadOneModel(4);
-				testingNumber++;
-			}
-		};
-
 		//Run a download or not
 		thread0.start();
 //		thread1.start();
-//		thread2.start();
-//		thread3.start();
-//		thread4.start();
 	}
 
 	private void downloadOneModel(final int testingNumb){
@@ -537,7 +504,7 @@ class MyCircleAdapter extends RecyclerView.Adapter<MyCircleAdapter.ViewHolder> {
 
 		ViewHolder(final View itemView){
 			super(itemView);
-			sriv = (SelectableRoundedImageView)itemView.findViewById(R.id.circle_image);
+			sriv = itemView.findViewById(R.id.circle_image);
 		}
 	}
 

@@ -5,23 +5,15 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import org.w3c.dom.Attr;
-
 import sadappp.myapplication.model3D.controller.TouchController;
 
-/**
- * This is the actual opengl view. From here we can detect touch gestures for example
- * 
- * @author andresoviedo
- *
- */
 public class ModelSurfaceView extends GLSurfaceView {
 
 	private static ModelFragment parent;
 	private ModelRenderer mRenderer;
 	private TouchController touchHandler;
 
-	public ModelSurfaceView(Context context, AttributeSet attrs) {//ModelActivity parent) {Context context, AttributeSet attrs) {
+	public ModelSurfaceView(Context context, AttributeSet attrs) {
 		super(context,attrs);
 
 		// Create an OpenGL ES 2.0 context.

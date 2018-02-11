@@ -21,7 +21,7 @@ public final class LocationHelper {
     private static String city;
     private static String state;
     private static String zipcode;
-    private static int radius;
+    private static int radius = 8;
     private static boolean locationPermission = false;
 
     public static int getRadius() {

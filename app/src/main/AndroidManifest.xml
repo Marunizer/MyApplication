@@ -50,12 +50,6 @@
         </activity>
 
         <activity
-            android:name="sadappp.myapplication.model3D.view.StoreActivity"
-            android:label="@string/title_activity_menu"
-            android:parentActivityName="sadappp.myapplication.model3D.MainActivity" >
-        </activity>
-
-        <activity
             android:name="sadappp.myapplication.model3D.view.DemoActivity"
             android:label="@string/title_activity_menu"
             android:parentActivityName="sadappp.myapplication.model3D.MainActivity" >

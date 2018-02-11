@@ -2,7 +2,6 @@ package sadappp.myapplication.model3D.view;
 
 import android.annotation.SuppressLint;
 import android.graphics.Paint;
-import android.support.v4.app.DialogFragment;
 import android.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -16,19 +15,14 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -40,18 +34,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import sadappp.myapplication.R;
-import sadappp.myapplication.model3D.util.AmazonS3Helper;
 import sadappp.myapplication.model3D.util.LocationHelper;
 import sadappp.myapplication.model3D.util.Restaurant;
 import sadappp.myapplication.util.Utils;
@@ -71,24 +60,14 @@ import static android.content.ContentValues.TAG;
  *     * When a default picture was added to the imageView inside card_view_restaurant,
  *      it seems to delay the process of showing items, and does it all at once instead.
  *          - Replace default image with a very small default picture unlike the one currently there
-
- *     * Implement a reload when user swipes all the way down from the top of the screen to update the list
- *     X I think Nick has done this, Have not actually tested in real time environment.
- *            Would be nice if the swipe up moved the entire screen down instead of having a circle come out of nowhere
  *
- *     * Not sure where this will be implemented. But maybe onDestroy(); there should be some call to a method to remove
- *           all the png's downloaded to relieve storage. Will be EXTREMELY necessary in the future.
- *           Probably change location of where png's are added to, into it's own folder
- *           then delete contents of folder
- *           UPDATE: Have made a delete function, just needs to be called
+ *    * Make images appear fluidly with little to no delay
  */
 
 public class RestaurantViewActivity extends AppCompatActivity implements MyAdapter.AdapterCallback {
 
     private ArrayList<Restaurant> restaurant = new ArrayList<Restaurant>();
     private ArrayList<GeoLocation> restaurantGeoChecker = new ArrayList<GeoLocation>();
-    AmazonS3Helper s3Helper;
-    private static TransferObserver observer; //make want to make local where called
     private RecyclerView mRecyclerView;
 
     //may want to make local where called
@@ -97,23 +76,22 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     private SwipeRefreshLayout mySwipeRefreshLayout;
     Toolbar toolbar;
     TextView textView;
-    double radius;// = .6; //should default be something
-    public static final int DIALOG_FRAGMENT = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        toolbar= (Toolbar) findViewById(R.id.app_bar);
+        toolbar= findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
         setContentView(R.layout.activity_demo);
-        textView = (TextView) findViewById(R.id.address_text);
+        textView = findViewById(R.id.address_text);
         textView.setText(LocationHelper.getAddress());
         textView.setPaintFlags(textView.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mRecyclerView = findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -149,51 +127,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         onRestaurantClick(key);
     }
 
-    //Access AWS S3
-    //Download image from Bucket
-    /*void downloadImageFromAWS(String imageKey)
-    {
-        imageKey = imageKey + "_main_image.png";
-        String path = getFilesDir().toString() + "/card/" + imageKey;
-
-        File files_folder = new File(path);
-
-        if(!files_folder.exists())
-        {
-            s3Helper = new AmazonS3Helper();
-            s3Helper.initiate(this.getApplicationContext());
-            observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), imageKey,files_folder);
-
-            observer.setTransferListener(new TransferListener(){
-
-                @Override
-                public void onStateChanged(int id, TransferState state) {
-                    System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
-                    if (state.toString().compareTo("COMPLETED") == 0 )
-                    {
-                        reloadData();
-                        System.out.println(state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
-                    }
-                }
-
-                //Keeps track of progress of download but isn't really needed. knowing when the state changes to complete is good enough
-                @Override
-                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                    int percentage = 0;
-                    if (bytesTotal > 0) {
-                        percentage = (int) (bytesCurrent / bytesTotal * 100);
-                    }
-                    System.out.println("Progress of download is at : " + percentage + "%" );
-                }
-
-                @Override
-                public void onError(int id, Exception ex) {
-                    // do something
-                }
-            });
-        }
-    }*/
-
     //  Access Firebase
     //  Access GeoFire
     //  Prepare List to display
@@ -204,6 +137,8 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         final String NAME_KEY = "restaurant_name";
         final String LAT_KEY = "lat";
         final String LONG_KEY = "long";
+
+        //reset in case there is an update. Make sure everything is clean slate
         restaurant.clear();
         restaurantGeoChecker.clear();
 
@@ -213,17 +148,15 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                 GeoFire geoFire;
                 geoFire = new GeoFire(myRef.child("geofire_restaurants"));
 
-                //Dynamic and will actually be used - Crashes, mLastLocation seems to be null :(
+                //Purpose of this is to know what area to look around for finding restaurants
                 double latitude = LocationHelper.getLatitude();
                 double longitude  = LocationHelper.getLongitude();
-                //TODO: make radius a variable that can be changed by the user, default wll be 10 miles
+
+                double radius = LocationHelper.getRadius(); //this will be the initial radius always at 5, and then whatever changed to after
 
                 //hardcoded values for testing purposes
                 latitude = 28.546373;
                 longitude = -81.162192;
-                //radius = LocationHelper.getRadius();
-                radius = 10;
-                LocationHelper.setRadius((int) radius);
 
                 //A GeoFire GeoQuery takes in the latitude, longitude, and finally the radius based on kilometers.
                 //Probably want to make multiple queries incrementing the radius based on some calculation
@@ -256,8 +189,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
                                     restaurantGeoChecker.add(location);
                                     System.out.println("RestaurantViewActivity: ADDING NEW RESTAURANT : " + name + ", " + item_lat + ", " + item_long + "  item.getKey() = " + item.getKey() + " location = " + location);
 
-                                    //While we're at it, lets download the image linked with the restaurant
-                                    //downloadImageFromAWS(name);
                                     setRestaurant(restaurant);
                                 }
                             }
@@ -309,7 +240,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
     {
         this.restaurant = restaurant;
     }
-    //set restaurant clicked key
 
     void reloadData()
     {
@@ -350,11 +280,6 @@ public class RestaurantViewActivity extends AppCompatActivity implements MyAdapt
         transaction.add(android.R.id.content,locationDialogFragment)
                 .addToBackStack(null).commit();
     }
-
-    public void deleteFiles() throws IOException {
-        File file = new File(getFilesDir().toString() + "/card");
-        FileUtils.deleteDirectory(file);
-    }
 }
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -377,10 +302,10 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
          ViewHolder(final View itemView){
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.restaurant_card);
-            restName = (TextView)itemView.findViewById(R.id.restaurant_name);
-            restDistance = (TextView)itemView.findViewById(R.id.restaurant_distance);
-            restImage = (ImageView)itemView.findViewById(R.id.restaurant_image);
+            cv = itemView.findViewById(R.id.restaurant_card);
+            restName = itemView.findViewById(R.id.restaurant_name);
+            restDistance = itemView.findViewById(R.id.restaurant_distance);
+            restImage = itemView.findViewById(R.id.restaurant_image);
         }
     }
 
@@ -412,23 +337,17 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        //String path = context.getFilesDir().toString() + "/card/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
-        //File imgFile = new File(path);
-
-
         //Get the path to the file from the dataset
         String path = ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
-        //Create a StorageRefrence variable to store the path to the image
+        //Create a StorageReference variable to store the path to the image
         StorageReference image = fbStorageReference.child(path);
+
         //Serve this path to Glide which is put into the image holder and cached for us
         GlideApp.with(context)
                 .load(image)
                 .override(600,600)
                 .into(holder.restImage);
 
-        //Picasso.with(context).load(imgFile).into(holder.restImage);
         holder.restName.setText(((Restaurant) mDataset.get(position)).getName());
 
         float milesAway = metersToMiles(((Restaurant) mDataset.get(position)).getDistanceAway());
@@ -469,8 +388,6 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mDataset.size();
     }
-
-  //  public String getKey(){return this.coordinateKey;}
 
     public interface AdapterCallback {
         void onMethodCallback(String key);

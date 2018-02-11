@@ -18,8 +18,6 @@ import sadappp.myapplication.model3D.services.SceneLoader;
  * Created by mende on 1/24/2018.
  */
 
-
-//I just want this to ONLY display a particular model
 public class ModelFragment extends Fragment {
 
     private float[] backgroundColor = new float[]{0.2f, 0.2f, 0.2f, 1.0f};
@@ -33,8 +31,6 @@ public class ModelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-
-        System.out.println("WE AT A FRAGMENT NOW");
         Bundle b = this.getArguments();
 
         if (b != null) {
@@ -63,7 +59,7 @@ public class ModelFragment extends Fragment {
 
     private void init(View v) {
 
-        gLView = (ModelSurfaceView) v.findViewById(R.id.myglsurfaceFragView);
+        gLView = v.findViewById(R.id.myglsurfaceFragView);
         gLView.setModelActivity(this);
         scene= new SceneLoader(this);
         scene.init();
