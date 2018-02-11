@@ -55,7 +55,7 @@ public final class LocationHelper {
         //Maybe do all of this within the LocationHelper instead, just pass in the zip
         final Geocoder geocoder = new Geocoder(context);
 
-        //TODO: This sometimes times out, gotta make it try again :) Consider putting in a thread
+        //TODO: This sometimes times out, gotta make it try again :) Consider putting in a thread sp doesn't make main thread sad
             List<Address> addresses = geocoder.getFromLocationName(zipcode, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);

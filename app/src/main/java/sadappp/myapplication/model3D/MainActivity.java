@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		context = this;
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		setContentView(R.layout.activity_main);
+	//	setContentView(R.layout.activity_main);
 
 		// Create an instance of GoogleAPIClient.
 		createGoogleAPIClient();
@@ -113,6 +113,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     finish();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    //Don't know if this will fix yet
+                    getMyLocation();
                 }
 
             }
