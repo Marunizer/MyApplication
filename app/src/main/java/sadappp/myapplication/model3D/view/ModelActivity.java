@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,16 +19,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import sadappp.myapplication.model3D.util.AmazonS3Helper;
 import sadappp.myapplication.model3D.util.Menu;
 import sadappp.myapplication.R;
 
@@ -37,7 +39,6 @@ import java.util.ArrayList;
 import com.joooonho.SelectableRoundedImageView;
 
 import org.apache.commons.io.FileUtils;
-
 
 /**
  * This activity represents the container for our 3D viewer.
@@ -57,9 +58,6 @@ import org.apache.commons.io.FileUtils;
  * 	    * Add item name and description option and have a textView float for at least the name
  */
 public class ModelActivity extends FragmentActivity implements MyCircleAdapter.AdapterCallback{
-
-	AmazonS3Helper s3Helper;
-	private static TransferObserver observer;
 
 	private String paramAssetDir;
 	private String paramAssetFilename;
@@ -95,6 +93,8 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	private ARModelFragment arModelFragment;
 	private boolean viewFlag = false; //If viewFlag = false -> 3D viewer (default)|| If viewFlag = true -> AR viewer
 
+	private StorageReference fbStorageReference = FirebaseStorage.getInstance().getReference();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -123,9 +123,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 		//even though model may not be downloaded, probably at least want to set up the environment so it isn't blank
 		//beginLoadingModel();
-
-		s3Helper = new AmazonS3Helper();
-		s3Helper.initiate(this.getApplicationContext());
 
 		prepareMenuArray();
 		handler = new Handler(getMainLooper());
@@ -273,102 +270,46 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		//file does not exist, so download it !
 		if(!files_folder1.exists()) {
 			downloadModel(files_folder1, menu.allItems.get(1).getObjPath(), 1);
-//			downloadModel(files_folder2, menu.allItems.get(1).getMtlPath(), 2);
-//			downloadModel(files_folder3, menu.allItems.get(1).getJpgPath(), 3);
+			downloadModel(files_folder2, menu.allItems.get(1).getMtlPath(), 2);
+			downloadModel(files_folder3, menu.allItems.get(1).getJpgPath(), 3);
 		}
 
 	}
 
-//	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
-//
-//		final long timeStart = System.currentTimeMillis();
-//
-//		if(!files_folder.exists())
-//		{
-//			//TODO Move this somewhere else so it's only called once per Activity maybe?
-//
-//			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: FishFilet/" + imageKey + "   file_dest" + files_folder);
-//																						//"FishFilet/"
-//			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
-//			observer.setTransferListener(new TransferListener(){
-//
-//				@Override
-//				public void onStateChanged(int id, TransferState state) {
-//					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
-//					if (state.toString().compareTo("COMPLETED") == 0 )
-//					{
-//						menu.allItems.get(menuIndex).incrementDownloadChecker();
-//						//This is the last file required, when finished, load the model
-//						if(fileNumber == 0)
-//							//beginLoadingModel();
-//
-//						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
-//						System.out.println("For : " + fileNumber + " , The time it took was: " + (System.currentTimeMillis() - timeStart));
-//					}
-//
-//				}
-//
-//				@Override
-//				public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-//					int percentage = 0;
-//					if (bytesTotal > 0) {
-//						percentage = (int) (bytesCurrent / bytesTotal * 100);
-//					}
-//					System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
-//				}
-//
-//				@Override
-//				public void onError(int id, Exception ex) {
-//					//beginLoadingModel();
-//					System.out.println("There was an error downloading !!" );
-//				}
-//
-//			});
-//		}
-//	}
-
 	private void downloadModel(File files_folder, String imageKey, final int fileNumber) {
 
-		if(!files_folder.exists())
-		{
-			//TODO Move this somewhere else so it's only called once per Activity maybe?
-			s3Helper = new AmazonS3Helper();
-			s3Helper.initiate(this.getApplicationContext());
+		if(!files_folder.exists()) {
 
-			System.out.println(" I WONDER IF WE GET TO AWS with " + s3Helper.getBucketName() + " at path: small/" + imageKey + "   file_dest" + files_folder);
+			//FIREBASE DOWNLOAD HERE
 
-			observer = s3Helper.getTransferUtility().download(s3Helper.getBucketName(), "small/" + imageKey,files_folder);
-			observer.setTransferListener(new TransferListener(){
+			final StorageReference fileToDownload = fbStorageReference.child(imageKey);
 
+			//Make a folder if does not exist
+			final File folder = new File(getFilesDir() + File.separator + "model");
+			if (!folder.exists())
+			{
+				folder.mkdirs();
+			}
+
+			fileToDownload.getFile(files_folder).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
 				@Override
-				public void onStateChanged(int id, TransferState state) {
-					System.out.println("THIS IS OUR STATE : " + state + " or : " + state.toString() + " TRANSFER UTILITY");
-					if (state.toString().compareTo("COMPLETED") == 0 )
-					{
-						//This is the last file required, when finished, load the model
-						if(fileNumber == 3)
+				public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+					downloadCheck++;//listens to make sure all three files are ready
+					//doesnt seem to work
+					if(fileNumber == 3 && downloadCheck == 3)
 							beginLoadingModel();
 
-						System.out.println("For : " + fileNumber + ",  " + state.toString() + " Completed?  " + state.toString().compareTo("COMPLETED"));
-					}
+					System.out.println("FINISHED DOWNLOADING");
 
+					//This was in my deleted method
+					//This is the last file required, when finished, load the model
+//						if(fileNumber == 0)
+//							//beginLoadingModel();
 				}
-
+			}).addOnFailureListener(new OnFailureListener() {
 				@Override
-				public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-					int percentage = 0;
-					if (bytesTotal > 0) {
-						percentage = (int) (bytesCurrent / bytesTotal * 100);
-					}
-					System.out.println("YO THIS DOWNLOAD AT *** : " + percentage + "%" );
+				public void onFailure(@NonNull Exception exception) {
 				}
-
-				@Override
-				public void onError(int id, Exception ex) {
-					//beginLoadingModel();
-					System.out.println("There was an error downloading !!" );
-				}
-
 			});
 		}
 	}
@@ -386,7 +327,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
 
-		downloadCheck++;//listens to make sure all three files are ready
+//		downloadCheck++;//listens to make sure all three files are ready
 //		if (menu.allItems.get(menuIndex).getDownloadChecker() != 3)
 //			return;
 

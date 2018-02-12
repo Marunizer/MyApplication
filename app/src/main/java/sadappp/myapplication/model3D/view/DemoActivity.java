@@ -22,14 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -65,7 +57,6 @@ public class DemoActivity extends ListActivity {
 	ArrayList<Object> objectArrayList;//HOLDS VALUES IN HASHMAP
 
 	//ALL REQUIRED FOR DOWNLOADING FILES IN S3
-	AmazonS3 s3Client;
 	String BUCKET_NAME = "verysadbucket";
 	FileOutputStream fos;
 
@@ -82,7 +73,6 @@ public class DemoActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_demo);
-		s3credentialsProvider();
 
 		Intent intent = getIntent();
 
@@ -116,32 +106,8 @@ public class DemoActivity extends ListActivity {
 		DemoActivity.this.startActivity(in);
 	}
 
-	private ListView listView;
-	private View view;
-	private int pos;
-	private long identification;
-
-	public  void clickNextModel(){
-
-		pos++;
-		identification++;
-
-		onListItemClick(listView, view, pos, identification);
-
-	}
-
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-
-		this.listView = l;
-		this.view = v;
-		this.pos = position;
-		this.identification = id;
-
-		//TODO: Need to add Loading sign, makes it sexy
-		//TODO: Disable ability to click on all items after clicking on one, enable all buttons after All files have been downloaded
-	//	System.out.println("******* Position: " + position + "     id: " + id + "     ********");
-	//	System.out.println("******* Position: " + l + "     id: " + v + "     ********");
 
 		final RowItem selectedItem = (RowItem) getListView().getItemAtPosition(position);
 
@@ -251,62 +217,7 @@ public class DemoActivity extends ListActivity {
 		}
 
 	}
-	public void s3credentialsProvider(){
-		// Initialize the Amazon Cognito credentials provider
-		CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = new CognitoCachingCredentialsProvider(
-				getApplicationContext(),
-				"us-east-1:1f71d265-5641-4934-a734-1cae7eb1ff47", // Identity pool ID
-				Regions.US_EAST_1 // Region
-		);
-		createAmazonS3Client(cognitoCachingCredentialsProvider);
-	}
 
-	/**
-	 * Create a AmazonS3Client constructor and pass the credentialsProvider.
-	 * @param credentialsProvider
-	 */
-	public void createAmazonS3Client(CognitoCachingCredentialsProvider credentialsProvider){
-		// Create an S3 client
-		s3Client = new AmazonS3Client(credentialsProvider);
-
-		// Set the region of your S3 bucket
-		s3Client.setRegion(Region.getRegion(Regions.US_EAST_1));
-	}
-
-	//WE CALL THIS TO DOWNLOAD FILES INTO INTERNAL STORAGE AT DATA/DATA/SADAPPP.MYAPPLICATION/FILES
-	public void downloadFileFromS3(final String myKey, final String file){
-//		File files_folder = getFilesDir();                       //will get folder data/data/packagename/file
-//		File files_child = new File(files_folder, "files_child");
-//		files_child.mkdirs();
-//		File created_folder = getDir("custom", MODE_PRIVATE);     //Will create a folder named app+custom in internal folder
-//		File f1_child = new File(created_folder, "custom_child");
-//		f1_child.mkdirs();
-
-		//RUN DOWNLOAD ON A SEPARATE THREAD OR ELSE WILL OVERWHELM MAIN THREAD AND CAUSE A CRASH,
-		// OR UNSUCCESSFUL DOWNLOAD
-				S3Object o = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, myKey));
-
-				try {
-					fos = openFileOutput(file, Context.MODE_PRIVATE);
-					InputStream s3is = o.getObjectContent();
-					byte[] read_buf = new byte[1024];
-					int read_len = 0;
-					while ((read_len = s3is.read(read_buf)) > 0) {
-						fos.write(read_buf, 0, read_len);
-					}
-					s3is.close();
-				} catch (AmazonServiceException e) {
-					System.err.println(e.getErrorMessage());
-					System.exit(1);
-				} catch (FileNotFoundException e) {
-					System.err.println(e.getMessage());
-					System.exit(1);
-				} catch (IOException e) {
-					System.err.println(e.getMessage());
-					System.exit(1);
-				}
-		//TODO: Should always delete files after no longer needed with myContext.deleteFile(filename);
-	}
 
 	public void draco_decode(String dracoFile, String objFile) {
 		Log.d(TAG, "/data/user/0/sadappp.myapplication/files/" + dracoFile + "   /data/user/0/sadappp.myapplication/files/" + objFile);
