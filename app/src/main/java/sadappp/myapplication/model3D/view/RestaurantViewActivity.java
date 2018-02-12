@@ -417,7 +417,6 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         //String path = context.getFilesDir().toString() + "/card/" + ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
         //File imgFile = new File(path);
 
-
         //Get the path to the file from the dataset
         String path = ((Restaurant) mDataset.get(position)).getName() + "_main_image.png";
         //Create a StorageRefrence variable to store the path to the image
