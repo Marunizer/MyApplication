@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -22,8 +21,6 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,10 +34,6 @@ import sadappp.myapplication.R;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.joooonho.SelectableRoundedImageView;
 
 import org.apache.commons.io.FileUtils;
@@ -101,8 +94,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	private ModelFragment modelFragment;
 	private ARModelFragment arModelFragment;
 	private boolean viewFlag = false; //If viewFlag = false -> 3D viewer (default)|| If viewFlag = true -> AR viewer
-
-	private StorageReference fbStorageReference = FirebaseStorage.getInstance().getReference();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -340,37 +331,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 		if(!files_folder.exists())
 		{
-			//FIREBASE DOWNLOAD HERE
-
-			final StorageReference objFile = fbStorageReference.child(imageKey);
-			final File folder = new File(getFilesDir() + File.separator + "NicksFolder");
-			if (!folder.exists())
-			{
-				folder.mkdirs();
-			}
-
-			File theFile = new File(getFilesDir() + File.separator + "NicksFolder", imageKey);
-			try {
-				theFile.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			objFile.getFile(theFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-				@Override
-				public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-
-				}
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception exception) {
-
-				}
-			});
-
-
-			//
-
 			//TODO Move this somewhere else so it's only called once per Activity maybe?
 			s3Helper = new AmazonS3Helper();
 			s3Helper.initiate(this.getApplicationContext());
