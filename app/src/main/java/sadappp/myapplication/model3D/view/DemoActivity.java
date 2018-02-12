@@ -61,13 +61,13 @@ public class DemoActivity extends ListActivity {
 	FileOutputStream fos;
 
 
-	//used to load C++ library
-	//public native String  stringFromJNI();
-	static {
-		System.loadLibrary("native-lib");
-	}
-    //from native library
-	public native String  decoder(String dracoFile, String objFile);
+//	//used to load C++ library
+//	//public native String  stringFromJNI();
+//	static {
+//		System.loadLibrary("native-lib");
+//	}
+//    //from native library
+//	public native String  decoder(String dracoFile, String objFile);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -218,11 +218,11 @@ public class DemoActivity extends ListActivity {
 
 	}
 
-
-	public void draco_decode(String dracoFile, String objFile) {
-		Log.d(TAG, "/data/user/0/sadappp.myapplication/files/" + dracoFile + "   /data/user/0/sadappp.myapplication/files/" + objFile);
-		decoder("/data/user/0/sadappp.myapplication/files/" + dracoFile, "/data/user/0/sadappp.myapplication/files/" + objFile);
-	}
+//
+//	public void draco_decode(String dracoFile, String objFile) {
+//		Log.d(TAG, "/data/user/0/sadappp.myapplication/files/" + dracoFile + "   /data/user/0/sadappp.myapplication/files/" + objFile);
+//		decoder("/data/user/0/sadappp.myapplication/files/" + dracoFile, "/data/user/0/sadappp.myapplication/files/" + objFile);
+//	}
 
 	//  _   _ ___   _____                 _
 	// | | | |_ _| | ____|_   _____ _ __ | |_ ___
