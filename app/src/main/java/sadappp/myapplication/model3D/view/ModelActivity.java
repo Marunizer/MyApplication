@@ -299,7 +299,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 					if(fileNumber == 3 && downloadCheck == 3)
 							beginLoadingModel();
 
-					System.out.println("FINISHED DOWNLOADING");
+					System.out.println("FINISHED DOWNLOADING...fileNumber = " + fileNumber + "    downlaodCheck = " + downloadCheck);
 
 					//This was in my deleted method
 					//This is the last file required, when finished, load the model
@@ -403,7 +403,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		if (!viewFlag)
 		{
 			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.N){
-				System.out.println("I hope this is not reached");
+				System.out.println(Build.VERSION.SDK_INT);
 
 				viewFlag = true;
 
@@ -420,7 +420,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 				//*******************AR
 
 			} else{
-				Toast.makeText(this,
+				Toast.makeText(ModelActivity.this,
 						"Sorry, This Device does not support Augmented Reality", Toast.LENGTH_LONG).show();
 			}
 		}

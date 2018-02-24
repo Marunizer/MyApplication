@@ -30,6 +30,10 @@ import java.util.Locale;
 
 /**
  * The purpose of this Activity is to be the very first Screen the user see's and find location or choose to include their own.
+ *
+ * TODO:
+ * Implement using WIFI for location services
+ * //https://android.jlelse.eu/know-your-sensors-android-location-services-565d5474bf0
  */
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
