@@ -284,7 +284,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 			final StorageReference fileToDownload = fbStorageReference.child(imageKey);
 
-			//Make a folder if does not exist
+			//Make a folder if one does not exist
 			final File folder = new File(getFilesDir() + File.separator + "model");
 			if (!folder.exists())
 			{

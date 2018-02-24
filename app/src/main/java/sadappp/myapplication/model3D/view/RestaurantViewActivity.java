@@ -22,6 +22,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.GenericTransitionOptions;
+import com.bumptech.glide.TransitionOptions;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -324,7 +328,6 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_view_restaurant, parent, false);
-
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -339,8 +342,10 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         StorageReference image = fbStorageReference.child(path);
 
         //Serve this path to Glide which is put into the image holder and cached for us
+        //Can change withCrossFade timer to change fade in time, in milliseconds.
         GlideApp.with(context)
                 .load(image)
+                .transition(DrawableTransitionOptions.withCrossFade(1000))
                 .override(600,600)
                 .into(holder.restImage);
 
