@@ -46,6 +46,21 @@ public class Menu {
             return jpgPath;
         }
 
+        public String getName() {
+            return splitCamelCase(name);
+        }
+
+        static String splitCamelCase(String s) {
+            return s.replaceAll(
+                    String.format("%s|%s|%s",
+                            "(?<=[A-Z])(?=[A-Z][a-z])",
+                            "(?<=[^A-Z])(?=[A-Z])",
+                            "(?<=[A-Za-z])(?=[^A-Za-z])"
+                    ),
+                    " "
+            );
+        }
+
         public int getDownloadChecker() {
             return downloadChecker;
         }

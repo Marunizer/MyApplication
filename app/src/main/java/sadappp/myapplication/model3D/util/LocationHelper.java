@@ -48,23 +48,24 @@ public final class LocationHelper {
         LocationHelper.zipcode = zipcode;
     }
 
-    public static void setZipcodeAndAll(String zipcode, Context context) throws IOException {
+    public static void setZipcodeAndAll(final String zipcode, Context context) throws IOException {
         LocationHelper.zipcode = zipcode;
-        Location mLastLocation;
+        final Location[] mLastLocation = new Location[1];
 
         //Maybe do all of this within the LocationHelper instead, just pass in the zip
         final Geocoder geocoder = new Geocoder(context);
 
-        //TODO: This sometimes times out, gotta make it try again :) Consider putting in a thread sp doesn't make main thread sad
+        //TODO: This sometimes times out, gotta make it try again :) Consider putting in a thread so doesn't make main thread sad
+
             List<Address> addresses = geocoder.getFromLocationName(zipcode, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
 
-                mLastLocation = new Location(zipcode);
-                mLastLocation.setLatitude((float) address.getLatitude());
-                mLastLocation.setLongitude((float) address.getLongitude());
+                mLastLocation[0] = new Location(zipcode);
+                mLastLocation[0].setLatitude((float) address.getLatitude());
+                mLastLocation[0].setLongitude((float) address.getLongitude());
 
-                setLocation(mLastLocation);
+                setLocation(mLastLocation[0]);
                 setLongitude((float) address.getLongitude());
                 setLatitude((float) address.getLatitude());
                 setAddress(address.getAddressLine(0));

@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +51,7 @@ import org.apache.commons.io.FileUtils;
  * 	    * Implement latest UI design, floating circle back button on top left, Name of item on top right with a clickable text for details for later
  *
  * 	    * 3d Model Viewer, if zooming in and out, do not allow user to rotate the screen !
- * 	                       When user has 2 fingsers not zooming on the screen, allow user to move camera position? maybe not
+ * 	                       When user has 2 fingers not zooming on the screen, allow user to move camera position? maybe not
  *
  * 	    * After the final 3d model production is decided, will need to change how xyz-axis are disaplyed so model is shown from the front.
  *
@@ -63,6 +64,8 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	private String paramAssetFilename;
 	private String coordinateKey;
 	Menu menu;
+	TextView foodTitle;
+	TextView moneyNumber;
 	private int menuIndex = 0;
 	/**
 	 * The file to load. Passed as input parameter
@@ -128,6 +131,8 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		handler = new Handler(getMainLooper());
 
 		setContentView(R.layout.activity_model);
+		foodTitle = findViewById(R.id.title_text);
+		moneyNumber = findViewById(R.id.moneySign);
 	}
 
 	private void prepareMenuArray() {
@@ -151,6 +156,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 					if(item.getKey().compareTo("0") == 0)
 					{
 						firstAccess();
+						foodTitle.setText(menu.allItems.get(menuIndex).getName());
 						//first item in the list, so should immediately notify that this should be downloaded and loaded
 					}
 
@@ -181,6 +187,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("assetDir",getParamAssetDir());
 		b.putString("assetFilename",getParamAssetFilename());
 		b.putString("uri", getParamFilename());
+//		foodTitle.setText("uri");//menu.allItems.get(menuIndex).getName());
 		//Used for deleting  files
 //		File file = new File(getFilesDir().toString() + "/TheRyanBurger.mtl");
 //		File file2 = new File(getFilesDir().toString() + "/TheRyanBurger.obj");
@@ -296,7 +303,8 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 				public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 					downloadCheck++;//listens to make sure all three files are ready
 					//doesnt seem to work
-					if(fileNumber == 3 && downloadCheck == 3)
+					//fileNumber == 3 &&
+					if(downloadCheck == 3)
 							beginLoadingModel();
 
 					System.out.println("FINISHED DOWNLOADING...fileNumber = " + fileNumber + "    downlaodCheck = " + downloadCheck);
@@ -393,6 +401,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 			beginLoadingModel();
 	}
 
+	public void onBackPress(View view)
+	{
+		finish();
+	}
+
 	//AR Button on top right of screen
 	//Should be made into a flag system, to go from AR to 3D view interchangeably
 	public void loadMode(View view) {
@@ -402,6 +415,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 		if (!viewFlag)
 		{
+			//TODO: Change how the check is done, don't even have a button there if phone does not support AR
 			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.N){
 				System.out.println(Build.VERSION.SDK_INT);
 

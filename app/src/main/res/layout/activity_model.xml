@@ -31,15 +31,39 @@
         android:onClick="loadMode"
         />
 
+    <LinearLayout
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:onClick="onBackPress"/>
+
         <TextView
             android:id="@+id/title_text"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="This is a 3D Model !"
             android:textSize="36sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
+            android:fontFamily="@font/avenir"
             android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/moneySign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$$$"
+            android:fontFamily="@font/avenir"
+            android:textSize="36sp"
+            />
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
