@@ -124,9 +124,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		//Initiate the Menu class to be used that will hold all the menu items
 		menu = new Menu(this.coordinateKey);
 
-		//even though model may not be downloaded, probably at least want to set up the environment so it isn't blank
-		//beginLoadingModel();
-
 		prepareMenuArray();
 		handler = new Handler(getMainLooper());
 
@@ -150,7 +147,7 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 					//retrieve both the key and the value
 					//With this line I believe I gain the file name and the basic filename for all needed and an ID
 					menu.allItems.add(new Menu.MenuItem(item.getKey(), item.getValue().toString()));
-					System.out.println("!!!!!!!ADDING NEW item : " + item.getValue().toString() + " to the Menu at coordinate: " + coordinateKey);
+					System.out.println("ADDING NEW item : " + item.getValue().toString() + " to the Menu at coordinate: " + coordinateKey);
 
 					//download ?
 					if(item.getKey().compareTo("0") == 0)
@@ -161,9 +158,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 					}
 
 				}
-
-				//update menuArray? if we're here then that means we are done with firebase, start downloading !
-				//access();
 			}
 
 			@Override
@@ -175,7 +169,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	}
 
 	private void firstAccess() {
-
 		//very first instructions called when Activity is accessed
 		//first time this Activity is created, should just load the very first model
 		//in the restaurant so what should be loaded here is should probably just be the very first model
@@ -187,11 +180,11 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		b.putString("assetDir",getParamAssetDir());
 		b.putString("assetFilename",getParamAssetFilename());
 		b.putString("uri", getParamFilename());
-//		foodTitle.setText("uri");//menu.allItems.get(menuIndex).getName());
+
 		//Used for deleting  files
-//		File file = new File(getFilesDir().toString() + "/TheRyanBurger.mtl");
-//		File file2 = new File(getFilesDir().toString() + "/TheRyanBurger.obj");
-//		File file3 = new File(getFilesDir().toString() + "/TheRyanBurger.jpg");
+//		File file = new File(getFilesDir().toString() + "/model/ryan.mtl");
+//		File file2 = new File(getFilesDir().toString() + "/model/ryan.obj");
+//		File file3 = new File(getFilesDir().toString() + "/model/ryan.jpg");
 //		file.delete();
 //		file2.delete();
 //		file3.delete();
@@ -221,23 +214,32 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		//Threads for the purpose of running multiple (3 at a time) downloads at the same time
 		Thread thread0 = new Thread(){
 			public void run(){
+				//Currently unknown if the shadow will be included
+//
+//				String path1 = getFilesDir().toString() + "/model/andy_shadow.obj";
+//				String path3 = getFilesDir().toString() + "/model/andy_shadow.jpg";
+//
+//				//will get folder data/data/packagename/file
+//				File files_folder1 = new File(path1);
+//				File files_folder3 = new File(path3);
+//
+//				System.out.println("CHECK IF EXISTS: "+ files_folder1 + "  Exists?  " + files_folder1.exists());
+//				//download only the mtl for testing
+//				//	downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
+//				//file object does not exist, so download it !
+//				if(!files_folder1.exists()) {
+//					downloadModel(files_folder1, "andy_shadow.obj", 0);
+//					downloadModel(files_folder3, "andy_shadow.jpg", 0);
+//				}
 				System.out.println("Thread0 Running");
+				System.out.println("TESTING MARU FILE LOCTION :  " + getFilesDir().getAbsolutePath()+"/model/");
 				downloadOneModel(testingNumber);
 				testingNumber++;
 			}
 		};
 
-		Thread thread1 = new Thread(){
-			public void run(){
-				System.out.println("Thread1 Running");
-				downloadOneModel(1);
-				testingNumber++;
-			}
-		};
-
-		//Run a download or not
+		//Run a download
 		thread0.start();
-//		thread1.start();
 	}
 
 	private void downloadOneModel(final int testingNumb){
@@ -250,14 +252,14 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		File files_folder2 = new File(path2);
 		File files_folder3 = new File(path3);
 
-		//download only the mtl for testing
-	//	downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
 		//file object does not exist, so download it !
 		if(!files_folder1.exists()) {
 			downloadModel(files_folder1, menu.allItems.get(menuIndex).getObjPath(), testingNumb);
 			downloadModel(files_folder2, menu.allItems.get(menuIndex).getMtlPath(), testingNumb);
 			downloadModel(files_folder3, menu.allItems.get(menuIndex).getJpgPath(), testingNumb);
 		}
+//		else
+//			beginLoadingModel();
 	}
 
 	//Not currently used
@@ -287,8 +289,6 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 
 		if(!files_folder.exists()) {
 
-			//FIREBASE DOWNLOAD HERE
-
 			final StorageReference fileToDownload = fbStorageReference.child(imageKey);
 
 			//Make a folder if one does not exist
@@ -302,17 +302,14 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 				@Override
 				public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 					downloadCheck++;//listens to make sure all three files are ready
-					//doesnt seem to work
+					//doesnt seem to work file number is never 3 because it is a final variable
 					//fileNumber == 3 &&
 					if(downloadCheck == 3)
 							beginLoadingModel();
 
 					System.out.println("FINISHED DOWNLOADING...fileNumber = " + fileNumber + "    downlaodCheck = " + downloadCheck);
 
-					//This was in my deleted method
-					//This is the last file required, when finished, load the model
-//						if(fileNumber == 0)
-//							//beginLoadingModel();
+
 				}
 			}).addOnFailureListener(new OnFailureListener() {
 				@Override
@@ -333,13 +330,18 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 		modelFragment = new ModelFragment();
 		modelFragment.setArguments(b);
 
+		//TODO: Handle normal download and loading handling
 		fragMgr.beginTransaction().replace(R.id.modelFrame, modelFragment).commit();
-
-//		downloadCheck++;//listens to make sure all three files are ready
-//		if (menu.allItems.get(menuIndex).getDownloadChecker() != 3)
-//			return;
-
-		System.out.println(paramAssetDir);
+		//Threads for the purpose of running multiple (3 at a time) downloads at the same time
+//			Thread thread1 = new Thread(){
+//				public void run(){
+//					System.out.println("Thread1 Running");
+//					downloadOneModel(testingNumber);
+//					testingNumber++;
+//				}
+//			};
+//
+//			thread1.start();
 
 		// TODO: Alert user when there is no multitouch support (2 fingers). He won't be able to rotate or zoom for
 		// example
@@ -352,24 +354,24 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	}
 
 	//This refers to the menubar that can optionally be placed. Might just remove entirely though.
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.model_toggle_wireframe:
-			//	scene.toggleWireframe();
-				break;
-			case R.id.model_toggle_boundingbox:
-			//	scene.toggleBoundingBox();
-				break;
-			case R.id.model_toggle_textures:
-			//	scene.toggleTextures();
-				break;
-			case R.id.model_toggle_lights:
-				////scene.toggleLighting();
-				break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		switch (item.getItemId()) {
+//			case R.id.model_toggle_wireframe:
+//			//	scene.toggleWireframe();
+//				break;
+//			case R.id.model_toggle_boundingbox:
+//			//	scene.toggleBoundingBox();
+//				break;
+//			case R.id.model_toggle_textures:
+//			//	scene.toggleTextures();
+//				break;
+//			case R.id.model_toggle_lights:
+//				////scene.toggleLighting();
+//				break;
+//		}
+//		return super.onOptionsItemSelected(item);
+//	}
 
 	public String getParamAssetDir() {
 		return this.paramAssetDir;
@@ -390,15 +392,30 @@ public class ModelActivity extends FragmentActivity implements MyCircleAdapter.A
 	//  \___/|___| |_____| \_/ \___|_| |_|\__|___/
 	//
 
+	//When bubble gets hit
 	@Override
 	public void onMethodCallback(int key) {
 		this.paramFilename = menu.allItems.get(key).getObjPath();
+		this.menuIndex = key;
 		if (viewFlag)
 		{
 			arModelFragment.passData(getParamFilename());
 		}
 		else
 			beginLoadingModel();
+//		{
+//			//Threads for the purpose of running multiple (3 at a time) downloads at the same time
+//			Thread thread1 = new Thread(){
+//				public void run(){
+//					System.out.println("Thread1 Running");
+//					downloadOneModel(testingNumber);
+//					testingNumber++;
+//				}
+//			};
+//
+//			thread1.start();
+//		}
+
 	}
 
 	public void onBackPress(View view)

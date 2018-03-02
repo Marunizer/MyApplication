@@ -14,19 +14,17 @@
  */
 package sadappp.myapplication.model3D.rendering;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import org.apache.commons.io.FileUtils;
 
-import sadappp.myapplication.R;
+import com.google.ar.core.Session;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -60,6 +58,8 @@ public class ObjectRenderer {
 
     // Note: the last component must be zero to avoid applying the translational part of the matrix.
     private static final float[] LIGHT_DIRECTION = new float[] { 0.250f, 0.866f, 0.433f, 0.0f };
+    //could test
+    //private static final float[] LIGHT_DIRECTION = new float[]{0.0f, 1.0f, 0.0f, 0.0f};
     private float[] viewLightDirection = new float[4];
 
     // Object vertex buffer variables.
@@ -104,43 +104,38 @@ public class ObjectRenderer {
     private float specular = 1.0f;
     private float specularPower = 6.0f;
 
-    public ObjectRenderer() {
+    // cache model view matrix
+    private final float[] mModelMatrix = new float[16];
+    private TrackableAttachment mAttachement;
+    private boolean mInitialized = false;
+
+    private final String mObjectFileName;
+    private final String mTextureFileName;
+    private final String mFragmentShaderFileName;
+    private final String mVertexShaderFileName;
+
+    public ObjectRenderer(
+        String mObjectFileName,
+        String textureFileName,
+        String fragmentShaderFileName,
+        String vertexShaderFileName) {
+            this.mObjectFileName = mObjectFileName;
+            this.mTextureFileName = textureFileName;
+            this.mFragmentShaderFileName = fragmentShaderFileName;
+            this.mVertexShaderFileName = vertexShaderFileName;
     }
 
-
-    /**
-     * Creates and initializes OpenGL resources needed for rendering the model.
-     *
-     * @param context Context for loading the shader and below-named model and texture assets.
-     * @param objAssetName  Name of the OBJ file containing the model geometry.
-     * @param diffuseTextureAssetName  Name of the PNG file containing the diffuse texture map.
-     */
-    public void createOnGlThread(Context context, String objAssetName,
-                                 String diffuseTextureAssetName) throws IOException {
-
-        System.out.println(" ******** WE ARE MAKING OBJECT ******** - MARU");
-        //TODO: Some void function that reads mtl and returns appropriate information.
-//        setMaterialProperties(
-//        float ambient, float diffuse, float specular, float specularPower);
-
-        // TODO: dont hard code
-
-        //Read the jpg
-        InputStream inputStream;
-
-        inputStream = FileUtils.openInputStream(new File(context.getFilesDir().toString()+"/model",diffuseTextureAssetName));
-        Bitmap textureBitmap = BitmapFactory.decodeStream(inputStream);
-        inputStream.close();
-
-        System.out.println(" ******** WE ARE MAKING BIT MAP******** - MARU");
+    public void createOnGlThread() throws IOException {
+        Bitmap textureBitmap = readTexture();
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glGenTextures(textures.length, textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 
-        GLES20.glTexParameteri(
-                GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);
         GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
@@ -149,11 +144,7 @@ public class ObjectRenderer {
 
         ShaderUtil.checkGLError(TAG, "Texture loading");
 
-        // Read the obj file.
-        InputStream objInputStream;
-        objInputStream = FileUtils.openInputStream(new File(context.getFilesDir().toString()+"/model",objAssetName));
-        Obj obj = ObjReader.read(objInputStream);
-        objInputStream.close();
+        Obj obj = ObjReader.read(new FileInputStream(mObjectFileName));
 
         // Prepare the Obj so that its structure is suitable for
         // rendering with OpenGL:
@@ -163,18 +154,22 @@ public class ObjectRenderer {
         // 4. Convert it to single-indexed data
         obj = ObjUtils.convertToRenderable(obj);
 
+        System.out.println(
+                "The renderable OBJ has " + obj.getNumVertices()
+                        + " vertices");
+
         // OpenGL does not use Java arrays. ByteBuffers are used instead to provide data in a format
         // that OpenGL understands.
 
         // Obtain the data from the OBJ, as direct buffers:
-        IntBuffer wideIndices = ObjData.getFaceVertexIndices(obj);//, 3);//my app I think uses 4
+        IntBuffer wideIndices = ObjData.getFaceVertexIndices(obj, 3);
         FloatBuffer vertices = ObjData.getVertices(obj);
         FloatBuffer texCoords = ObjData.getTexCoords(obj, 2);
         FloatBuffer normals = ObjData.getNormals(obj);
 
         // Convert int indices to shorts for GL ES 2.0 compatibility
         ShortBuffer indices = ByteBuffer.allocateDirect(2 * wideIndices.limit())
-            .order(ByteOrder.nativeOrder()).asShortBuffer();
+                .order(ByteOrder.nativeOrder()).asShortBuffer();
         while (wideIndices.hasRemaining()) {
             indices.put((short) wideIndices.get());
         }
@@ -210,10 +205,13 @@ public class ObjectRenderer {
 
         ShaderUtil.checkGLError(TAG, "OBJ buffer load");
 
-        final int vertexShader =
-                ShaderUtil.loadGLShader(TAG, context, GLES20.GL_VERTEX_SHADER, R.raw.object_vertex);
-        final int fragmentShader =
-                ShaderUtil.loadGLShader(TAG, context, GLES20.GL_FRAGMENT_SHADER, R.raw.object_fragment);
+        final int vertexShader = ShaderUtil.loadGLShader(TAG,
+                mVertexShaderFileName,
+                GLES20.GL_VERTEX_SHADER);
+
+        final int fragmentShader = ShaderUtil.loadGLShader(TAG,
+                mFragmentShaderFileName,
+                GLES20.GL_FRAGMENT_SHADER);
 
         program = GLES20.glCreateProgram();
         GLES20.glAttachShader(program, vertexShader);
@@ -224,7 +222,8 @@ public class ObjectRenderer {
         ShaderUtil.checkGLError(TAG, "Program creation");
 
         modelViewUniform = GLES20.glGetUniformLocation(program, "u_ModelView");
-        modelViewProjectionUniform = GLES20.glGetUniformLocation(program, "u_ModelViewProjection");
+        modelViewProjectionUniform =
+                GLES20.glGetUniformLocation(program, "u_ModelViewProjection");
 
         positionAttribute = GLES20.glGetAttribLocation(program, "a_Position");
         normalAttribute = GLES20.glGetAttribLocation(program, "a_Normal");
@@ -237,7 +236,13 @@ public class ObjectRenderer {
 
         ShaderUtil.checkGLError(TAG, "Program parameters");
 
-        Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.setIdentityM(mModelMatrix, 0);
+
+        mInitialized = true;
+    }
+
+    protected Bitmap readTexture() throws FileNotFoundException {
+        return BitmapFactory.decodeStream(new FileInputStream(mTextureFileName));
     }
 
     /**
@@ -252,17 +257,19 @@ public class ObjectRenderer {
     /**
      * Updates the object model matrix and applies scaling.
      *
-     * @param modelMatrix A 4x4 model-to-world transformation matrix, stored in column-major order.
      * @param scaleFactor A separate scaling factor to apply before the {@code modelMatrix}.
      * @see Matrix
      */
-    public void updateModelMatrix(float[] modelMatrix, float scaleFactor) {
+    public void updateModelMatrix(float scaleFactor) {
+        mAttachement.getPose().toMatrix(modelMatrix, 0);
+
         float[] scaleMatrix = new float[16];
         Matrix.setIdentityM(scaleMatrix, 0);
         scaleMatrix[0] = scaleFactor;
         scaleMatrix[5] = scaleFactor;
         scaleMatrix[10] = scaleFactor;
-        Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
+
+        Matrix.multiplyMM(mModelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
     }
 
     /**
@@ -290,17 +297,25 @@ public class ObjectRenderer {
      * @param lightIntensity  Illumination intensity.  Combined with diffuse and specular material
      *     properties.
      * @see #setBlendMode(BlendMode)
-     * @see #updateModelMatrix(float[], float)
      * @see #setMaterialProperties(float, float, float, float)
      * @see Matrix
      */
     public void draw(float[] cameraView, float[] cameraPerspective, float lightIntensity) {
+        if (!isInitialized()) {
+            setMaterialProperties(0.0f, 3.5f, 1.0f, 6.0f);
+            try {
+                createOnGlThread();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         ShaderUtil.checkGLError(TAG, "Before draw");
 
         // Build the ModelView and ModelViewProjection matrices
         // for calculating object position and light.
-        Matrix.multiplyMM(modelViewMatrix, 0, cameraView, 0, modelMatrix, 0);
+        Matrix.multiplyMM(modelViewMatrix, 0, cameraView, 0, mModelMatrix, 0);
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, cameraPerspective, 0, modelViewMatrix, 0);
 
         GLES20.glUseProgram(program);
@@ -308,15 +323,12 @@ public class ObjectRenderer {
         // Set the lighting environment properties.
         Matrix.multiplyMV(viewLightDirection, 0, modelViewMatrix, 0, LIGHT_DIRECTION, 0);
         normalizeVec3(viewLightDirection);
-        GLES20.glUniform4f(
-                lightingParametersUniform,
-                viewLightDirection[0],
-                viewLightDirection[1],
-                viewLightDirection[2],
-                lightIntensity);
+        GLES20.glUniform4f(lightingParametersUniform,
+                viewLightDirection[0], viewLightDirection[1], viewLightDirection[2], lightIntensity);
 
         // Set the object material properties.
-        GLES20.glUniform4f(materialParametersUniform, ambient, diffuse, specular, specularPower);
+        GLES20.glUniform4f(materialParametersUniform, ambient, diffuse, specular,
+                specularPower);
 
         // Attach the object texture.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -328,15 +340,18 @@ public class ObjectRenderer {
 
         GLES20.glVertexAttribPointer(
                 positionAttribute, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, verticesBaseAddress);
-        GLES20.glVertexAttribPointer(normalAttribute, 3, GLES20.GL_FLOAT, false, 0, normalsBaseAddress);
+        GLES20.glVertexAttribPointer(
+                normalAttribute, 3, GLES20.GL_FLOAT, false, 0, normalsBaseAddress);
         GLES20.glVertexAttribPointer(
                 texCoordAttribute, 2, GLES20.GL_FLOAT, false, 0, texCoordsBaseAddress);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
         // Set the ModelViewProjection matrix in the shader.
-        GLES20.glUniformMatrix4fv(modelViewUniform, 1, false, modelViewMatrix, 0);
-        GLES20.glUniformMatrix4fv(modelViewProjectionUniform, 1, false, modelViewProjectionMatrix, 0);
+        GLES20.glUniformMatrix4fv(
+                modelViewUniform, 1, false, modelViewMatrix, 0);
+        GLES20.glUniformMatrix4fv(
+                modelViewProjectionUniform, 1, false, modelViewProjectionMatrix, 0);
 
         // Enable vertex arrays
         GLES20.glEnableVertexAttribArray(positionAttribute);
@@ -375,6 +390,22 @@ public class ObjectRenderer {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
         ShaderUtil.checkGLError(TAG, "After draw");
+    }
+
+    public boolean isTracking() {
+        return mAttachement.isTracking();
+    }
+
+    public void setAttachement(TrackableAttachment attachement) {
+        this.mAttachement = attachement;
+    }
+
+    public boolean isInitialized() {
+        return mInitialized;
+    }
+
+    public void destroy(Session session) {
+        mAttachement.getAnchor().detach();
     }
 
     private static void normalizeVec3(float[] v) {

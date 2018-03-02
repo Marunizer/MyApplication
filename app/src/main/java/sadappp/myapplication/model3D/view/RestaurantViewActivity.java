@@ -22,9 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.GenericTransitionOptions;
-import com.bumptech.glide.TransitionOptions;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;

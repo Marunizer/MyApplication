@@ -22,6 +22,7 @@ public class Menu {
         String objPath;
         String mtlPath;
         String jpgPath;
+        String ingredients;
 
         int downloadChecker;
 

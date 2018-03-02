@@ -71,8 +71,6 @@ public abstract class LoaderTask extends AsyncTask<Void, Integer, Object3DData> 
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		// this.dialog = ProgressDialog.show(this.parent, "Please wait ...", "Loading model data...", true);
-		// this.dialog.setTitle(modelId);
 		this.dialog.setMessage("Loading...");
 		this.dialog.setCancelable(false);
 		this.dialog.show();
@@ -134,6 +132,4 @@ public abstract class LoaderTask extends AsyncTask<Void, Integer, Object3DData> 
 			callback.onBuildComplete(data);
 		}
 	}
-
-
 }

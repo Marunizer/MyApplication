@@ -7,7 +7,7 @@ projects 3D models in an intractable viewer + AR in a user friendly experience
 # Currently runnable ?
 Yes.
 
-But for testing, only one model can be accessed to the public. First attempt may not work because I have taken out the handler that manages what to do when a download is complete. Restarting app will make it functional.
+But for testing, only one model can be accessed to the public. First attempt at viewing model may not work. Restarting app will make it functional.
 
  Also: issues may arise when compiling native-lib.cpp, the Draco library is not included, as well as ARCore library
 

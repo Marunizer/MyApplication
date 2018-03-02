@@ -14,7 +14,6 @@ public class Restaurant {
     private float distanceAway; //to be used when finally calculating distance from user
     private ArrayList categories = new ArrayList<String>() ;//Will hold keywords that will be used for emojis
 
-
     public Restaurant(String name,Location location,String coordinateKey) {
         this.name = name;
         this.coordinateKey  = coordinateKey;

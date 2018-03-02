@@ -115,7 +115,6 @@ public class LocationDialogFragment extends DialogFragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override

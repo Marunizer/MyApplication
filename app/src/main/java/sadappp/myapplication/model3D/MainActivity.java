@@ -32,8 +32,8 @@ import java.util.Locale;
  * The purpose of this Activity is to be the very first Screen the user see's and find location or choose to include their own.
  *
  * TODO:
- * Implement using WIFI for location services
- * //https://android.jlelse.eu/know-your-sensors-android-location-services-565d5474bf0
+ * Implement using WIFI (network calls) over gps when available, consumes less battery, better accuracy
+ *
  */
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
@@ -52,18 +52,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 		context = this;
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-	//	setContentView(R.layout.activity_main);
-
 		// Create an instance of GoogleAPIClient.
 		createGoogleAPIClient();
 	}
-
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-//		return true;
-//	}
 
 
 	//    EVERYTHING
@@ -117,7 +108,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     finish();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    //Don't know if this will fix yet
+                    //Don't know if this will fix yet, DOES NOT SEEM TO BE THE CASE,
                     getMyLocation();
                 }
 
@@ -165,7 +156,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
 					}
 					else
 					{
